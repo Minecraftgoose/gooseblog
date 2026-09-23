@@ -69,6 +69,10 @@ marked.use({ renderer });
 // 换自定义域名时改这一行即可。
 const SITE_ORIGIN = 'https://blog.goose.cc.cd';
 
+// ========== 上游接口：流浪地球台词 API（自托管 Worker） ==========
+// 默认返回纯文本一句台词；加 ?type=json 返回 {code,msg,data}
+const QUOTE_API = 'https://thewanderingearth.goose.cc.cd/';
+
 // ========== Demo Data ==========
 const DEMO_POSTS = [
   { id: 1, slug: 'why-purple-glass', title: '鹅言鹅语：为什么我选了紫色玻璃做博客', excerpt: '因为好看啊还需要理由吗。好吧认真说——亚克力毛玻璃（Glassmorphism）配上深紫渐变，视觉层次感确实比纯色块强太多。这篇讲讲设计思路和踩的坑。', content: '<p>因为好看啊还需要理由吗。</p><p>认真说——亚克力毛玻璃（Glassmorphism）配上深紫渐变，视觉层次感确实比纯色块强太多。这篇讲讲设计思路和踩的坑。</p>', tag: '设计', created_at: '2026-07-17T08:00:00Z' },
@@ -938,31 +942,47 @@ async function handleRandomCover(request) {
 }
 
 /**
- * GET /api/yiyan — 每日一言（代理 fuchenboke 的 shici.php，绕开前端 CORS）
+ * GET /api/yiyan — 随机一句《流浪地球》台词
+ * 走 Worker 服务端代理上游自有 API：既绕开浏览器跨域，也不暴露上游地址给访客。
+ * 上游异常/超时一律落到内置台词兜底，绝不让侧栏打字机空白。
  */
 async function handleYiyan() {
+  const headers = {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Cache-Control': 'no-store',
+  };
   try {
-    const res = await fetch('https://api.fuchenboke.cn/api/shici.php', {
-      headers: { 'User-Agent': 'GooseBlog/1.0' }
+    const res = await fetch(QUOTE_API, {
+      headers: { 'User-Agent': 'GooseBlog/1.0' },
+      // 上游卡住不能拖垮侧栏：3 秒没响应就放弃走兜底
+      signal: AbortSignal.timeout(3000),
     });
     if (res.ok) {
-      const text = (await res.text()).trim();
-      if (text) {
-        return new Response(text, {
-          headers: {
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Cache-Control': 'no-store',
-          },
-        });
+      let text = (await res.text()).trim();
+      // 上游万一返回了 JSON（如 ?type=json 形态），取出 data 字段
+      if (text.startsWith('{')) {
+        try {
+          const j = JSON.parse(text);
+          if (j && typeof j.data === 'string' && j.data.trim()) text = j.data.trim();
+        } catch { /* 解析失败就用原文 */ }
       }
+      if (text) return new Response(text, { headers });
     }
   } catch {
     /* 落到兜底 */
   }
-  return new Response('保持热爱，奔赴山海。', {
-    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-  });
+  return new Response(FALLBACK_QUOTES[Math.floor(Math.random() * FALLBACK_QUOTES.length)], { headers });
 }
+
+// 上游不可用时的兜底台词（保持同系列风格）
+const FALLBACK_QUOTES = [
+  '希望是像钻石一样珍贵的东西，希望是我们唯一回家的方向。',
+  '危难当前，唯有责任。',
+  '道路千万条，安全第一条，行车不规范，亲人两行泪。',
+  '无论最终结果将人类历史导向何处，我们决定，选择希望。',
+  '没有人的人间，毫无意义。',
+  '人类的勇气与坚毅，将永刻于星空之下。',
+];
 
 // ========== 工具 ==========
 function jsonResponse(data, status = 200, request = null) {
