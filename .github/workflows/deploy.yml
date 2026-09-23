@@ -2,7 +2,9 @@ name: Deploy Gooseblog
 
 on:
   push:
-    branches: [main, master]
+    # production = Pages 的生产分支（推它就上生产环境）
+    # main/master = 预览分支（推它们只出 Preview）
+    branches: [production, main, master]
   workflow_dispatch:
 
 # 同一分支的多次推送排队执行，不互相打断（避免部署到一半被取消）
@@ -14,14 +16,15 @@ permissions:
   contents: read
 
 # ┌───────────────────────────────────────────────────────────────┐
-# │ 仓库 Settings → Secrets and variables → Actions 需要配置 4 个  │
+# │ 仓库 Settings → Secrets and variables → Actions 需配置 6 个    │
 # ├───────────────────────────────────────────────────────────────┤
+# │ 必需 4 个：                                                   │
 # │ CLOUDFLARE_API_TOKEN   Cloudflare API Token（Workers/Pages 写）│
 # │ CLOUDFLARE_ACCOUNT_ID  Cloudflare Account ID                  │
 # │ SUPABASE_URL           Supabase 项目 URL                      │
 # │ SUPABASE_ANON_KEY      Supabase anon public key               │
 # ├───────────────────────────────────────────────────────────────┤
-# │ 可选（强烈建议配）：                                          │
+# │ 建议再配 2 个：                                               │
 # │ SUPABASE_SERVICE_KEY   service_role key，绕过 RLS 写库        │
 # │ ADMIN_PASSWORD         后台密码，不配则回落到默认 'gooseblog' │
 # └───────────────────────────────────────────────────────────────┘
@@ -29,6 +32,12 @@ permissions:
 env:
   # wrangler CLI 版本（锁定大版本，避免 major 升级直接炸流水线）
   WRANGLER_VERSION: '4'
+
+  # ⚠️ 关键：必须与 Cloudflare Pages 项目里设置的「Production branch」完全一致
+  # 当前 Pages 生产分支 = production
+  # 只有 --branch 的值等于这个值，部署才会是「生产环境」并更新自定义域名；
+  # 否则一律是 Preview（<branch>.gooseblog.pages.dev），自定义域名不会变。
+  PRODUCTION_BRANCH: production
 
 jobs:
   # ─────────────────────────────────────────────────────────────
@@ -122,12 +131,28 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Determine deploy target
+        id: target
+        run: |
+          ref="${GITHUB_REF_NAME}"
+          prod="${PRODUCTION_BRANCH}"
+          if [ "$ref" = "$prod" ]; then
+            echo "branch=$prod" >> "$GITHUB_OUTPUT"
+            echo "is_production=true" >> "$GITHUB_OUTPUT"
+            echo "部署目标：生产环境（branch=$prod）"
+          else
+            echo "branch=$ref" >> "$GITHUB_OUTPUT"
+            echo "is_production=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::当前分支 $ref ≠ 生产分支 $prod，本次为 Preview 部署，自定义域名不会更新。"
+          fi
+
       - name: Deploy to Cloudflare Pages
         working-directory: blog
         run: |
           npx --yes wrangler@$WRANGLER_VERSION pages deploy . \
             --project-name gooseblog \
-            --branch "${GITHUB_REF_NAME}" \
+            --branch "${{ steps.target.outputs.branch }}" \
+            --commit-hash "${GITHUB_SHA}" \
             --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -142,4 +167,9 @@ jobs:
             echo "- Commit: \`${GITHUB_SHA::7}\`"
             echo "- Pages 项目: \`gooseblog\`"
             echo "- API Worker: \`gooseblog-api\`"
+            if [ "${{ steps.target.outputs.is_production }}" = "true" ]; then
+              echo "- 环境: **生产**（自定义域名已更新）"
+            else
+              echo "- 环境: ⚠️ **Preview**（生产分支为 \`${PRODUCTION_BRANCH}\`）"
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
