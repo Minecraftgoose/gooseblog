@@ -1,0 +1,10 @@
+/src/css/*
+  Cache-Control: public, max-age=0, must-revalidate
+/src/js/*
+  Cache-Control: public, max-age=0, must-revalidate
+/background.webp
+  Cache-Control: public, max-age=86400
+/background-1920.webp
+  Cache-Control: public, max-age=86400
+/background-1280.webp
+  Cache-Control: public, max-age=86400

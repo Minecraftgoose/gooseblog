@@ -1,0 +1,17 @@
+# GooseBlog — Cloudflare Pages 配置
+#
+# 部署：
+#   wrangler pages deploy . --project-name gooseblog
+#
+# 环境变量（Secrets，在 Dashboard 中设置）：
+#   这些只应在 Worker（gooseblog-api）的环境变量中设置，不在 Pages 侧设置。
+#   Pages Function 只是一个透传层，不直接访问 Supabase。
+
+name = "gooseblog"
+pages_build_output_dir = "."
+
+# Service Binding — 将 /api/* 请求转发到后端 Worker
+# script_name 指向 wrangler deploy 部署的 Worker 项目名（gooseblog-api）
+[[services]]
+binding = "ROOM"
+service = "gooseblog-api"

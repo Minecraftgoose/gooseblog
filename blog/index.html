@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!-- deploy 20260728-2135 -->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>GooseBlog</title>
+  <link rel="icon" href="https://img.cyann.top/images/2c1adce22v29160f9ed686cac697556e.webp" type="image/webp">
+  <link rel="preconnect" href="https://cdn.bootcdn.net">
+  <!-- 首屏背景预加载（与 CSS 断点一致，避免 JS/CSS 到位前闪白） -->
+  <link rel="preload" as="image" href="/background.webp" media="(min-width: 1441px)">
+  <link rel="preload" as="image" href="/background-1920.webp" media="(min-width: 901px) and (max-width: 1440px)">
+  <link rel="preload" as="image" href="/background-1280.webp" media="(max-width: 900px)">
+  <!-- OG_MARK -->
+  <meta property="og:title" content="GooseBlog">
+  <meta property="og:description" content="紫色玻璃风博客 · 网页开发 · 工具折腾 · 偶尔写点有用的东西">
+  <meta property="og:image" content="https://img.cyann.top/images/2c1adce22v29160f9ed686cac697556e.webp">
+  <meta property="og:url" content="https://blog.goose.cc.cd/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <!-- /OG_MARK -->
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></noscript>
+  <link rel="stylesheet" href="/src/css/core.css">
+  <link rel="stylesheet" href="/src/css/layout.css">
+  <link rel="stylesheet" href="/src/css/article.css">
+  <link rel="stylesheet" href="/src/css/components.css">
+  <link rel="stylesheet" href="/src/css/widgets.css">
+</head>
+<body>
+  <div id="root">
+    <div class="app-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <img class="brand-logo" src="/logo.svg" alt="GooseBlog">
+          </div>
+        </div>
+
+        <div class="sidebar-banner banner-image"
+             style="background-image: url('/background-1280.webp'); background-size: cover; background-position: center center;">
+          <div class="banner-overlay">
+            <div class="banner-subtitle"><span id="typingText"></span><span class="typing-cursor">|</span></div>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <a class="nav-item" data-route="/">
+            <span class="nav-item-icon"><i class="fas fa-home"></i></span>
+            <span class="nav-item-title" data-i18n="nav.home">首页</span>
+          </a>
+          <a class="nav-item" data-route="/about">
+            <span class="nav-item-icon"><i class="fas fa-user"></i></span>
+            <span class="nav-item-title" data-i18n="nav.about">关于</span>
+          </a>
+          <a class="nav-item" data-route="/archive">
+            <span class="nav-item-icon"><i class="fas fa-archive"></i></span>
+            <span class="nav-item-title" data-i18n="nav.archive">归档</span>
+          </a>
+          <a class="nav-item" data-route="/projects">
+            <span class="nav-item-icon"><i class="fas fa-layer-group"></i></span>
+            <span class="nav-item-title" data-i18n="nav.projects">项目</span>
+          </a>
+          <a class="nav-item" data-route="/friends">
+            <span class="nav-item-icon"><i class="fas fa-link"></i></span>
+            <span class="nav-item-title" data-i18n="nav.friends">友链</span>
+          </a>
+          <a class="nav-item nav-admin-hidden" data-route="/admin">
+            <span class="nav-item-icon"><i class="fas fa-pen"></i></span>
+            <span class="nav-item-title" data-i18n="nav.admin">写文章</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-toggle">
+          <span class="toggle-label" data-i18n="side.leaves">落叶飘落</span>
+          <label class="switch">
+            <input type="checkbox" id="leavesToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="sidebar-toggle">
+          <span class="toggle-label" data-i18n="side.clickFx">点击特效</span>
+          <label class="switch">
+            <input type="checkbox" id="clickToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="sidebar-toggle">
+          <span class="toggle-label" data-i18n="side.palette">调色板</span>
+          <button class="color-toggle-btn" id="colorToggle" title="打开调色板">
+            <span class="color-dot" id="colorDot"></span>
+            <i class="fas fa-chevron-up"></i>
+          </button>
+        </div>
+
+        <div class="user-bar">
+          <div class="avatar"><img src="https://img.cyann.top/images/2c1adce22v29160f9ed686cac697556e.webp" alt=""></div>
+          <span class="user-name">Goose</span>
+        </div>
+      </aside>
+
+      <div class="overlay" id="overlay"></div>
+
+      <!-- Main -->
+      <main class="main">
+        <header class="mobile-header">
+          <button class="icon-btn" id="menuBtn">
+            <i class="fas fa-bars"></i>
+          </button>
+          <button class="header-icon-btn" id="mobileBackBtn" title="后退" disabled>
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <button class="header-icon-btn" id="mobileForwardBtn" title="前进" disabled>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+          <div class="logo">
+            <img class="brand-logo" src="/logo.svg" alt="GooseBlog">
+          </div>
+          <button class="header-icon-btn" id="mobileThemeBtn" title="切换主题">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="header-icon-btn" id="mobileLangBtn" title="English">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </button>
+        </header>
+
+        <header class="chat-header">
+          <button class="header-icon-btn" id="headerSidebarBtn" title="折叠侧栏">
+            <i class="fas fa-bars"></i>
+          </button>
+          <button class="header-icon-btn" id="headerBackBtn" title="后退" disabled>
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <button class="header-icon-btn" id="headerForwardBtn" title="前进" disabled>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+          <span class="chat-header-title" id="chatHeaderTitle"></span>
+          <div class="chat-header-actions">
+            <button class="header-icon-btn" id="headerThemeBtn" title="切换主题">
+              <i class="fas fa-moon"></i>
+            </button>
+            <button class="header-icon-btn" id="headerLangBtn" title="English">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="announcement-bar" id="announcementBar" style="display:none">
+          <span class="announcement-icon"><i class="fas fa-bullhorn"></i></span>
+          <div class="announcement-scroll" id="announcementScroll">
+            <div class="announcement-track" id="announcementTrack">
+              <span class="announcement-text" id="announcementText"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-center" id="app">
+          <div class="state-msg">
+            <div class="spinner"></div>
+            <p>加载中...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- 开屏动画 -->
+  <div id="splash" class="splash-overlay" style="display:none">
+    <svg class="splash-svg" viewBox="0 0 417 102" xmlns="http://www.w3.org/2000/svg">
+      <g class="splash-path" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round">
+        <path d="M27.783 71.604L31.833 71.604Q35.883 71.604 41.148 71.037L41.148 71.037L43.173 54.999L28.755 54.999L29.808 46.089L53.784 46.089L49.734 79.137Q39.042 80.514 30.942 80.514L30.942 80.514L26.730 80.514Q14.985 80.433 9.680 75.897Q4.374 71.361 4.374 61.560L4.374 61.560Q4.374 59.130 4.779 55.323L4.779 55.323L5.994 44.550Q7.128 35.640 10.368 30.132Q13.608 24.624 19.521 22.032Q25.434 19.440 34.587 19.359L34.587 19.359L36.774 19.359Q46.575 19.359 55.485 19.602L55.485 19.602L54.351 28.593L47.628 28.431Q39.042 28.269 35.721 28.269L35.721 28.269L33.291 28.269Q27.378 28.269 23.814 29.929Q20.250 31.590 18.346 34.992Q16.443 38.394 15.714 44.064L15.714 44.064L14.256 55.809Q13.932 59.049 13.932 60.183L13.932 60.183Q13.932 66.258 17.050 68.891Q20.169 71.523 27.783 71.604L27.783 71.604Z M60.345 61.074L61.155 54.270Q63.504 34.749 82.620 34.749L82.620 34.749L86.508 34.749Q103.275 34.749 103.275 50.139L103.275 50.139Q103.275 52.002 103.032 54.189L103.032 54.189L102.222 60.993Q99.873 80.514 80.757 80.514L80.757 80.514L76.869 80.514Q60.102 80.514 60.102 65.124L60.102 65.124Q60.102 63.261 60.345 61.074L60.345 61.074Z M77.922 71.847L81.810 71.847Q91.530 71.847 92.826 61.236L92.826 61.236L93.717 53.946Q93.879 52.326 93.879 51.678L93.879 51.678Q93.879 43.416 85.455 43.416L85.455 43.416L81.567 43.416Q71.847 43.416 70.551 54.027L70.551 54.027L69.660 61.317Q69.498 62.937 69.498 63.585L69.498 63.585Q69.498 71.847 77.922 71.847L77.922 71.847Z M109.512 61.074L110.322 54.270Q112.671 34.749 131.787 34.749L131.787 34.749L135.675 34.749Q152.442 34.749 152.442 50.139L152.442 50.139Q152.442 52.002 152.199 54.189L152.199 54.189L151.389 60.993Q149.040 80.514 129.924 80.514L129.924 80.514L126.036 80.514Q109.269 80.514 109.269 65.124L109.269 65.124Q109.269 63.261 109.512 61.074L109.512 61.074Z M127.089 71.847L130.977 71.847Q140.697 71.847 141.993 61.236L141.993 61.236L142.884 53.946Q143.046 52.326 143.046 51.678L143.046 51.678Q143.046 43.416 134.622 43.416L134.622 43.416L130.734 43.416Q121.014 43.416 119.718 54.027L119.718 54.027L118.827 61.317Q118.665 62.937 118.665 63.585L118.665 63.585Q118.665 71.847 127.089 71.847L127.089 71.847Z M171.558 80.514L168.804 80.514Q161.352 80.352 155.925 79.866L155.925 79.866L157.140 71.118Q165.078 71.847 169.857 72.009L169.857 72.009L172.611 72.009Q177.795 72.009 179.861 70.713Q181.926 69.417 182.412 66.987L182.412 66.987Q182.493 66.582 182.493 65.853L182.493 65.853Q182.493 63.828 181.845 63.180L181.845 63.180Q181.278 62.289 179.982 61.965Q178.686 61.641 175.041 61.236L175.041 61.236L173.178 60.993Q168.966 60.669 165.159 59.535L165.159 59.535Q162.162 58.401 160.704 56.255Q159.246 54.108 159.246 50.544L159.246 50.544Q159.246 49.815 159.408 48.033L159.408 48.033Q159.975 43.092 162.243 40.297Q164.511 37.503 168.561 36.288Q172.611 35.073 179.010 35.073L179.010 35.073L182.331 35.073L193.752 35.154L192.699 43.740L177.957 43.740Q174.393 43.740 172.530 44.105Q170.667 44.469 169.816 45.320Q168.966 46.170 168.723 47.790L168.723 47.790Q168.642 48.195 168.642 48.843L168.642 48.843Q168.642 50.139 169.371 51.030L169.371 51.030Q170.181 52.002 171.761 52.367Q173.340 52.731 177.633 53.217L177.633 53.217Q182.736 53.703 185.976 54.756L185.976 54.756Q188.811 55.728 190.310 58.077Q191.808 60.426 191.808 64.152L191.808 64.152Q191.808 65.934 191.646 66.906L191.646 66.906Q190.674 74.439 185.976 77.477Q181.278 80.514 171.558 80.514L171.558 80.514Z M221.049 34.749L222.669 34.749Q231.012 34.749 235.264 38.678Q239.517 42.606 239.517 50.301L239.517 50.301Q239.517 52.083 239.274 54.189L239.274 54.189L238.383 61.479L208.170 61.479L208.170 61.560Q208.008 63.342 208.008 63.990L208.008 63.990Q208.008 68.121 210.397 70.106Q212.787 72.090 218.457 72.090L218.457 72.090L222.426 72.090Q226.638 72.090 235.224 71.361L235.224 71.361L234.333 79.785Q227.205 80.514 221.535 80.514L221.535 80.514L217.566 80.514Q207.765 80.514 203.188 76.545Q198.612 72.576 198.612 64.881L198.612 64.881Q198.612 63.018 198.855 61.074L198.855 61.074L199.665 54.270Q200.799 44.550 206.064 39.649Q211.329 34.749 221.049 34.749L221.049 34.749Z M209.142 53.622L230.040 53.622L230.040 53.541Q230.202 51.759 230.202 50.949L230.202 50.949Q230.202 47.061 228.136 45.036Q226.071 43.011 221.616 43.011L221.616 43.011L219.996 43.011Q210.438 43.011 209.142 53.622L209.142 53.622Z M271.269 80.190L244.701 80.190L252.153 19.359L276.210 19.359Q284.310 19.440 288.644 22.801Q292.977 26.163 292.977 32.643L292.977 32.643Q292.977 33.291 292.815 35.073L292.815 35.073L292.491 37.989Q291.519 44.874 286.335 48.195L286.335 48.195Q289.818 49.572 291.600 52.407Q293.382 55.242 293.382 59.211L293.382 59.211Q293.382 60.426 293.301 61.074L293.301 61.074L292.896 64.476Q291.924 72.009 286.375 76.100Q280.827 80.190 271.269 80.190L271.269 80.190Z M258.552 45.036L273.294 45.036Q281.961 44.874 283.014 38.151L283.014 38.151L283.419 34.911Q283.986 28.107 275.400 27.945L275.400 27.945L260.658 27.945L258.552 45.036Z M255.312 71.442L272.403 71.442Q277.182 71.361 279.936 69.579Q282.690 67.797 283.257 64.638L283.257 64.638L283.662 61.155Q284.067 57.429 281.758 55.445Q279.450 53.460 274.590 53.379L274.590 53.379L257.580 53.379L255.312 71.442Z M308.691 80.190L299.376 80.190L306.990 17.739L316.305 17.739L308.691 80.190Z M319.950 61.074L320.760 54.270Q323.109 34.749 342.225 34.749L342.225 34.749L346.113 34.749Q362.880 34.749 362.880 50.139L362.880 50.139Q362.880 52.002 362.637 54.189L362.637 54.189L361.827 60.993Q359.478 80.514 340.362 80.514L340.362 80.514L336.474 80.514Q319.707 80.514 319.707 65.124L319.707 65.124Q319.707 63.261 319.950 61.074L319.950 61.074Z M337.527 71.847L341.415 71.847Q351.135 71.847 352.431 61.236L352.431 61.236L353.322 53.946Q353.484 52.326 353.484 51.678L353.484 51.678Q353.484 43.416 345.060 43.416L345.060 43.416L341.172 43.416Q331.452 43.416 330.156 54.027L330.156 54.027L329.265 61.317Q329.103 62.937 329.103 63.585L329.103 63.585Q329.103 71.847 337.527 71.847L337.527 71.847Z M369.198 60.750L369.846 54.594Q371.952 35.073 391.392 35.073L391.392 35.073L410.751 35.073L404.838 83.349Q403.947 89.910 399.452 93.717Q394.956 97.524 385.884 97.524L385.884 97.524Q377.865 97.524 370.737 96.876L370.737 96.876L371.709 88.452Q379.485 89.181 386.451 89.181L386.451 89.181Q390.906 89.181 393.012 87.723Q395.118 86.265 395.523 83.106L395.523 83.106L395.847 80.190L385.722 80.190Q368.955 80.190 368.955 64.557L368.955 64.557Q368.955 62.775 369.198 60.750L369.198 60.750Z M386.775 71.685L396.900 71.685L400.383 43.578L390.339 43.578Q380.376 43.578 379.242 54.351L379.242 54.351L378.513 60.993Q378.351 62.613 378.351 63.180L378.351 63.180Q378.351 71.685 386.775 71.685L386.775 71.685Z" />
+      </g>
+    </svg>
+    <div class="splash-loader"></div>
+  </div>
+
+  <!-- 国际化核心（同步加载，早于 defer 脚本） -->
+  <script src="/src/js/i18n-core.js"></script>
+  <script type="module" src="/src/app.js"></script>
+  <!-- 第三方装饰特效：花瓣飘落 + 点击爆炸（来自 api.fuchenboke.cn，纯 canvas 无数据外发） -->
+  <script src="https://api.fuchenboke.cn/api/fengye.js" defer></script>
+  <script src="https://api.fuchenboke.cn/api/dianjibaozha.js" defer></script>
+  <script src="/src/js/color-picker.js" defer></script>
+  <script src="/src/js/image-viewer.js" defer></script>
+  <script src="/src/js/toc-ball.js" defer></script>
+  <script src="/src/js/share-float.js" defer></script>
+  <script src="/src/js/code-copy.js" defer></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+  <script src="/src/js/share-bar.js" defer></script>
+  <script src="/src/js/link-card.js" defer></script>
+</body>
+</html>
