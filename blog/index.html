@@ -181,9 +181,8 @@
   <!-- 国际化核心（同步加载，早于 defer 脚本） -->
   <script src="/src/js/i18n-core.js"></script>
   <script type="module" src="/src/app.js"></script>
-  <!-- 第三方装饰特效：花瓣飘落 + 点击爆炸（来自 api.fuchenboke.cn，纯 canvas 无数据外发） -->
-  <script src="https://api.fuchenboke.cn/api/fengye.js" defer></script>
-  <script src="https://api.fuchenboke.cn/api/dianjibaozha.js" defer></script>
+  <!-- 装饰特效（花瓣飘落 / 点击爆炸）已移除：原为 api.fuchenboke.cn 第三方脚本，
+       该站已 403 不可达，且第三方 JS 可在本站执行任意代码，不再引入。 -->
   <script src="/src/js/color-picker.js" defer></script>
   <script src="/src/js/image-viewer.js" defer></script>
   <script src="/src/js/toc-ball.js" defer></script>
