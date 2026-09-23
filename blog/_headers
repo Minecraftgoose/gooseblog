@@ -8,3 +8,7 @@
   Cache-Control: public, max-age=86400
 /background-1280.webp
   Cache-Control: public, max-age=86400
+/avatar.webp
+  Cache-Control: public, max-age=86400
+/avatar-256.webp
+  Cache-Control: public, max-age=86400

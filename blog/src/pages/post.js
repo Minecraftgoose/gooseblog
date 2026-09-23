@@ -31,7 +31,7 @@ function renderPostContent(container, post, prev, next) {
   const rawContent = post.content || `<p>${escapeHtml(post.excerpt || '内容待补充。')}</p>`;
 
   // comment
-  const img = post.cover_url || 'https://img.cyann.top/images/2c1adce22v29160f9ed686cac697556e.webp';
+  const img = post.cover_url || '/avatar.webp';
   const desc = post.excerpt || post.title || 'GooseBlog';
   setMeta('og:title', post.title);
   setMeta('og:description', desc);

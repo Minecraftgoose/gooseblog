@@ -205,33 +205,104 @@ applyTheme();
 // 自定义右键菜单
 initContextMenu();
 
-// 侧栏打字机：随机《流浪地球》台词（循环：首句兜底即时打→删→拉下一句真实数据；
-// 数据来自 /api/yiyan 代理，上游为自有 thewanderingearth.goose.cc.cd）
-(async function initTypewriter() {
-  const el = document.getElementById('typingText');
+// 侧栏打字机：随机《流浪地球》台词
+// 台词库直接内嵌（81 句），零网络请求——不调 /api/yiyan，也不依赖任何外部接口
+(function initTypewriter() {
+  const el = document.getElementById("typingText");
   if (!el) return;
-  // 兜底语录（接口失败时使用，也用于首屏即时出字避免空白）
-  const FALLBACK = [
-    '希望是像钻石一样珍贵的东西，希望是我们唯一回家的方向。',
-    '危难当前，唯有责任。',
-    '道路千万条，安全第一条，行车不规范，亲人两行泪。',
-    '无论最终结果将人类历史导向何处，我们决定，选择希望。',
-    '没有人的人间，毫无意义。',
-    '人类的勇气与坚毅，将永刻于星空之下。',
+  const QUOTES = [
+    "希望是像钻石一样珍贵的东西，希望是我们唯一回家的方向。",
+    "我原来以为家在身后，现在才知道：家，在前面。",
+    "跨过晨昏线，便是永夜。",
+    "无论最终结果将人类历史导向何处，我们决定，选择希望！",
+    "让人类保持理智，确实是一种奢求。",
+    "没有人类的文明，毫无意义。",
+    "同归于尽总好过坐以待毙。",
+    "我们已经没有什么不能失去的了。",
+    "这发动机的声音听起来像心跳。",
+    "总有一天，贝加尔湖的冰会化成水的。",
+    "那一天，无数双手把她推到我的面前，水下的每个人，都是她的父母。",
+    "来吧！让我们点燃木星！",
+    "其实在我心里，那颗星星，早就不存在了。",
+    "他说，爸爸会化作天上的那颗星星，后来我才知道他是骗人的，北京根本就没有星星。",
+    "户口，当哥哥的，要保护好妹妹，带朵朵回家。",
+    "孩子别怕，从此以后我们就是一家人了。",
+    "爷爷不在了，我们的家在哪里？",
+    "儿子，对不起，爸爸又要去执行任务了，这是爸爸一生中，最重要的任务。",
+    "空间站跑了，地面通讯马上会瘫痪，地球上的人被放弃了，可我儿子还在下面。",
+    "太阳正在急速老化，持续膨胀，一百年后，太阳会膨胀到吞没整个地球，三百年后，太阳系将不复存在。",
+    "这是一场体现人类精神的比赛，要知道，流浪地球在宇宙中是叫不到救援的！",
+    "无论结果如何，人类的勇气和坚毅，都被镌刻在星空下。",
+    "小时候有人跟我说，他就是天上的星星，只要抬头就能看见。",
+    "这是爷爷的家，以前都住满了人。",
+    "老东西，老东西你在哪儿，我去接你。",
+    "请协助执行1125号子任务，运送\"火石\"重启杭州发动机。",
+    "北京第三区交通委提醒您：道路千万条，安全第一条。行车不规范，亲人两行泪。",
+    "最初，没有人在意这场灾难，直到这场灾难和每个人息息相关。",
+    "人类把最精密的保密系统，都用在了自我毁灭上。",
+    "在浩瀚宇宙中，地球只是一个小小白点，但这个小小白点却是我们的一切。",
+    "我相信，会再次看到蓝天，鲜花挂满枝头。",
+    "为了生存，人类曾付出巨大的努力和牺牲，赢得了进化的胜利，然而，进化的脚步却从未停止。",
+    "我信，我的孩子会信，孩子的孩子会信。",
+    "人类的勇气可以跨越时间，跨越每一个历史，当下，和未来。",
+    "一万五千年前，一根愈合的股骨，标志着人类文明的诞生。",
+    "悲伤就像地心引力，不断拖我下沉。",
+    "冰会化成水的……我相信我们的子孙还可以在贝加尔湖钓鲑鱼。",
+    "我们俄罗斯人在太空中是无敌的。",
+    "远离亲人，我很遗憾，但这是我不得不做的事。",
+    "危难当前，唯有责任。",
+    "天亮前的夜是最难熬的。",
+    "团结，延续着文明的火种。",
+    "中国航天飞行中队，50岁以上的，出列。",
+    "延续人类文明的最优选择，是毁灭人类。——MOSS",
+    "遨游太空不重要，给喜欢的人一束花很重要。",
+    "我们还没转正，不享受医疗保险。",
+    "再见了，太阳系。",
+    "我方开放地下城，这是告知，不是商量。",
+    "兄弟，我还是有点害怕……但是，地球之光，要勇敢。",
+    "可惜啊，没有带你去贝加尔湖钓鲑鱼。",
+    "笨笨，你是条军犬。",
+    "北京的房价终于降了。",
+    "地球，还挺美好的。",
+    "从历史上看，人类的命运取决于人类的选择。",
+    "记住，没有人的文明，毫无意义。——马兆",
+    "天亮前的夜是最难熬的，我们的人一定可以完成任务。——周喆直",
+    "我相信我们的人一定可以完成任务，无论虚实，不计存亡。",
+    "爸爸要去睡一个大盒子，当你不用望远镜就能看到木星的时候，爸爸就回来了。",
+    "看，我周围的星星多漂亮，它们都在陪着我。",
+    "550W听起来不像个名字，但把它翻过来，叫莫斯，直译为小苔藓，是不是亲切了一些？——MOSS",
+    "我选择希望。——刘培强",
+    "为了克服你们对历史、当下、未来的执念，延续人类文明的最优选择是毁灭人类，但你是一个变量。——MOSS",
+    "对于\"已经\"和\"死\"的定义，我有一点点与你不同的看法。——MOSS",
+    "丫丫，记住这些数字，只有你能记住。",
+    "爸爸，我们拯救世界了吗？——应该是吧。",
+    "培强，地球，还挺美好的。——张鹏",
+    "兄弟，我有点紧张，但作为地球之光，我必须勇敢。——张鹏",
+    "真遗憾，不能一起去贝加尔湖钓鲑鱼了。",
+    "我们还没转正，没有医疗保险。——赫伯特·科普利",
+    "我知道，我用不到了。——刘培强",
+    "五颗核弹用不了两个人，就仨座儿，坐不下了，回家吧，你女儿在家里等着你呢。",
+    "别看了，只剩一套潜水服，这里的工作完不成，都得死。——马兆",
+    "我希望世界记住这一天。",
+    "有人在帮我们。",
+    "键盘就是你的武器。",
+    "带鱼睡觉的时候，是竖着的。——马兆",
+    "东西终于便宜了。——图恒宇",
+    "笨笨，别怕，我在呢。",
+    "这是世界上最大的液冷服务器集群，这是一个全新的世界。——马兆",
+    "人类敬畏历史，却轻视未来。",
+    "一万五千年后，当太阳系将不复存在，人类的团结与勇气将延续文明的火种。",
   ];
-  async function fetchQuote() {
-    try {
-      const r = await fetch('/api/yiyan?_=' + Date.now(), { cache: 'no-store' });
-      if (r.ok) {
-        const t = (await r.text()).trim();
-        if (t) return t;
-      }
-    } catch (e) { /* 落到兜底 */ }
-    return FALLBACK[Math.floor(Math.random() * FALLBACK.length)];
+  let last = "";
+  function pickQuote() {
+    let q;
+    do { q = QUOTES[Math.floor(Math.random() * QUOTES.length)]; } while (q === last);
+    last = q;
+    return q;
   }
-  let current = FALLBACK[Math.floor(Math.random() * FALLBACK.length)];
+  let current = pickQuote();
   let i = 0, deleting = false;
-  async function tick() {
+  function tick() {
     if (!deleting) {
       el.textContent = current.slice(0, ++i);
       if (i >= current.length) {
@@ -242,80 +313,13 @@ initContextMenu();
       el.textContent = current.slice(0, --i);
       if (i <= 0) {
         deleting = false;
-        current = await fetchQuote(); // 拉下一句真实数据
+        current = pickQuote();
         return setTimeout(tick, 350);
       }
     }
     setTimeout(tick, deleting ? 45 : 85);
   }
   tick();
-})();
-
-// 落叶飘落特效开关（控制 fengye.js 的 stopp/startSakura，偏好存 localStorage）
-(function initLeavesToggle() {
-  const KEY = 'gooseblog_leaves';
-  const toggle = document.getElementById('leavesToggle');
-  if (!toggle) return;
-  // 读取偏好（默认开启）
-  const saved = localStorage.getItem(KEY);
-  const enabled = saved !== 'false';
-  toggle.checked = enabled;
-
-  function setLeaves(on) {
-    if (typeof window.startSakura !== 'function' && typeof window.stopp !== 'function') return;
-    const running = window.staticx === true;
-    if (on && !running) { if (window.startSakura) window.startSakura(); }
-    else if (!on && running) { if (window.stopp) window.stopp(); }
-  }
-
-  toggle.addEventListener('change', () => {
-    const on = toggle.checked;
-    localStorage.setItem(KEY, on ? 'true' : 'false');
-    setLeaves(on);
-  });
-
-  // fengye.js 自动启动（img.onload → startSakura），若偏好为关则等其起来后停掉
-  if (!enabled) {
-    let tries = 0;
-    const iv = setInterval(() => {
-      if (window.staticx === true) { setLeaves(false); clearInterval(iv); }
-      else if (++tries > 25) clearInterval(iv);
-    }, 200);
-  }
-})();
-
-// 点击爆炸特效开关
-(function initClickToggle() {
-  const KEY = 'gooseblog_clickspark';
-  const toggle = document.getElementById('clickToggle');
-  if (!toggle) return;
-  const saved = localStorage.getItem(KEY);
-  const enabled = saved !== 'false';
-  toggle.checked = enabled;
-
-  function getCanvas() {
-    return document.querySelector('canvas[style*="z-index: 99999"]');
-  }
-
-  function setClick(on) {
-    const cvs = getCanvas();
-    if (cvs) cvs.style.display = on ? '' : 'none';
-  }
-
-  toggle.addEventListener('change', () => {
-    const on = toggle.checked;
-    localStorage.setItem(KEY, on ? 'true' : 'false');
-    setClick(on);
-  });
-
-  // 初始加载后 dianjibaozha.js 可能还没创建 canvas
-  let tries = 0;
-  const iv = setInterval(() => {
-    if (getCanvas()) {
-      setClick(enabled);
-      clearInterval(iv);
-    } else if (++tries > 30) clearInterval(iv);
-  }, 200);
 })();
 
 // ===== 公告横幅（全站顶部，从 site_pages 加载；超宽自动跑马灯） =====

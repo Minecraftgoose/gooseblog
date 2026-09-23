@@ -56,7 +56,7 @@ export async function onRequest(context) {
       if (postRes.ok) {
         const post = await postRes.json();
         if (post && post.title) {
-          const img = post.cover_url || 'https://img.cyann.top/images/2c1adce22v29160f9ed686cac697556e.webp';
+          const img = post.cover_url || '/avatar.webp';
           const desc = post.excerpt || post.title || 'GooseBlog';
           const tags = `
   <meta property="og:title" content="${escapeAttr(post.title)}">

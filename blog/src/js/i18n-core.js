@@ -56,8 +56,6 @@
     'lang.toggle':    {zh:'English', en:'中文'},
     'toast.copied':   {zh:'已复制', en:'Copied'},
     'toast.postCopied':{zh:'链接已复制', en:'Link copied'},
-    'side.leaves':    {zh:'落叶飘落', en:'Falling Leaves'},
-    'side.clickFx':   {zh:'点击特效', en:'Click Effects'},
     'side.palette':   {zh:'调色板', en:'Palette'},
     'ai.exclude':     {zh:'屏蔽AI', en:'Hide AI'},
     'ai.excluded':    {zh:'已屏蔽AI', en:'AI Hidden'},

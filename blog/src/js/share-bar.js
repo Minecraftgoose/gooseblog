@@ -5,7 +5,7 @@
   if (window._postActionsInit) return;
   window._postActionsInit = true;
 
-  var AVATAR = 'https://img.cyann.top/images/2c1adce22v29160f9ed686cac697556e.webp';
+  var AVATAR = '/avatar.webp';
   var SITE = 'blog.goose.cc.cd';
 
   // ---- 复制链接 ----
