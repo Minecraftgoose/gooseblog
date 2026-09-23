@@ -2,9 +2,9 @@ name: Deploy Gooseblog
 
 on:
   push:
-    # production = Pages 的生产分支（推它就上生产环境）
-    # main/master = 预览分支（推它们只出 Preview）
-    branches: [production, main, master]
+    # main / production → 生产环境（更新 blog.goose.cc.cd）
+    # master 等其他分支 → Preview
+    branches: [main, production, master]
   workflow_dispatch:
 
 # 同一分支的多次推送排队执行，不互相打断（避免部署到一半被取消）
@@ -38,6 +38,10 @@ env:
   # 只有 --branch 的值等于这个值，部署才会是「生产环境」并更新自定义域名；
   # 否则一律是 Preview（<branch>.gooseblog.pages.dev），自定义域名不会变。
   PRODUCTION_BRANCH: production
+
+  # 触发生产部署的分支：推它就走生产环境（--branch 强制用 PRODUCTION_BRANCH）
+  # 其余分支（如 master）仍然只出 Preview
+  DEPLOY_PROD_ON: main
 
 jobs:
   # ─────────────────────────────────────────────────────────────
@@ -131,19 +135,22 @@ jobs:
         with:
           node-version: '20'
 
+      # 生产判定：看的是「推送分支」是否等于 DEPLOY_PROD_ON，
+      # 而传给 Pages 的 --branch 一律用 PRODUCTION_BRANCH。
+      # 两者名字不同（main vs production）也没关系，因为 Pages 只认后者。
       - name: Determine deploy target
         id: target
         run: |
           ref="${GITHUB_REF_NAME}"
           prod="${PRODUCTION_BRANCH}"
-          if [ "$ref" = "$prod" ]; then
+          if [ "$ref" = "${DEPLOY_PROD_ON}" ] || [ "$ref" = "$prod" ]; then
             echo "branch=$prod" >> "$GITHUB_OUTPUT"
             echo "is_production=true" >> "$GITHUB_OUTPUT"
-            echo "部署目标：生产环境（branch=$prod）"
+            echo "部署目标：生产环境（推送分支 $ref → --branch $prod）"
           else
             echo "branch=$ref" >> "$GITHUB_OUTPUT"
             echo "is_production=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::当前分支 $ref ≠ 生产分支 $prod，本次为 Preview 部署，自定义域名不会更新。"
+            echo "::warning::分支 $ref 不在生产触发列表（${DEPLOY_PROD_ON} / ${prod}），本次为 Preview 部署，自定义域名不会更新。"
           fi
 
       - name: Deploy to Cloudflare Pages
