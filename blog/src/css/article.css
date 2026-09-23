@@ -199,11 +199,11 @@
 
 /* comment */
 .post-content {
-  width: 100%; font-size: 15px; line-height: 1.7;
+  width: 100%; font-size: 17px; line-height: 1.8;
   color: var(--text); word-break: break-word;
 }
 .post-content > *:first-child { margin-top: 0; }
-.post-content p { margin: 0 0 12px; }
+.post-content p { margin: 0 0 14px; }
 .post-content p:last-child { margin-bottom: 0; }
 .post-content ul, .post-content ol { margin: 0 0 12px 20px; padding: 0; }
 .post-content li { margin-bottom: 4px; }
@@ -214,10 +214,10 @@
   margin: 18px 0 10px; line-height: 1.35; font-weight: 600; color: var(--text);
   scroll-margin-top: 20px;
 }
-.post-content h1 { font-size: 22px; }
-.post-content h2 { font-size: 19px; }
-.post-content h3 { font-size: 17px; }
-.post-content h4, .post-content h5, .post-content h6 { font-size: 15px; }
+.post-content h1 { font-size: 25px; }
+.post-content h2 { font-size: 21px; }
+.post-content h3 { font-size: 19px; }
+.post-content h4, .post-content h5, .post-content h6 { font-size: 17px; }
 /* comment */
 .post-content .heading-anchor {
   position: absolute; left: -28px; top: 50%; transform: translateY(-50%);
@@ -231,7 +231,7 @@
 .post-content a:hover { text-decoration: underline; }
 .post-content code {
   font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
-  font-size: 13.5px; background: rgba(255,255,255,0.08);
+  font-size: 15px; background: rgba(255,255,255,0.08);
   padding: 2px 6px; border-radius: 6px;
 }
 .post-content pre, .post-content pre[class*="language-"] {
@@ -239,7 +239,7 @@
   border: 1px solid var(--border); border-radius: var(--radius-sm);
   padding: 14px 16px; overflow-x: auto;
   white-space: pre-wrap !important; word-break: break-word !important; overflow-wrap: anywhere !important;
-  font-size: 13px;
+  font-size: 14.5px;
 }
 /* Prism.js 鍦?<code> 涓婁篃璁句簡 white-space:pre锛屽繀椤讳竴璧疯?鐩?*/
 .post-content pre code, .post-content pre code[class*="language-"] {
@@ -247,7 +247,7 @@
   word-break: break-word !important;
   overflow-wrap: anywhere !important;
 }
-.post-content pre code { background: none; padding: 0; font-size: 13px; line-height: 1.6; color: var(--text); }
+.post-content pre code { background: none; padding: 0; font-size: 14.5px; line-height: 1.6; color: var(--text); }
 .code-copy-btn {
   position: absolute; top: 8px; right: 8px;
   width: 30px; height: 30px; padding: 6px; border-radius: 4px;
