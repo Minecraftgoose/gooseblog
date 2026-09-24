@@ -1,6 +1,3 @@
-/**
- * GooseBlog 鈥?文章详情页?250727
- */
 import { fetchPost, fetchPosts } from '../js/api.js';
 import { formatDate, escapeHtml, renderState } from '../js/utils.js';
 import { navigate } from '../js/router.js';
@@ -8,7 +5,7 @@ import { highlightCode } from '../js/highlight.js';
 
 export function renderPost(container, params) {
   let { slug } = params;
-  try { slug = decodeURIComponent(slug); } catch { /* 淇濈暀鍘熷€?*/ }
+  try { slug = decodeURIComponent(slug); } catch {  }
   renderState(container, 'loading', window.__ ? window.__('post.loading') : '加载涓?..');
   loadPost(container, slug);
 }
@@ -20,7 +17,6 @@ async function loadPost(container, slug) {
       renderState(container, 'error', window.__ ? window.__('post.notFound') : '找不到这篇文章');
       return;
     }
-    // Worker 宸茶繑鍥?prev/next
     renderPostContent(container, post, post.prev || null, post.next || null);
   } catch (err) {
     renderState(container, 'error', err.message, () => loadPost(container, slug));
@@ -60,7 +56,6 @@ function renderPostContent(container, post, prev, next) {
   canonical.href = postUrl;
   document.title = post.title + ' - GooseBlog';
 
-  // 鍒ゆ柇鏄?惁涓哄畬鏁?HTML 文档。锛?!DOCTYPE html> / <html> 开头达級
   const isFullHtml = /^\s*(<!DOCTYPE html|<html)/i.test(rawContent);
 
   if (isFullHtml) {

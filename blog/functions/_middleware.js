@@ -1,11 +1,15 @@
 /**
  * GooseBlog — Pages Function Middleware
  *
- * 职责：
- *   - /api/* → 透传给后端 Worker（env.ROOM service binding）
- *   - /post/* → 从 Worker 取文章数据，服务端注入 og:meta 标签，
- *               使微信/QQ 等不执行 JS 的爬虫也能拿到文章专属社交预览
- *   - 其他 → next() 走静态资源
+ * 职责（刻意只留一件）：
+ *   - /api/*  → 透传给后端 Worker（env.ROOM service binding）
+ *   - 其他     → next()，交给路由函数或静态资源
+ *
+ * 文章页 /post/* 的社交卡片注入已移到 functions/post/[slug].js：
+ *   路由函数部署稳定，而改动本文件有时不会进部署产物（踩过一次坑）。
+ *   那边注入时会删掉 OG_MARK 标记，所以即便旧版本文件还在运行也不会二次覆盖。
+ *
+ * 注意：后端 Worker 只处理 GET，用 curl -I（HEAD）探测 /api/* 会拿到 404，属正常。
  */
 
 export async function onRequest(context) {
@@ -41,55 +45,6 @@ export async function onRequest(context) {
     }
   }
 
-  // /post/* — 服务端注入文章专属 og 标签（针对不执行 JS 的爬虫）
-  const postMatch = url.pathname.match(/^\/post\/(.+)$/);
-  if (postMatch && env.ROOM) {
-    let slug = postMatch[1];
-    try { slug = decodeURIComponent(slug); } catch { /* 保留原值 */ }
-    // 先拿静态 HTML（这个很快）
-    const htmlRes = await next();
-    let html = await htmlRes.text();
-    // 再试着从 Worker 取文章数据（可能冷启动慢，但爬虫会等）
-    try {
-      const postReq = new Request(`https://internal/api/posts/${encodeURIComponent(slug)}`);
-      const postRes = await env.ROOM.fetch(postReq);
-      if (postRes.ok) {
-        const post = await postRes.json();
-        if (post && post.title) {
-          const img = post.cover_url || '/avatar.webp';
-          const desc = post.excerpt || post.title || 'GooseBlog';
-          const tags = `
-  <meta property="og:title" content="${escapeAttr(post.title)}">
-  <meta property="og:description" content="${escapeAttr(desc)}">
-  <meta property="og:image" content="${escapeAttr(img)}">
-  <meta property="og:url" content="https://blog.goose.cc.cd/post/${escapeAttr(slug)}">
-  <meta property="og:type" content="article">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="${escapeAttr(img)}">`;
-          // 把 index.html 的通用 og 标签整块替换掉（只匹配 OG 块，不吃掉其他 head 内容）
-          html = html.replace(
-            /<!-- OG_MARK -->[\s\S]*?<!-- \/OG_MARK -->/,
-            tags
-          );
-        }
-      }
-    } catch { /* 取文章失败则用 index.html 的通用 og 标签 */ }
-
-    // 返回新 Response，清掉原 Content-Length 头（body 长度已变）
-    const newHeaders = new Headers(htmlRes.headers);
-    newHeaders.delete('content-length');
-    newHeaders.delete('content-encoding');
-    return new Response(html, {
-      status: htmlRes.status,
-      headers: newHeaders,
-    });
-  }
-
-  // 其他 → 静态资源
+  // 其他 → 路由函数 / 静态资源
   return next();
 }
-
-function escapeAttr(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-/* ogfix */
