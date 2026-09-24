@@ -7,7 +7,6 @@
   <title>GooseBlog</title>
   <link rel="icon" href="/avatar-256.webp" type="image/webp">
   <link rel="preconnect" href="https://cdn.bootcdn.net">
-  <!-- 首屏背景预加载（与 CSS 断点一致，避免 JS/CSS 到位前闪白） -->
   <link rel="preload" as="image" href="/background.webp" media="(min-width: 1441px)">
   <link rel="preload" as="image" href="/background-1920.webp" media="(min-width: 901px) and (max-width: 1440px)">
   <link rel="preload" as="image" href="/background-1280.webp" media="(max-width: 900px)">
@@ -20,7 +19,6 @@
   <meta name="twitter:card" content="summary">
   <!-- /OG_MARK -->
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-  <!-- 代码高亮主题：自托管，避免第三方 CDN 403 / 被墙导致高亮失效 -->
   <link rel="stylesheet" href="/vendor/prism/prism-tomorrow.min.css">
   <noscript><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
   <link rel="stylesheet" href="/src/css/core.css">
@@ -163,11 +161,8 @@
     <div class="splash-loader"></div>
   </div>
 
-  <!-- 国际化核心（同步加载，早于 defer 脚本） -->
   <script src="/src/js/i18n-core.js"></script>
   <script type="module" src="/src/app.js"></script>
-  <!-- 装饰特效（花瓣飘落 / 点击爆炸）已移除：原为 api.fuchenboke.cn 第三方脚本，
-       该站已 403 不可达，且第三方 JS 可在本站执行任意代码，不再引入。 -->
   <script src="/src/js/color-picker.js" defer></script>
   <script src="/src/js/image-viewer.js" defer></script>
   <script src="/src/js/toc-ball.js" defer></script>
@@ -175,11 +170,7 @@
   <script src="/src/js/code-copy.js" defer></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
-  <!-- ============ 代码高亮：Prism 本地自托管 ============ -->
-  <!-- data-manual：关掉 Prism 自带的 DOMContentLoaded 自动高亮（对 SPA 无效），
-       全部交由 src/js/highlight.js 在内容渲染后精确触发 -->
   <script src="/vendor/prism/prism.min.js" data-manual defer></script>
-  <!-- core 已内置 markup / css / clike / javascript，下面只补额外语言 -->
   <script src="/vendor/prism/components/prism-markup-templating.min.js" defer></script>
   <script src="/vendor/prism/components/prism-typescript.min.js" defer></script>
   <script src="/vendor/prism/components/prism-python.min.js" defer></script>

@@ -1,7 +1,3 @@
-/**
- * GooseBlog — 主入口
- * 路由注册 + 侧栏导航高亮 + 顶栏标题同步
- */
 import { route, initRouter, getCurrentPath, goBack, goForward, canGoBack, canGoForward, navigate } from './js/router.js';
 import { initContextMenu } from './js/contextmenu.js';
 import { renderHome, setRandomBg } from './pages/home.js';
@@ -13,7 +9,6 @@ import { renderProjects } from './pages/projects.js';
 import { renderAdmin } from './pages/admin.js';
 import { renderFriends } from './pages/friends.js';
 
-// 引入国际化（自动执行侧栏/顶栏文字同步）
 import './js/i18n.js';
 
 const app = document.getElementById('app');
@@ -71,8 +66,6 @@ route('/404', () => {
 function updateChrome() {
   const path = getCurrentPath();
 
-  // 顶栏标题
-  // 兼容 /post/xxx, /tag/xxx 这类动态路径
   let title = TITLE_MAP[path];
   if (!title) {
     if (path.startsWith('/post/')) {
@@ -322,8 +315,7 @@ initContextMenu();
   tick();
 })();
 
-// ===== 公告横幅（全站顶部，从 site_pages 加载；超宽自动跑马灯） =====
-// 公告按纯文本展示，不渲染 markdown；动画作用在 track 上实现无缝循环
+// ===== 公告横幅=====
 (function loadAnnouncement() {
   fetch('/api/pages/announcement')
     .then(function(r) { return r.json(); })
