@@ -68,6 +68,21 @@
   transition: opacity .2s, transform .2s;
 }
 .color-popover.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+/* 调色板里的「关闭磨砂」开关 */
+.frost-toggle {
+  flex: 0 0 100%;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 2px; padding: 7px 10px;
+  background: transparent;
+  border: 1px solid var(--border); border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-family: inherit; font-size: 12px; line-height: 1;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.frost-toggle:hover { color: var(--text); border-color: var(--brand); }
+.frost-toggle.active { color: var(--text); border-color: var(--brand); background: var(--brand-soft); }
+.frost-toggle i { font-size: 11px; }
 .color-swatch {
   width: 26px; height: 26px; border-radius: 50%;
   border: 2px solid transparent; cursor: pointer;

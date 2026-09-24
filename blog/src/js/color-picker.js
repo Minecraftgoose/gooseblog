@@ -22,6 +22,7 @@
     { color: '#0f172a', name: '墨' }
   ];
   var STORAGE_KEY = 'gooseblog_brand';
+  var FROST_KEY = 'gooseblog_frost';   // 'off' = 关闭磨砂
   var root = document.documentElement;
   var currentColor = localStorage.getItem(STORAGE_KEY) || '#8b5cf6';
 
@@ -76,6 +77,8 @@
     html += '<button class="color-swatch" data-color="' + p.color + '" title="' + p.name + '" style="background:' + p.color + '"></button>';
   });
   html += '<label class="color-swatch color-swatch-custom" title="自定义"><span>+</span><input type="color" class="custom-color-input" value="' + currentColor + '"></label>';
+  html += '<button type="button" class="frost-toggle" id="frostToggle" title="关闭全站毛玻璃模糊，面板底变实色">' +
+           '<i class="fas fa-droplet"></i><span>关闭磨砂</span></button>';
   panel.innerHTML = html;
   document.body.appendChild(panel);
 
@@ -94,8 +97,31 @@
     if (active && !panel.contains(e.target) && btn && !btn.contains(e.target)) toggle();
   });
 
+  // 磨砂开关：清掉全站 backdrop-filter（CSS 侧由 html.no-frost 接管）
+  function setFrost(off) {
+    root.classList.toggle('no-frost', !!off);
+    try { localStorage.setItem(FROST_KEY, off ? 'off' : 'on'); } catch (e) {}
+    updateFrostBtn();
+  }
+
+  function updateFrostBtn() {
+    var fb = document.getElementById('frostToggle');
+    if (!fb) return;
+    var off = root.classList.contains('no-frost');
+    fb.classList.toggle('active', off);
+    var i = fb.querySelector('i');
+    var t = fb.querySelector('span');
+    if (i) i.className = off ? 'fas fa-droplet-slash' : 'fas fa-droplet';
+    if (t) t.textContent = off ? '开启磨砂' : '关闭磨砂';
+  }
+
   // 选色事件
   panel.addEventListener('click', function(e) {
+    // 磨砂开关：切换后保持面板打开，方便来回对比
+    if (e.target.closest('.frost-toggle')) {
+      setFrost(!root.classList.contains('no-frost'));
+      return;
+    }
     var sw = e.target.closest('.color-swatch');
     if (!sw) return;
     var c = sw.getAttribute('data-color');
@@ -108,4 +134,10 @@
   applyColor(currentColor);
   updateDot();
   updateActive();
+
+  // 恢复磨砂偏好（index.html 里已内联应用过一次防闪，这里同步按钮文案）
+  var frostOff = false;
+  try { frostOff = localStorage.getItem(FROST_KEY) === 'off'; } catch (e) {}
+  root.classList.toggle('no-frost', frostOff);
+  updateFrostBtn();
 })();

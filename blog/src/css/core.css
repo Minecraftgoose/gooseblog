@@ -87,3 +87,25 @@ body::before {
 @media (max-width: 900px) {
   :root { --bg-image: url("/background-1280.webp"); }
 }
+
+/* ── 关闭磨砂：清掉全站 backdrop-filter，并把亚克力底换成实色 ──
+   只关 blur 不换底的话，背景图会从半透明面板下直接透出来，文字糊成一片。
+   由调色板里的「关闭磨砂」按钮切换（localStorage: gooseblog_frost）。 */
+/* 值引用 --surface / --sidebar-bg，深浅两套主题自动适配，不用各写一份 */
+html.no-frost,
+/* layout.css 的浅色主题是 :root[data-theme="light"]（特异性 0,2,0），
+   必须抬到 0,2,1 才能盖住它，否则浅色下关不掉 */
+html.no-frost[data-theme="light"] {
+  --acrylic-sidebar: var(--sidebar-bg);
+  --acrylic-panel:   var(--surface);
+  --acrylic-header:  var(--sidebar-bg);
+  --acrylic-input:   var(--surface);
+  --acrylic-bubble:  var(--surface);
+  --acrylic-bar:     var(--surface);
+}
+.no-frost *,
+.no-frost *::before,
+.no-frost *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
