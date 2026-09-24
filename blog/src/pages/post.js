@@ -4,6 +4,7 @@
 import { fetchPost, fetchPosts } from '../js/api.js';
 import { formatDate, escapeHtml, renderState } from '../js/utils.js';
 import { navigate } from '../js/router.js';
+import { highlightCode } from '../js/highlight.js';
 
 export function renderPost(container, params) {
   let { slug } = params;
@@ -94,6 +95,9 @@ function renderPostContent(container, post, prev, next) {
   // 探测无扩展名 URL 的媒体类型：扩展名正则匹配不到、但响应头是 audio/video 的链接，
   // 把 <img> 就地替换成原生播放器（后端同步渲染查不到 Content-Type，只能前端探测）
   probeMediaByContentType(container);
+
+  // 文章正文是异步插入的，Prism 不会自动高亮它，这里手动触发一次
+  highlightCode(container);
 
   // 给 .post-content 内带 id 的标题加锚点链接
   const targetHash = location.hash ? decodeURIComponent(location.hash.slice(1)) : '';

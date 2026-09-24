@@ -10,9 +10,11 @@ export function mdToHtml(text) {
   // 转义裸 HTML 标签（除了代码块里的）
   // 先保护代码块
   const codeBlocks = [];
-  html = html.replace(/```([\s\S]*?)```/g, (_, code) => {
+  // 带语言标识：```js / ```python，输出 language-xxx 供 Prism 高亮
+  html = html.replace(/```([a-zA-Z0-9+#_-]*)\r?\n?([\s\S]*?)```/g, (_, lang, code) => {
     const idx = codeBlocks.length;
-    codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+    const cls = lang ? ` class="language-${escapeHtml(lang.toLowerCase())}"` : '';
+    codeBlocks.push(`<pre><code${cls}>${escapeHtml(code.replace(/\n$/, ''))}</code></pre>`);
     return `%%CODEBLOCK_${idx}%%`;
   });
 

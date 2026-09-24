@@ -499,7 +499,18 @@ function renderAnnouncementEditor(container) {
 
 /** 简易 markdown → HTML（和后端 marked 保持一致） */
 function simpleMarkdown(md) {
-  var html = md
+  var esc = function(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  };
+  // 先保护围栏代码块，避免被后面的行内规则/转义破坏
+  var blocks = [];
+  var html = String(md == null ? '' : md)
+    .replace(/```([a-zA-Z0-9+#_-]*)\r?\n?([\s\S]*?)```/g, function(_, lang, code) {
+      var cls = lang ? ' class="language-' + lang.toLowerCase() + '"' : '';
+      blocks.push('<pre><code' + cls + '>' + esc(code.replace(/\n$/, '')) + '</code></pre>');
+      return '\u0000CODEBLOCK_' + (blocks.length - 1) + '\u0000';
+    });
+  html = html
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
@@ -509,9 +520,10 @@ function simpleMarkdown(md) {
   html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
   html = html.replace(/\n\n/g, '</p><p>');
   html = '<p>' + html + '</p>';
+  html = html.replace(/\u0000CODEBLOCK_(\d+)\u0000/g, function(_, i) { return blocks[+i]; });
   return html;
 }

@@ -20,8 +20,9 @@
   <meta name="twitter:card" content="summary">
   <!-- /OG_MARK -->
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></noscript>
+  <!-- 代码高亮主题：自托管，避免第三方 CDN 403 / 被墙导致高亮失效 -->
+  <link rel="stylesheet" href="/vendor/prism/prism-tomorrow.min.css">
+  <noscript><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
   <link rel="stylesheet" href="/src/css/core.css">
   <link rel="stylesheet" href="/src/css/layout.css">
   <link rel="stylesheet" href="/src/css/article.css">
@@ -173,8 +174,32 @@
   <script src="/src/js/share-float.js" defer></script>
   <script src="/src/js/code-copy.js" defer></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+
+  <!-- ============ 代码高亮：Prism 本地自托管 ============ -->
+  <!-- data-manual：关掉 Prism 自带的 DOMContentLoaded 自动高亮（对 SPA 无效），
+       全部交由 src/js/highlight.js 在内容渲染后精确触发 -->
+  <script src="/vendor/prism/prism.min.js" data-manual defer></script>
+  <!-- core 已内置 markup / css / clike / javascript，下面只补额外语言 -->
+  <script src="/vendor/prism/components/prism-markup-templating.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-typescript.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-python.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-go.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-json.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-bash.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-yaml.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-toml.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-ini.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-sql.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-diff.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-markdown.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-rust.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-java.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-c.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-cpp.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-php.min.js" defer></script>
+  <script src="/vendor/prism/components/prism-nginx.min.js" defer></script>
+  <script type="module" src="/src/js/highlight.js"></script>
+
   <script src="/src/js/share-bar.js" defer></script>
   <script src="/src/js/link-card.js" defer></script>
 </body>

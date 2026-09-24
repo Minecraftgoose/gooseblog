@@ -1,6 +1,8 @@
 /**
  * GooseBlog — 关于页
  */
+import { highlightCode } from '../js/highlight.js';
+
 export function renderAbout(container) {
   container.innerHTML = '<div id="about-content"></div>';
   loadAbout(container);
@@ -26,6 +28,9 @@ async function loadAbout(container) {
       <div class="post-content">${contentHtml || '<p>鹅还没想好关于页面要写什么。</p>'}</div>
     </article>
   `;
+
+  // 关于页正文也可能有代码块，渲染完立刻高亮
+  highlightCode(container);
 
   // 标题锚点链接
   const headings = container.querySelectorAll('.post-content h1[id], .post-content h2[id], .post-content h3[id], .post-content h4[id], .post-content h5[id], .post-content h6[id]');
