@@ -14,7 +14,8 @@
  *   - 外链图床抽风或图片被删 → 边缘缓存里那份还在，旧文章卡片不会突然变没图
  *
  * 抓不到封面（文章没填 / 上游 404 / 不是图片 / 超时 / 内网地址）→
- * 302 到 /og-default.jpg，绝不给爬虫返回非图片内容。
+ * 直接以 200 吐出 /og-default.jpg 的图片字节（不 302：社交爬虫不跟跳转，
+ * 会当成无图退化成一行链接），绝不给爬虫返回非图片内容。
  *
  * 排查：curl -sI https://blog.goose.cc.cd/og/<slug>.jpg
  *   X-OG-Source: cover      = 出的是文章封面
@@ -114,9 +115,31 @@ export async function onRequest(context) {
     }
   }
 
-  // 4) 兜底：站级默认卡片
+  // 4) 兜底：站级默认卡片（直接 200 返回图片字节，绝不 302）
+  try {
+    const fb = await env.ASSETS.fetch(new URL(FALLBACK_IMAGE, url).toString());
+    if (fb.ok) {
+      const buf = await fb.arrayBuffer();
+      const out = new Response(buf, {
+        status: 200,
+        headers: {
+          'Content-Type': fb.headers.get('content-type') || 'image/jpeg',
+          'Cache-Control': 'public, max-age=86400',
+        },
+      });
+      return tag(out, 'fallback', coverUrl);
+    }
+  } catch { /* 落最后一道保险 */ }
+
+  // 最后一道保险：1x1 透明 PNG，永远 200（防止 ASSETS 也拿不到）
+  const px = Uint8Array.from(atob(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+  ), c => c.charCodeAt(0));
   return tag(
-    Response.redirect(new URL(FALLBACK_IMAGE, url).toString(), 302),
+    new Response(px, {
+      status: 200,
+      headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' },
+    }),
     'fallback',
     coverUrl
   );
@@ -127,10 +150,7 @@ function tag(res, src, coverUrl) {
   const h = new Headers(res.headers);
   h.set('X-OG-Source', src);
   if (coverUrl) h.set('X-OG-Cover', coverUrl);
-  return new Response(res.status === 302 ? null : res.body, {
-    status: res.status,
-    headers: h,
-  });
+  return new Response(res.body, { status: res.status, headers: h });
 }
 
 /** 只放行公网 http(s)，挡掉内网 / 本地 / 非 http 协议（防 SSRF） */

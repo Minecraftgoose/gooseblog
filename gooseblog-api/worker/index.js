@@ -603,6 +603,16 @@ async function handleLinkPreview(env, request) {
   const u = new URL(request.url).searchParams.get('url');
   if (!u) return jsonResponse({ error: 'missing url' }, 400);
 
+  let parsed;
+  try { parsed = new URL(u); } catch { return jsonResponse({ error: 'bad url' }, 400); }
+  const domain = parsed.hostname;
+
+  // 自己站的链接：直查 Supabase，绝不走公网回环 fetch
+  if (parsed.origin === SITE_ORIGIN) {
+    return handleSelfLinkPreview(env, parsed, domain);
+  }
+
+  // 外站链接：保持原逻辑
   try {
     const res = await fetch(u, {
       headers: { 'User-Agent': 'GooseBlog/1.0 LinkPreview' },
@@ -622,11 +632,47 @@ async function handleLinkPreview(env, request) {
       title: (tag('title') || '').substring(0, 200),
       description: (desc || '').substring(0, 300),
       image: tag('image'),
-      domain: new URL(u).hostname
+      domain
     });
   } catch (e) {
-    return jsonResponse({ error: e.message, domain: new URL(u).hostname }, 200);
+    return jsonResponse({ error: e.message, domain }, 200);
   }
+}
+
+/** 自己站链接的预览：直接查库，不发任何公网请求 */
+async function handleSelfLinkPreview(env, parsed, domain) {
+  // /post/<slug>
+  const m = parsed.pathname.match(/^\/post\/(.+?)\/?$/);
+  if (m) {
+    let slug = m[1];
+    try { slug = decodeURIComponent(slug); } catch { /* 保留原值 */ }
+    try {
+      const posts = await supabaseFetch(
+        env,
+        `/posts?select=title,excerpt,cover_url&slug=eq.${encodeURIComponent(slug)}&limit=1`
+      );
+      if (posts && posts[0]) {
+        const p = posts[0];
+        const cover = String(p.cover_url || '').trim();
+        return jsonResponse({
+          title: p.title || '',
+          description: (p.excerpt || '').slice(0, 300),
+          image: cover
+            ? `${SITE_ORIGIN}/og/${encodeURIComponent(slug)}.jpg`
+            : `${SITE_ORIGIN}/og-default.jpg`,
+          domain,
+        });
+      }
+    } catch { /* 落到下面默认 */ }
+  }
+
+  // 自己站的其他页面（首页、归档、关于…）
+  return jsonResponse({
+    title: 'GooseBlog',
+    description: '紫色玻璃风博客 · 网页开发 · 工具折腾 · 偶尔写点有用的东西',
+    image: `${SITE_ORIGIN}/og-default.jpg`,
+    domain,
+  });
 }
 
 async function handleAdminAuth(request, env) {
