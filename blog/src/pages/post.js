@@ -31,15 +31,33 @@ function renderPostContent(container, post, prev, next) {
   const date = formatDate(post.created_at);
   const rawContent = post.content || `<p>${escapeHtml(post.excerpt || '内容待补充。')}</p>`;
 
-  // comment
-  const img = post.cover_url || '/avatar.webp';
-  const desc = post.excerpt || post.title || 'GooseBlog';
+  // 社交预览 meta：服务端已注入，这里负责 SPA 内切换后的同步（分享/复制链接时读到当前文章）
+  // og:image / og:url 必须是绝对 URL，否则微信、QQ、Telegram 这类解析器直接丢弃卡片
+  const ORIGIN = location.origin;
+  // 卡片图 = 这篇文章的封面，走 /og/<slug>.jpg 代理（同域 + .jpg 结尾 + 无 & ）
+  // 没有封面的文章由该端点兜底到 /og-default.jpg
+  const img = ORIGIN + '/og/' + encodeURIComponent(post.slug || '') + '.jpg';
+  const desc = (post.excerpt || post.title || 'GooseBlog').replace(/\s+/g, ' ').trim();
+  const postUrl = ORIGIN + '/post/' + encodeURIComponent(post.slug || '');
+  setMeta('og:type', 'article');
+  setMeta('og:site_name', 'GooseBlog');
+  setMeta('og:locale', 'zh_CN');
   setMeta('og:title', post.title);
   setMeta('og:description', desc);
   setMeta('og:image', img);
-  setMeta('og:url', 'https://blog.goose.cc.cd/post/' + encodeURIComponent(post.slug || ''));
+  setMeta('og:image:alt', post.title);
+  setMeta('og:url', postUrl);
   setMeta('twitter:card', 'summary_large_image', 'name');
+  setMeta('twitter:title', post.title, 'name');
+  setMeta('twitter:description', desc, 'name');
   setMeta('twitter:image', img, 'name');
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement('link');
+    canonical.rel = 'canonical';
+    document.head.appendChild(canonical);
+  }
+  canonical.href = postUrl;
   document.title = post.title + ' - GooseBlog';
 
   // 鍒ゆ柇鏄?惁涓哄畬鏁?HTML 文档。锛?!DOCTYPE html> / <html> 开头达級

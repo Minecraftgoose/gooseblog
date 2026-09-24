@@ -14,3 +14,5 @@
   Cache-Control: public, max-age=86400
 /avatar-256.webp
   Cache-Control: public, max-age=86400
+/og-default.jpg
+  Cache-Control: public, max-age=86400
