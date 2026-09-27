@@ -41,13 +41,16 @@
 .
 ├── _config.yml                 站点配置（url / permalink / 分页 6 篇 / marked 对齐旧站）
 ├── package.json
-├── scripts/
+├── scripts/                    ⚠️ Hexo 会把这里的文件当插件加载，只能放 .js
 │   ├── generate-heatmap.js     构建期生成热力图数据
+│   └── extra-assets.js         把 source/_headers 带进 public/（hexo 默认忽略 _ 开头）
+├── tools/                      独立 CLI 脚本，不参与 hexo 构建
 │   ├── export-from-goose.mjs   从旧站 Supabase 导出文章/友链/关于页
 │   └── export-projects.mjs     从旧站导出项目页
 ├── source/
 │   ├── _posts/                 文章（Markdown）
 │   ├── _headers                Cloudflare Pages 缓存头
+│   ├── _data/links.yml         友链（导出脚本生成，主题自动读取）
 │   ├── about/  friends/  projects/  tags/  categories/
 │   ├── images/                 ★ Goose 原站图片资源
 │   ├── fonts/                  ★ 钉钉进步体
@@ -70,15 +73,16 @@ npm run build        # 产物在 public/
 ```bash
 export SUPABASE_URL=https://xxxx.supabase.co
 export SUPABASE_KEY=<service_role key>      # 用 service_role 才能绕过 RLS 读到草稿
-npm run export:goose                        # posts → source/_posts，friends → source/_data/friends.yml
+npm run export:goose                        # posts → source/_posts，friends → source/_data/links.yml
 npm run export:projects                     # gc_projects → source/projects/index.md
 ```
 
 导出后：
 
-- 友链：把 `source/_data/friends.yml` 的内容粘进 `themes/redefine/_config.yml` 的 `links:` 段
+- 友链：已写到 `source/_data/links.yml`，主题在 `generateBefore` 自动读取，**不用再手抄进主题配置**
 - 公告：把 `source/_data/announcement.txt` 的内容填进 `home.sidebar.announcement`
 - 文章正文是旧站 marked 渲染过的 HTML，Hexo 直接吃，不需要二次转换
+- 然后 `npm run build` 重新生成即可
 
 ## 部署（Cloudflare Pages）
 

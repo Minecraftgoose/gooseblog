@@ -376,16 +376,21 @@ comment:
 # COMMENT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # FRIEND LINKS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
-# 【Goose】原站友链存在 Supabase friends 表，静态化后改为在这里维护
-# 用 scripts/export-from-goose.mjs 可一键把线上 friends 表导成下面这段
-links:
-  - links_category: 朋友们
-    has_thumbnail: false
-    list:
-#      - name: 示例友链
-#        link: https://example.com
-#        avatar: https://example.com/avatar.png
-#        description: 一句话介绍
+# 【Goose】原站友链存在 Supabase friends 表，静态化后改为在这里维护。
+# ⚠️ 没有友链时必须是空数组 []，不能留空，否则 friends 页会报
+#     "category.list is not iterable"。
+# 跑 `npm run export:goose` 可一键把线上 friends 表导成下面这段。
+links: []
+#
+# 有友链时按这个格式填：
+# links:
+#   - links_category: 朋友们
+#     has_thumbnail: false
+#     list:
+#       - name: 示例友链
+#         link: https://example.com
+#         avatar: https://example.com/avatar.png
+#         description: 一句话介绍
 # FRIEND LINKS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # FOOTER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start

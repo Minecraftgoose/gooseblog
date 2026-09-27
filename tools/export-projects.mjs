@@ -9,7 +9,7 @@
  * 用法：
  *   export SUPABASE_URL=https://xxxx.supabase.co
  *   export SUPABASE_KEY=<service_role 或 anon key>
- *   node scripts/export-projects.mjs
+ *   node tools/export-projects.mjs
  *
  * 不联网也能用：手动编辑 source/projects/index.md 里的卡片即可，格式见该文件注释。
  */
@@ -68,7 +68,7 @@ ${other.length ? other.map(card).join('\n') : '<p class="goose-project-empty">�
 </div>
 
 <!--
-  本文件由 scripts/export-projects.mjs 生成（数据来自旧站 Supabase gc_projects 表）。
+  本文件由 tools/export-projects.mjs 生成（数据来自旧站 Supabase gc_projects 表）。
   也可以直接手写卡片，格式：
   <div class="goose-project-card">
     <div class="goose-project-name"><i class="fa-regular fa-cube"></i> 项目名</div>

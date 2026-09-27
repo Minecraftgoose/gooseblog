@@ -9,7 +9,7 @@
  * 用法：
  *   export SUPABASE_URL=https://xxxx.supabase.co
  *   export SUPABASE_KEY=<service_role 或 anon key>
- *   node scripts/export-from-goose.mjs
+ *   node tools/export-from-goose.mjs
  *
  * 可选参数：
  *   --out=source/_posts        文章输出目录（默认 source/_posts）
@@ -17,7 +17,7 @@
  *
  * 输出：
  *   source/_posts/<slug>.md            每篇文章（含 front-matter：title/date/tags/cover/pinned）
- *   source/_data/friends.yml           友链（也可直接粘进 themes/redefine/_config.yml 的 links）
+ *   source/_data/links.yml             友链（主题会自动读取，不用再粘进主题配置）
  *   source/about/index.md              关于页
  *   source/_data/announcement.txt      公告文本
  *
@@ -43,7 +43,7 @@ const ONLY = arg('only', 'all');
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error('缺少环境变量：SUPABASE_URL / SUPABASE_KEY');
-  console.error('示例：SUPABASE_URL=https://xxx.supabase.co SUPABASE_KEY=xxx node scripts/export-from-goose.mjs');
+  console.error('示例：SUPABASE_URL=https://xxx.supabase.co SUPABASE_KEY=xxx node tools/export-from-goose.mjs');
   process.exit(1);
 }
 
@@ -130,21 +130,28 @@ async function exportFriends() {
   const outDir = path.resolve(ROOT, 'source/_data');
   fs.mkdirSync(outDir, { recursive: true });
 
+  // 主题在 generateBefore 里会读 source/_data/links.yml 覆盖 theme.links，
+  // 所以直接写这个文件即可，不用再手抄进 themes/redefine/_config.yml。
+  // 文件内容 = 分类数组本身（不是 links: 开头的映射）。
   const lines = [
-    '# 由 scripts/export-from-goose.mjs 从旧站 friends 表导出',
-    '# 用法二选一：',
-    '#   1) 粘贴到 themes/redefine/_config.yml 的 links: 段',
-    '#   2) 保持本文件，在主题配置 links 里读不到时手动同步',
-    'friends:'
+    '# 由 tools/export-from-goose.mjs 从旧站 friends 表导出',
+    '# 主题会自动读取本文件，无需再手工粘贴进主题配置',
+    '- links_category: 朋友们',
+    '  has_thumbnail: false',
+    '  list:'
   ];
-  friends.forEach((f) => {
-    lines.push(`  - name: ${yamlStr(f.name)}`);
-    lines.push(`    link: ${yamlStr(f.url)}`);
-    if (f.avatar) lines.push(`    avatar: ${yamlStr(f.avatar)}`);
-    if (f.description) lines.push(`    description: ${yamlStr(f.description)}`);
-  });
-  fs.writeFileSync(path.join(outDir, 'friends.yml'), lines.join('\n') + '\n', 'utf-8');
-  console.log(`✔ 已导出 ${friends.length} 条友链 → source/_data/friends.yml`);
+  if (friends.length === 0) {
+    lines.push('    []');
+  } else {
+    friends.forEach((f) => {
+      lines.push(`    - name: ${yamlStr(f.name)}`);
+      lines.push(`      link: ${yamlStr(f.url)}`);
+      if (f.avatar) lines.push(`      avatar: ${yamlStr(f.avatar)}`);
+      if (f.description) lines.push(`      description: ${yamlStr(f.description)}`);
+    });
+  }
+  fs.writeFileSync(path.join(outDir, 'links.yml'), lines.join('\n') + '\n', 'utf-8');
+  console.log(`✔ 已导出 ${friends.length} 条友链 → source/_data/links.yml`);
 }
 
 async function exportPages() {
