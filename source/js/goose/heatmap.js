@@ -7,15 +7,38 @@
  *     在 hexo g 时把全站文章日期写成 window.__GOOSE_HEATMAP__，零请求
  *   - 只在首页显示（原站也是首页顶部）
  *   - 适配 swup：切回首页时脚本会被重新执行，这里做幂等插入
+ *   - 配色读主题的 --primary-color（出厂 #A31F34 深红，现改紫），不写死色值
  */
 (function () {
-  var COLOR_RANGE = [
-    'rgba(163, 31, 52, 0.10)',
-    'rgba(163, 31, 52, 0.30)',
-    'rgba(163, 31, 52, 0.50)',
-    'rgba(163, 31, 52, 0.72)',
-    'rgba(163, 31, 52, 1)'
-  ];
+  // 【Goose】热力图配色跟随主题主色 --primary-color，不再写死色值。
+  // 出厂主色是 #A31F34（深红），全站改紫后这里自动跟着变紫；
+  // 以后再换主色（蓝 / 绿…）也不用动这个文件。
+  var FALLBACK_RGB = [139, 92, 246];        // #8B5CF6 violet-500，读不到变量时兜底
+  var LEVEL_ALPHA = [0.10, 0.30, 0.50, 0.72, 1];
+
+  /** 把 --primary-color 解析成 [r,g,b]，支持 #rgb / #rrggbb / rgb() / rgba() */
+  function primaryRgb() {
+    var raw = '';
+    try {
+      raw = getComputedStyle(document.documentElement).getPropertyValue('--primary-color') || '';
+    } catch (e) {}
+    raw = String(raw).trim();
+
+    var hex = raw.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (hex) {
+      var h = hex[1];
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      return [
+        parseInt(h.slice(0, 2), 16),
+        parseInt(h.slice(2, 4), 16),
+        parseInt(h.slice(4, 6), 16)
+      ];
+    }
+    var rgb = raw.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+    if (rgb) return [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])];
+    return FALLBACK_RGB;
+  }
+
   var CELL = 11;
   var GAP = 3;
   var MONTH_LABEL_H = 16;
@@ -25,13 +48,18 @@
     return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m];
   }
 
+  var _rgb = null;   // 主色只解析一次
   function getColor(count, max) {
-    if (!count) return COLOR_RANGE[0];
-    var ratio = count / max;
-    if (ratio <= 0.25) return COLOR_RANGE[1];
-    if (ratio <= 0.5) return COLOR_RANGE[2];
-    if (ratio <= 0.75) return COLOR_RANGE[3];
-    return COLOR_RANGE[4];
+    if (_rgb === null) _rgb = primaryRgb();
+    var a = LEVEL_ALPHA[0];
+    if (count) {
+      var ratio = count / max;
+      a = ratio <= 0.25 ? LEVEL_ALPHA[1]
+        : ratio <= 0.5 ? LEVEL_ALPHA[2]
+        : ratio <= 0.75 ? LEVEL_ALPHA[3]
+        : LEVEL_ALPHA[4];
+    }
+    return 'rgba(' + _rgb[0] + ', ' + _rgb[1] + ', ' + _rgb[2] + ', ' + a + ')';
   }
 
   function render(container, data) {

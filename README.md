@@ -182,6 +182,8 @@ colors:
 
 Goose 自己的组件样式（`source/css/goose-skin.css`）**一律用 CSS 变量不写死色值**，所以改主色不需要动它。
 
+发文热力图的配色也在 JS 里**运行时读取 `--primary-color`**（`source/js/goose/heatmap.js` 的 `primaryRgb()`），支持 `#rgb` / `#rrggbb` / `rgb()` / `rgba()` 四种写法，读不到时兜底 `#8B5CF6`。以前是写死的 `rgba(163, 31, 52)`（旧的深红主色），换主色时会忘记改它。
+
 ## 已知取舍
 
 - **评论**：原站本来就没有评论功能。这次新增 giscus，评论存进 `Minecraftgoose/gooseblog` 的 GitHub Discussions，零后端、免费、支持 Reactions。**已启用**（`comment.enable: true`），分类 = Announcements（只有仓库维护者和 giscus bot 能开帖，防垃圾）。

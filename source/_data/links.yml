@@ -1,3 +1,15 @@
+# 由 tools/import-from-csv.mjs 从 friends_rows.csv 生成
+# 主题在 generateBefore 会自动读取本文件，无需再粘贴进主题配置
+#
+# has_thumbnail: true 开启卡片顶部的网站截图位（h-32 / md:h-44）。
+#   原站 friends 表没有截图字段，所以这里不给 thumbnail —— 截图由
+#   source/js/goose/friends-thumb.js 用链接预览 Worker 抓 og:image 填。
+#   抓不到图的站点截图位自动隐藏，不会留空框。
+#   想手动指定某条友链的截图，加一行 `thumbnail: https://...` 即可，
+#   有 thumbnail 的话脚本不会再去找 Worker。
+#
+# 完全不想要截图：把 has_thumbnail 改成 false，卡片变回紧凑的
+# 「头像 + 名字 + 简介」两列布局（和原站一致）。
 - links_category: 朋友们
   has_thumbnail: true
   list:
