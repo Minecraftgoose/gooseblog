@@ -46,19 +46,24 @@ render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
-# 代码高亮：Redefine 用的是 Hexo 内置 highlight（构建期生成 hljs 类名），
-# 主题的 hljs-themes CSS 只负责给这些类上色。
-# ⚠️ 这里必须 enable: true —— 关掉的话代码块不会生成 .hljs-* 类，
-#    主题 CSS 再全也没东西可上色，页面上的代码就是纯白一片。
-# hljs: true = 输出 highlight.js 的类名（Redefine 的 CSS 认这套，
-#              prism 那套 token 类名不兼容，所以 prismjs 保持关闭）。
+# 代码高亮：Hexo 内置 highlight 在构建期生成 span，Redefine 的 CSS 给它们上色。
+#
+# ⚠️ enable 必须 true —— 关掉的话代码块一个 span 都不生成，纯白一片。
+#
+# ⚠️ hljs 必须 false —— 这个开关控制类名前缀：
+#      hljs: true  → <span class="hljs-keyword">   （新版 highlight.js 命名）
+#      hljs: false → <span class="keyword">        （旧版命名）
+#    Redefine 的 highlight.styl 里写的是 `pre .keyword { color: var(--highlight-keyword) }`
+#    这类**旧式类名**，全主题找不到一条 .hljs-* 规则。
+#    所以设 true 虽然 span 生成了，但没有 CSS 匹配 → 整块代码都不上色。
+#    这个坑踩过一次，别再改回去。
 highlight:
   enable: true
   line_number: false
   auto_detect: true      # 78 个没标语言的 ``` 裸块也尽量给高亮
   tab_replace: '  '
   wrap: true
-  hljs: true
+  hljs: false
 prismjs:
   enable: false
   preprocess: true

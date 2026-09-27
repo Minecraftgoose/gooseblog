@@ -434,6 +434,15 @@
   border: none;
 }
 
+/* ---------- 7.5 代码高亮补漏 ----------
+   Redefine 的 highlight.styl 漏了 operator（+ - * / = 这类符号），
+   全站 11 处不上色。这里补一条，沿用主题的 CSS 变量，深浅色自动跟随。
+   .emphasis / .strong 主题已给 italic / bold，只是没颜色，保持原样即可。 */
+.highlight pre .operator,
+.markdown-body pre .operator {
+  color: var(--highlight-keyword);
+}
+
 /* ---------- 8. 项目页卡片（source/projects/index.md 手写维护） ----------
    分「Goose 系列 / 其他项目」两组。加卡片直接复制文件底部注释里的模板。 */
 .goose-projects h2 {

@@ -158,6 +158,10 @@ tag 记品牌与类型（GooseHost / 文档 / 教程…），分类记内容域�
   - **站内链接** → `scripts/generate-self-links.js` 构建期生成的 `js/goose/self-links.js` 索引，零网络请求、必定命中，拿到的是本地的标题/摘要/封面（原站靠 Worker 绕开公网回环去查库，现在本地解决，更快也更准）
   - **外站链接** → `worker/link-preview` 纯代理抓 og:图（浏览器直接 fetch 外站会被 CORS 拦死，必须有中转），不连数据库、不需要 Secret
   - 抓不到图就只显示「域名标识 + 标题」，不会开天窗。favicon 由 Worker 从目标站自己的 `<link rel="icon">` 解析，拿不到就画域名首字母标（纯 CSS）——**别用 faviconkit 那类第三方服务**，它们对没 favicon 的站点会返回默认蓝点，卡片上就顶着一个莫名的小蓝点
-- **代码高亮**：用 Hexo 内置 highlight.js（构建期生成 `.hljs-*` 类），主题自带 github / vs2015 深浅色主题。`_config.yml` 里 `highlight.enable` 必须为 `true`，否则一块色都没有。注意 highlight.js 对 shell 的 token 类型偏少（只有注释、内置命令如 `cd`、字符串会着色），普通命令名不上色，这是 hljs 的固有行为。
+- **代码高亮**：Hexo 内置 highlight.js 构建期生成 span，Redefine 的 CSS 上色，主题自带 github（浅）/ vs2015（深）。`_config.yml` 里两个开关都有讲究：
+  - `highlight.enable` 必须 `true` —— 关掉一个 span 都不生成，纯白一片
+  - `highlight.hljs` 必须 **`false`** —— 这个开关控制类名前缀：`true` 输出 `.hljs-keyword`（新版命名），`false` 输出 `.keyword`（旧版命名）。Redefine 的 `highlight.styl` 写的是 `pre .keyword { color: var(--highlight-keyword) }` 这类**旧式类名**，全主题没有一条 `.hljs-*` 规则。设成 `true` 的后果是：span 生成了但没 CSS 匹配，整块代码都不上色（踩过一次，详见配置注释）
+  - 全站 659 个上色 token，24 种类型全覆盖。`operator` 主题漏了，在 `goose-skin.css` 里补了一条
+  - 注意 highlight.js 对 shell 的 token 类型偏少（只有注释、`cd` 这类内置命令、字符串上色），普通命令名如 `pip install` 不上色，这是 hljs 的固有行为，不是配置问题
 - **写文章**：原来的 `/admin` 后台（Supabase 写库）随后端一起删除，改为本地写 Markdown 后 `git push`。
 - **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉与字体全走 Redefine 原味（Chillax / Geist），只有壁纸、头像、OG 图还是 Goose 的。
