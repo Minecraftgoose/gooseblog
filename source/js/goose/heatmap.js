@@ -119,9 +119,15 @@
 
     var gridW = weeks * (CELL + GAP) - GAP;
     var gridH = 7 * (CELL + GAP) - GAP;
+    // 【Goose】宽度用 viewBox 的自然宽度，不再写 width="100%"。
+    // 原因：53 周的 viewBox 只有 ~770px 宽，撑满 1200px 容器会被放大 1.5 倍，
+    // 格子从 11px 变 17px，整块图顶到容器边缘、右边一点留白都没有。
+    // 现在按自然尺寸渲染（CSS 里 max-width:100% 负责窄屏缩放），
+    // 宽屏下靠左、右侧自然留白，跟 GitHub 那种紧凑热力图一致。
+    var naturalW = WEEKDAY_LABEL_W + gridW;
     container.innerHTML =
-      '<svg class="goose-heatmap" viewBox="0 0 ' + (WEEKDAY_LABEL_W + gridW) + ' ' + (MONTH_LABEL_H + gridH) +
-      '" width="100%" preserveAspectRatio="xMinYMin meet" xmlns="http://www.w3.org/2000/svg">' +
+      '<svg class="goose-heatmap" viewBox="0 0 ' + naturalW + ' ' + (MONTH_LABEL_H + gridH) +
+      '" width="' + naturalW + '" preserveAspectRatio="xMinYMin meet" xmlns="http://www.w3.org/2000/svg">' +
       monthLabels.join('') + weekdayEls + rects.join('') + '</svg>';
   }
 

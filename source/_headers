@@ -15,6 +15,11 @@
 /images/*
   Cache-Control: public, max-age=86400
 
+# 根目录头像副本：别处的友链还在引用 https://blog.goose.cc.cd/avatar.webp，
+# 这个文件要一直保留（实体文件，不走重定向，避免对端不跟随 301）
+/avatar.webp
+  Cache-Control: public, max-age=86400
+
 # 搜索索引 / RSS / sitemap：要能被及时抓到最新
 /search.xml
   Cache-Control: public, max-age=0, must-revalidate

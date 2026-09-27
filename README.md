@@ -20,6 +20,14 @@
 - `avatar.webp`（导航栏 Logo + 侧栏头像）、`avatar-256.webp`（favicon）、`og-default.jpg`
 - `vendor/prism/` —— 原站 prism 与 18 个语言包（**保留但未启用**：Redefine 用 highlight.js 的类名，与 prism 的 token 类名不兼容，所以实际高亮由 Hexo 内置 highlight 负责）
 
+**站点自身的头像路径**
+
+现在规范路径是 `/images/avatar.webp`。但早期对外发的友链用的是 `/avatar.webp`，别的博客还在引用它，所以**根目录放了一份实体副本 `source/avatar.webp`** —— 不走重定向，避免对端不跟随 301 导致头像裂图。
+
+`source/_redirects` 里另外兜了几个历史/约定路径（`/favicon.ico`、`/avatar.png`、`/og.jpg`），301 指到规范地址。
+
+⚠️ `source/avatar.webp` 不要删，删了别处友链的头像就 404 了。
+
 **功能**
 
 | 原功能 | 现在的落点 |
@@ -181,6 +189,8 @@ colors:
 - **导航栏渐变**：出厂是 橙 `#f78736` → 蓝 `#367df7`，在紫色主题下会打架，改成紫的深浅渐变 `#A78BFA` → `#7C3AED`（同 violet 色族）。想换回橙蓝见配置里的注释
 
 Goose 自己的组件样式（`source/css/goose-skin.css`）**一律用 CSS 变量不写死色值**，所以改主色不需要动它。
+
+热力图的宽度**按 viewBox 自然尺寸渲染**（53 周 ≈ 770px），不用 `width="100%"` 撑满容器 —— 撑满会被放大 1.5 倍、格子从 11px 变 17px 而且顶到容器边缘。窄屏由 CSS `max-width: 100%` 缩放。
 
 发文热力图的配色也在 JS 里**运行时读取 `--primary-color`**（`source/js/goose/heatmap.js` 的 `primaryRgb()`），支持 `#rgb` / `#rrggbb` / `rgb()` / `rgba()` 四种写法，读不到时兜底 `#8B5CF6`。以前是写死的 `rgba(163, 31, 52)`（旧的深红主色），换主色时会忘记改它。
 

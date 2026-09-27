@@ -1,0 +1,21 @@
+# Cloudflare Pages 重定向规则
+# https://developers.cloudflare.com/pages/platform/redirects/
+# 格式：旧路径  新路径  状态码
+#
+# 说明：本站在别的博客友链里被引用过两个头像地址，
+#   /images/avatar.webp   现在这个（主题配置里的规范路径）
+#   /avatar.webp          早期用过的，外面还在引用
+# 后者已经放了实体文件 source/avatar.webp，直接就能访问，不需要重定向。
+#
+# 下面这些是历史上/常见约定路径，统一指到规范地址，避免 404。
+
+# 站点图标：有些工具会直接请求根目录的 favicon.ico
+/favicon.ico              /images/avatar-256.webp        301
+
+# 早期头像地址的其它写法
+/avatar.png               /images/avatar.webp            301
+/images/avatar.png        /images/avatar.webp            301
+
+# OG 默认图（社交分享用）
+/og.jpg                   /images/og-default.jpg         301
+/og-default.jpg           /images/og-default.jpg         301

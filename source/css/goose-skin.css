@@ -26,9 +26,11 @@
   color: var(--third-text-color);
   margin-bottom: 8px;
 }
+/* 宽度由 JS 按 viewBox 自然宽度给（53 周 ≈ 770px），这里只负责：
+     1. 窄屏缩到容器宽度以内（不溢出）
+     2. 不要让 SVG 被拉伸 —— 拉伸会把格子放大，还会顶到容器边缘 */
 .goose-heatmap {
   display: block;
-  width: 100%;
   max-width: 100%;
   height: auto;
 }
