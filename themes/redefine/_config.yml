@@ -219,26 +219,36 @@ navbar:
     home: 1200px
     pages: 1000px
   links:                   # 【Goose】对齐原站侧栏导航项
+    # text = 导航项显示的文字。全部写英文，避免中英混排（原来只有 PROJECTS
+    #        是英文，因为 zh-CN 语言文件里没有 projects 这个 key）。
+    #        想换回中文直接改 text，例如 text: 首页。
     Home:
       path: /
+      text: Home
       icon: fa-regular fa-house
     Archives:
       path: /archives
+      text: Archives
       icon: fa-regular fa-archive
     Tags:
       path: /tags
+      text: Tags
       icon: fa-regular fa-tags
     Categories:
       path: /categories
+      text: Categories
       icon: fa-regular fa-folder
     Projects:
       path: /projects
+      text: Projects
       icon: fa-regular fa-layer-group
     Friends:
       path: /friends
+      text: Friends
       icon: fa-regular fa-link
     About:
       path: /about
+      text: About
       icon: fa-regular fa-user
   search:
     enable: true           # 【Goose】补一个本地搜索（原站没有，静态站更好用）
@@ -251,17 +261,25 @@ home:
     enable: true
     position: left
     first_item: menu
-    announcement: 鹅在慢慢把旧文章搬过来，缺图缺链接的地方欢迎戳我。   # 【Goose】原站公告条
+    announcement: '中文：十一快乐，国庆节快乐！愿祖国繁荣昌盛、国泰民安，祝你假期愉快、出行顺利、阖家团圆、身体健康、万事如意！ | 日本語：国慶節おめでとうございます！十月一日、おめでとうございます！祖国のますますの発展と繁栄、国の平和と国民の幸せを願っています。楽しい休暇を過ごし、旅の安全を祈り、家族との再会と幸せな時間、そして万事順調でありますように！ | English: Happy National Day! Happy October 1st! May our motherland prosper and thrive, may the nation enjoy peace and the people live in happiness. Wishing you a joyful holiday, safe travels, happy family reunions, good health, and all the best!'
     show_on_mobile: true
+    # 侧栏三个计数（标签数 / 分类数 / 文章数）下面的小字，统一用英文跟导航对齐
+    statistics_labels:
+      tags: Tags
+      categories: Categories
+      posts: Posts
     links:
       Archives:
         path: /archives
+        text: Archives
         icon: fa-regular fa-archive
       Tags:
         path: /tags
+        text: Tags
         icon: fa-regular fa-tags
       Categories:
         path: /categories
+        text: Categories
         icon: fa-regular fa-folder
   article_date_format: auto
   excerpt_length: 200
@@ -409,7 +427,7 @@ links: []
 footer:
   runtime: true
   icon: '<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>'
-  start: 2026/7/17 11:45:14     # 【Goose】原站首篇文章日期
+  start: 2026/7/19 20:10:08     # 【Goose】真实首篇文章日期（goosehost-tutorial，UTC+8）
   statistics: true
   customize: '<p>GooseBlog · 由 Hexo + Redefine 驱动</p>'   # 【Goose】
   icp:

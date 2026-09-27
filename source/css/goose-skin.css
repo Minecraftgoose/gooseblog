@@ -2,7 +2,7 @@
    GooseBlog × Redefine —— Goose 遗留能力的皮肤
    做三件事：
      1. 承载 Goose 组件所需样式（热力图 / 分享悬浮球 / 海报 / Toast / 链接卡片）
-     2. 微调 giscus 评论区（宽度、加载中占位、iframe 圆角）
+     2. 微调 giscus 评论区（宽度、加载留白、iframe 边框）
      3. 沿用 Redefine 的 CSS 变量，深浅色自动跟随，不引入紫色玻璃
 
    字体一律用主题自带的（Chillax / Geist），不再引入钉钉进步体。

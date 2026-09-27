@@ -27,7 +27,7 @@
                                     <% if (theme.home.sidebar.links[i].icon) { %>
                                         <i class="<%- theme.home.sidebar.links[i].icon %> icon-space"></i>
                                     <% } %>
-                                    <span class="link-name"><%= __(i) %></span>
+                                    <span class="link-name"><%= theme.home.sidebar.links[i].text || __(i) %></span>
                                 </a>
                             <% } %>
                         <% } %>
@@ -56,7 +56,7 @@
                                     <% if (theme.home.sidebar.links[i].icon) { %>
                                         <i class="<%- theme.home.sidebar.links[i].icon %> icon-space"></i>
                                     <% } %>
-                                    <span class="link-name"><%= __(i) %></span>
+                                    <span class="link-name"><%= theme.home.sidebar.links[i].text || __(i) %></span>
                                 </a>
                             <% } %>
                         <% } %>

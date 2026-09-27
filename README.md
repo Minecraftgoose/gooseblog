@@ -35,6 +35,9 @@
 | 阅读进度条、站内搜索 | 主题自带（原站没有搜索，静态站补上了） |
 | **评论（新增）** | giscus → GitHub Discussions，配置见下文 |
 
+导航栏与首页侧栏统一用英文（HOME / ARCHIVES / TAGS / CATEGORIES / PROJECTS / FRIENDS / ABOUT），
+文字写在 `navbar.links[*].text` 和 `home.sidebar.links[*].text`，想改回中文直接改 `text`。
+
 ## 目录结构
 
 ```
@@ -45,10 +48,11 @@
 │   ├── generate-heatmap.js     构建期生成热力图数据
 │   └── extra-assets.js         把 source/_headers 带进 public/（hexo 默认忽略 _ 开头）
 ├── tools/                      独立 CLI 脚本，不参与 hexo 构建
+│   ├── import-from-csv.mjs     从自备 CSV 恢复文章/友链/关于页/公告（含分类映射）
 │   ├── export-from-goose.mjs   从旧站 Supabase 导出文章/友链/关于页
 │   └── export-projects.mjs     从旧站导出项目页
 ├── source/
-│   ├── _posts/                 文章（Markdown）
+│   ├── _posts/                 ★ 15 篇旧文章（Markdown，只有 drive 是 HTML）
 │   ├── _headers                Cloudflare Pages 缓存头
 │   ├── _data/links.yml         友链（导出脚本生成，主题自动读取）
 │   ├── about/  friends/  projects/  tags/  categories/
@@ -67,22 +71,44 @@ npm run server       # http://localhost:4000
 npm run build        # 产物在 public/
 ```
 
-## 把旧文章搬进来
+## 内容迁移
+
+旧站数据已经导入完毕：**15 篇文章 + 5 条友链 + 关于页 + 公告**。
+
+两种方式，任选：
 
 ```bash
+# 方式一：从导出的 CSV 恢复（CSV 不入库，按需自备）
+npm run import:csv -- --dir=/path/to/csv
+
+# 方式二：直接从线上 Supabase 拉
 export SUPABASE_URL=https://xxxx.supabase.co
 export SUPABASE_KEY=<service_role key>      # 用 service_role 才能绕过 RLS 读到草稿
 npm run export:goose                        # posts → source/_posts，friends → source/_data/links.yml
 npm run export:projects                     # gc_projects → source/projects/index.md
 ```
 
-导出后：
+导入要点：
 
-- 友链：已写到 `source/_data/links.yml`，主题在 `generateBefore` 自动读取，**不用再手抄进主题配置**
-- 公告：把 `source/_data/announcement.txt` 的内容填进 `home.sidebar.announcement`
-- 文章正文是旧站 marked 渲染过的 HTML，Hexo 直接吃，不需要二次转换
+- **正文**：优先用 `markdown` 原文字段（以后还能继续编辑），只有 `drive` 这篇没存原文，退回用渲染后的 HTML
+- **时间**：`created_at` 是 UTC，脚本统一转成东八区再写 front-matter，否则文章时间会比原站早 8 小时
+- **友链**：写到 `source/_data/links.yml`，主题在 `generateBefore` 自动读取，**不用手抄进主题配置**
+- **分类**：原站 `posts` 表没有 category 字段，15 篇文章的分类是**人工补的**（见下表），写在 `tools/import-from-csv.mjs` 的 `CATEGORY_MAP` 里，重跑导入会自动带上
 - 然后 `npm run build` 重新生成即可
 
+### 分类方案
+
+tag 记品牌与类型（GooseHost / 文档 / 教程…），分类记内容域，两者互补。只做单层，不搞层级（避免嵌套 URL）。
+
+| 分类 | 篇数 | 文章 |
+| --- | --- | --- |
+| 项目 | 7 | GooseHost 教程 / 自托管指南 / CLI 文档、GooseHyperGlass 问题汇总 / 2.0 日志 / 难绷事件、GooseAI 为什么消失 |
+| 折腾 | 3 | 驾考模拟器、TimeFreeze、Kimi 发现只读面板 |
+| 随笔 | 2 | 九一八事变 95 周年、为什么 Github 正在变差 |
+| 教程 | 2 | Markdown 入门、怎么查网站有没有被收录 |
+| 建站 | 1 | GooseBlog 升级日志 2026-07-27 |
+
+标签共 9 个：文档(6) / GooseHyperGlass(3) / GooseHost(3) / 教程(2) / 历史 / html小游戏 / GitHub / GooseAI / GooseBlog。
 ## 部署（Cloudflare Pages）
 
 1. 仓库 Settings → Secrets and variables → Actions 配两个 Secret：
@@ -94,6 +120,16 @@ npm run export:projects                     # gc_projects → source/projects/in
 推其他分支只出 Preview，自定义域名不会变。
 
 > 旧的 `gooseblog-api` Worker 已不再需要，可以在 Cloudflare 后台停掉或删除。
+
+## 主题文件的定制点
+
+改了 Redefine 的 3 个 ejs（升级主题时需要重新打上），目的都是让文字可由配置驱动、不依赖语言文件：
+
+| 文件 | 改动 |
+| --- | --- |
+| `layout/components/header/navbar.ejs` | 导航项文字优先取 `theme.navbar.links[*].text` |
+| `layout/pages/home/home-sidebar.ejs` | 侧栏链接文字优先取 `theme.home.sidebar.links[*].text` |
+| `layout/components/sidebar/statistics.ejs` | 侧栏计数标签取 `theme.home.sidebar.statistics_labels` |
 
 ## 已知取舍
 
