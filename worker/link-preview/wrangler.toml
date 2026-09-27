@@ -5,30 +5,34 @@
 # 直接 fetch 外站会被 CORS 拦死），让文章里的链接能渲染成带缩略图的卡片。
 #
 # 部署：
-#   npx wrangler deploy          # 本地
-#   git push                     # CI 自动部署（.github/workflows/deploy.yml 的 deploy-worker job）
-#
-# 路由说明见下方 routes。
+#   npx wrangler deploy --config worker/link-preview/wrangler.toml     # 本地
+#   git push                                                          # CI 自动部署（deploy-worker job）
+
+# ─────────────────────────────────────────────────────────────────────
+# ⚠️ TOML 铁律：所有顶层字段必须写在 [[table]] / [table] 之前。
+#    写在 [[routes]] 后面的顶层字段会被当成那张表的字段，
+#    wrangler 就会报 "Expected routes to be an array of ..." 然后整个部署失败。
+#    所以 workers_dev 放在这里，[[routes]] 放最后。
+# ─────────────────────────────────────────────────────────────────────
 
 name = "gooseblog-link-preview"
 main = "index.js"
 compatibility_date = "2026-07-17"
 
+# 改成 true 可拿到 *.workers.dev 的兜底地址（自定义域名路由没生效时用）
+workers_dev = false
+
 # 只接管 /api/link-preview 这一个路径，其余请求照常交给 Pages。
 # 精确路径的 Worker route 优先级高于 Pages，不会互相打架。
 #
-# 如果发现和 Pages 冲突（比如 /api/* 被 Pages 吃掉），改成独立子域名更省事：
-#   1) 注释掉下面的 routes
-#   2) 打开 workers_dev = true，用 *.workers.dev 的地址
+# 自定义域名的 route 必须带 zone_name（或 zone_id），只写 pattern 不行。
+#
+# 如果发现和 Pages 冲突（比如 /api/* 被 Pages 吃掉），改用独立地址更省事：
+#   1) 注释掉下面的 [[routes]]
+#   2) workers_dev 改成 true，用 *.workers.dev 的地址
 #   3) 把新地址填进 themes/redefine/_config.yml 的 inject.head 里的
 #      window.__GOOSE_LINK_PREVIEW__
 [[routes]]
 pattern = "blog.goose.cc.cd/api/link-preview*"
-custom_domain = false
-
-# 需要时用 workers.dev 兜底（自定义域名路由没生效时可直接切过去）
-workers_dev = false
-
-# 这个 Worker 不需要任何环境变量 / KV / D1
-[observability]
-enabled = false
+custom_domain = false        # 只接管这个路径，不是整域名
+zone_name = "goose.cc.cd"
