@@ -424,6 +424,23 @@
   color: var(--highlight-keyword);
 }
 
+/* ---------- 7.6 友链页网站截图 ----------
+   主题给了 thumbnail 位，但原站 friends 表没有截图字段，导入后是空的。
+   现在由 friends-thumb.js 拿链接预览 Worker 的 og:image 来填。
+   抓不到就整块 hidden，所以这里只做两件事：
+     1. 淡入，避免图片突然蹦出来
+     2. 图片加载失败时兜底隐藏（JS 里也处理了，这里是双保险） */
+.friends-link-container .thumbnail img.goose-thumb-lazy {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.friends-link-container .thumbnail img.goose-thumb-lazy.is-loaded {
+  opacity: 1;
+}
+.friends-link-container .thumbnail[hidden] {
+  display: none;
+}
+
 /* ---------- 8. 项目页卡片（source/projects/index.md 手写维护） ----------
    分「Goose 系列 / 其他项目」两组。加卡片直接复制文件底部注释里的模板。 */
 .goose-projects h2 {

@@ -1,22 +1,24 @@
-# 由 tools/import-from-csv.mjs 从 friends_rows.csv 生成
-# 主题在 generateBefore 会自动读取本文件，无需再粘贴进主题配置
 - links_category: 朋友们
   has_thumbnail: true
   list:
     - name: 'Object2 的小窝'
       link: 'https://x0.fan'
+      thumbnail: 'https://img.goose.cc.cd/i/c0a3264806ab642b9a5ead0a34642522.webp'
       avatar: 'https://weavatar.com/api/avatar/5ac0d5704a73d563c7da6265e6cc51d84ebb79ef1fab32673077b769c8ccc7c7'
       description: Reborn from the ashes.
     - name: '松间照的博客'
       link: 'http://sojizh.gt.tc/'
+      thumbnail: 'https://img.goose.cc.cd/i/8e154a1bfaf0fd21606208c26a0316e8.webp'
       avatar: 'https://avatar.moonshot.cn/avatar/cuhh0haav1f3eq4qpnq0/1779455717631153.png'
       description: '写字的 · 想事的 · 偶尔熬夜改稿的'
     - name: GooseHost
       link: 'https://host.goose.cc.cd/'
+      thumbnail: 'https://img.goose.cc.cd/i/d712485cd56be9505fa0b146697885f3.png'
       avatar: 'https://host.goose.cc.cd/icons/icon-192x192.png'
       description: '静态网站托管'
     - name: '登🌟者的博客'
       link: 'https://starblog.totalh.net/'
+      thumbnail: 'https://img.goose.cc.cd/i/1955852ea78f9580c36f3e6e4b220e22.webp'
       avatar: 'https://avatar.moonshot.cn/avatar/d5o5jimmu6s7tat0tdqg/1785077058301196.png'
       description: '优质内容的博客（starblog）'
     - name: '水水的小屋🏡'

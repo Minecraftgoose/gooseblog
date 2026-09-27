@@ -60,7 +60,7 @@
 │   ├── about/  friends/  projects/  tags/  categories/
 │   ├── images/                 ★ Goose 原站图片资源
 │   ├── vendor/prism/           ★ prism 与语言包
-│   ├── css/goose-skin.css      Goose 组件皮肤（热力图/分享/海报/链接卡片）
+│   ├── css/goose-skin.css      Goose 组件皮肤（热力图/分享/海报/链接卡片/友链截图）
 │   └── js/goose/               Goose 组件脚本
 └── themes/redefine/            hexo-theme-redefine（源码内置，含 Goose 定制 _config.yml）
 ```
@@ -129,6 +129,19 @@ tag 记品牌与类型（GooseHost / 文档 / 教程…），分类记内容域�
 | `layout/pages/home/home-sidebar.ejs` | 侧栏链接文字优先取 `theme.home.sidebar.links[*].text` |
 | `layout/components/sidebar/statistics.ejs` | 侧栏计数标签取 `theme.home.sidebar.statistics_labels` |
 | `layout/utils/side-tools.ejs` | 右下角工具栏里加了一个分享项 `#gooseShareTool` |
+| `layout/pages/friends/friends-link.ejs` | 友链截图位：无 thumbnail 时不输出 `src`，改由 JS 填 |
+
+## 友链页截图
+
+主题（Redefine）的友链卡片自带一个 `thumbnail` 横幅位（由 `links.yml` 的 `has_thumbnail: true` 开启），但**原站 friends 表里没有截图字段**，导入后这个位置是空的 —— 页面上顶着几个空灰框。
+
+现在由 `source/js/goose/friends-thumb.js` 复用链接预览 Worker 抓每个友链的 `og:image` 填进去：
+
+- 抓到图 → 淡入显示
+- 抓不到 / 站点没配 og:image → 截图位保持 `hidden`，卡片退回「头像 + 名字 + 简介」，**不会留空框**
+- 有手动 `thumbnail:` 的友链直接用，不再请求 Worker
+
+不想用截图：把 `source/_data/links.yml` 的 `has_thumbnail` 改成 `false`，卡片变回紧凑两列布局（和原站一致）。
 
 ## 链接预览 Worker
 
