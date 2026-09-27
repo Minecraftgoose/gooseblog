@@ -48,7 +48,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
+          # hexo 8.1.2 要求 node >= 20.19.0
           node-version: ${{ env.NODE_VERSION }}
+          # 需要 package-lock.json 才能命中缓存；仓库里已提交该文件
           cache: npm
 
       - name: Check required secrets
@@ -65,14 +67,29 @@ jobs:
           fi
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            echo "::warning::未找到 package-lock.json，回退到 npm install"
+            npm install --no-audit --no-fund
+          fi
 
       - name: Build Hexo site
-        run: npx hexo clean && npx hexo generate
+        run: npm run build
         env:
           # 导出旧文章用（可选）：配了才会跑，不配也不影响构建
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+      - name: Verify build output
+        run: |
+          if [ ! -f public/index.html ]; then
+            echo "::error::hexo generate 没有产出 public/index.html，构建异常"
+            exit 1
+          fi
+          echo "产物大小: $(du -sh public | cut -f1)"
+          echo "HTML 页数: $(find public -name '*.html' | wc -l)"
 
       - name: Determine deploy target
         id: target
