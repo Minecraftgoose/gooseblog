@@ -11,11 +11,9 @@
 /vendor/*
   Cache-Control: public, max-age=604800
 
-# Goose 原站资源：图片/字体不常变，缓存一天
+# Goose 原站资源：壁纸 / 头像 / OG 图不常变，缓存一天
 /images/*
   Cache-Control: public, max-age=86400
-/fonts/*
-  Cache-Control: public, max-age=2592000
 
 # 搜索索引 / RSS / sitemap：要能被及时抓到最新
 /search.xml

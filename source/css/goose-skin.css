@@ -1,32 +1,13 @@
 /* ==========================================================================
    GooseBlog × Redefine —— Goose 遗留能力的皮肤
-   只做三件事：
-     1. 把 Goose 的钉钉进步体用到品牌位（Logo / 站点名 / Banner 标题）
-     2. 承载 Goose 组件所需样式（热力图 / 分享悬浮球 / 海报 / Toast / 链接卡片）
-     3. 沿用 Redefine 的 CSS 变量，深浅色自动跟随，不引入紫色玻璃
+   只做两件事：
+     1. 承载 Goose 组件所需样式（热力图 / 分享悬浮球 / 海报 / Toast / 链接卡片）
+     2. 沿用 Redefine 的 CSS 变量，深浅色自动跟随，不引入紫色玻璃
+
+   字体一律用主题自带的（Chillax / Geist），不再引入钉钉进步体。
    ========================================================================== */
 
-/* ---------- 1. 钉钉进步体（Goose 原站品牌字体） ---------- */
-.navbar-logo,
-.navbar-logo .logo-text,
-.home-banner-container .description,
-.home-banner-container .description > *,
-.site-info .site-name,
-.sidebar-content .site-name {
-  font-family: "DingTalk JinBuTi", "Noto Sans SC", var(--redefine-font-family, sans-serif);
-  letter-spacing: 0.02em;
-}
-
-/* Logo 图片尺寸收敛（原站 brand-logo 视觉） */
-.navbar-logo img,
-.brand-logo {
-  height: 28px;
-  width: auto;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-/* ---------- 2. 首页热力图（原 Goose heatmap.js） ---------- */
+/* ---------- 1. 首页热力图（原 Goose heatmap.js） ---------- */
 .goose-heatmap-wrap {
   background: var(--second-background-color);
   border: 1px solid var(--border-color);
@@ -64,7 +45,7 @@
   fill: transparent;
 }
 
-/* ---------- 3. 分享悬浮球 + 面板 ---------- */
+/* ---------- 2. 分享悬浮球 + 面板 ---------- */
 .goose-share-ball {
   position: fixed;
   bottom: 130px;
@@ -148,7 +129,7 @@
   }
 }
 
-/* ---------- 4. Toast ---------- */
+/* ---------- 3. Toast ---------- */
 .goose-toast {
   position: fixed;
   bottom: 80px;
@@ -168,7 +149,7 @@
   opacity: 1;
 }
 
-/* ---------- 5. 海报弹层 ---------- */
+/* ---------- 4. 海报弹层 ---------- */
 .goose-poster-overlay {
   position: fixed;
   inset: 0;
@@ -308,7 +289,7 @@
   padding: 3px;
 }
 
-/* ---------- 6. 链接卡片（原 Goose link-card.js，去后端后走静态渲染） ---------- */
+/* ---------- 5. 链接卡片（原 Goose link-card.js，去后端后走静态渲染） ---------- */
 .goose-link-card {
   display: flex;
   gap: 0;
@@ -379,7 +360,7 @@
   }
 }
 
-/* ---------- 7. 微调：文章内音视频播放器（原站 Worker 渲染的同款） ---------- */
+/* ---------- 6. 微调：文章内音视频播放器（原站 Worker 渲染的同款） ---------- */
 .markdown-body audio,
 .markdown-body video {
   width: 100%;

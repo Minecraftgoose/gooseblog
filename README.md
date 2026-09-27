@@ -17,8 +17,7 @@
 **资源（原文件直接搬，未重新生成）**
 
 - `background.webp` / `background-1920.webp` / `background-1280.webp` —— 三档响应式壁纸
-- `avatar.webp`、`avatar-256.webp`（favicon）、`logo.svg`、`og-default.jpg`
-- `DingTalk JinBuTi.ttf` —— 钉钉进步体，Logo / 站点名 / Banner 标题沿用
+- `avatar.webp`（导航栏 Logo + 侧栏头像）、`avatar-256.webp`（favicon）、`og-default.jpg`
 - `vendor/prism/` —— 主题与全部 18 个语言包（代码高亮资产不丢）
 
 **功能**
@@ -53,7 +52,6 @@
 │   ├── _data/links.yml         友链（导出脚本生成，主题自动读取）
 │   ├── about/  friends/  projects/  tags/  categories/
 │   ├── images/                 ★ Goose 原站图片资源
-│   ├── fonts/                  ★ 钉钉进步体
 │   ├── vendor/prism/           ★ prism 与语言包
 │   ├── css/goose-skin.css      Goose 组件皮肤（热力图/分享球/海报/链接卡片）
 │   └── js/goose/               Goose 组件脚本
@@ -101,4 +99,4 @@ npm run export:projects                     # gc_projects → source/projects/in
 - **评论**：原站就没接评论系统，主题配置里 `comment.enable: false`。要开填 waline / twikoo / giscus 任一即可。
 - **链接卡片**：原站靠 `/api/link-preview` 实时抓标题和缩略图，静态站没有后端，降级为「域名 + favicon + 链接文字」。想要原效果可在 Markdown 里直接贴卡片 HTML。
 - **写文章**：原来的 `/admin` 后台（Supabase 写库）随后端一起删除，改为本地写 Markdown 后 `git push`。
-- **紫色玻璃风**：按需求弃用，视觉走 Redefine 原味；背景图、Logo、字体仍是 Goose 的。
+- **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉与字体全走 Redefine 原味（Chillax / Geist），只有壁纸、头像、OG 图还是 Goose 的。

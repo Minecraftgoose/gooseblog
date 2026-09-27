@@ -20,8 +20,8 @@ info:
 
 # IMAGE CONFIGURATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 defaults:
-  favicon: /images/avatar-256.webp   # 【Goose】原站 <link rel="icon">
-  logo: /images/logo.svg             # 【Goose】原站品牌 Logo
+  favicon: /images/avatar-256.webp   # 【Goose】原站 256 头像当站点图标
+  logo: /images/avatar.webp          # 【Goose】导航栏 Logo 用头像（512×512，正好填方形 logo 位）
   avatar: /images/avatar.webp        # 【Goose】原站头像
 # IMAGE CONFIGURATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
@@ -416,14 +416,6 @@ inject:
       <link rel="preload" as="image" href="/images/background-1920.webp" media="(min-width: 901px) and (max-width: 1440px)">
       <link rel="preload" as="image" href="/images/background-1280.webp" media="(max-width: 900px)">
       <link rel="stylesheet" href="/css/goose-skin.css">
-      <style>
-        /* 【Goose】钉钉进步体：仅 Logo / 站点名 / Banner 标题使用 */
-        @font-face {
-          font-family: "DingTalk JinBuTi";
-          src: url("/fonts/DingTalk JinBuTi.ttf") format("truetype");
-          font-display: swap;
-        }
-      </style>
     - |
       <style>
         /* 【Goose】背景图三档响应式：>1440 用 3008，901~1440 用 1920，≤900 用 1280

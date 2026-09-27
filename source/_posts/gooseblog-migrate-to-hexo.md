@@ -36,7 +36,7 @@ sticky: true
 
 ## 没换什么
 
-- **资源**：`background.webp` 三档响应式壁纸、`avatar.webp`、`logo.svg`、钉钉进步体、prism 语言包，原文件直接搬
+- **资源**：`background.webp` 三档响应式壁纸、`avatar.webp`、`avatar-256.webp`、`og-default.jpg`、prism 语言包，原文件直接搬
 - **首页发文热力图**：数据改由构建期算好，零请求
 - **右下角分享球**：复制链接 + 生成海报，跟原来一样
 - **侧栏台词**：那 81 句《流浪地球》还是内嵌的，不联网
