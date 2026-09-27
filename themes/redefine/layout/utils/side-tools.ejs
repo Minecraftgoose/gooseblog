@@ -30,6 +30,14 @@
 		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
 			<i class="fa-regular fa-arrow-down"></i>
 		</li>
+
+		<!-- 【Goose】分享：复制链接 / 生成海报，由 source/js/goose/share.js 驱动。
+		     放进主题自带的工具栏而不是自己造悬浮球 —— 位置由主题统一管理，
+		     不会跟齿轮那一列挤在一起。非文章页 share.js 会加 .hidden 隐藏。
+		     图标用 fa-share-nodes（FA6）；主题若加载的是 FA5，fallback 见 share.js。 -->
+		<li class="right-bottom-tools tool-goose-share flex justify-center items-center" id="gooseShareTool" title="分享">
+			<i class="fa-regular fa-share-nodes"></i>
+		</li>
 	</ul>
 
 	<ul class="visible-tools-list">

@@ -3,9 +3,13 @@
  * 移植自原站 blog/src/js/share-bar.js + share-float.js
  *
  * 差别：
- *   - 原站海报按钮在文章底部（依赖 admin 渲染），现在统一为右下角悬浮球
+ *   - 原站海报按钮在文章底部（依赖 admin 渲染）
+ *   - 早期移植做成了独立悬浮球（position: fixed + 写死 bottom/right），
+ *     跟主题自带的右下角工具栏（齿轮那一列）叠在一起，很格格不入。
+ *     现在改成挂进工具栏：layout/utils/side-tools.ejs 里加了一个
+ *     #gooseShareTool 项，随齿轮展开，位置由主题统一管理。
  *   - html2canvas 仍走 CDN（原站同款），加载失败时只保留复制链接，不报错
- *   - 文章页才显示（.markdown-body 存在）
+ *   - 只在文章页显示该工具项（非文章页加 .hidden）
  */
 (function () {
   var AVATAR = '/images/avatar.webp';
@@ -138,14 +142,23 @@
     });
   }
 
-  function build() {
-    if (document.getElementById('gooseShareBall')) return;
+  /** 面板贴着工具栏按钮的左侧弹出，跟着按钮走，不写死坐标 */
+  function placePanel(ball, panel) {
+    var r = ball.getBoundingClientRect();
+    // 按钮不可见（父容器被主题 hide 掉）时 rect 全 0，跳过避免面板飞到屏幕外
+    if (!r.width && !r.height) return;
+    panel.style.right = (window.innerWidth - r.left + 10) + 'px';
+    panel.style.bottom = (window.innerHeight - r.bottom) + 'px';
+  }
 
-    var ball = document.createElement('button');
-    ball.id = 'gooseShareBall';
-    ball.className = 'goose-share-ball hidden';
-    ball.setAttribute('aria-label', '分享');
-    ball.innerHTML = ICON_SHARE;
+  function build() {
+    if (document.getElementById('gooseSharePanel')) return;
+
+    // 分享按钮挂在主题自带的右下角工具栏里（layout/utils/side-tools.ejs）。
+    // 找不到就说明主题结构变了，静默退出 —— 不回退去造独立悬浮球，
+    // 那玩意儿位置写死，跟齿轮那一列挤在一起很难看。
+    var ball = document.getElementById('gooseShareTool');
+    if (!ball) return;
 
     var panel = document.createElement('div');
     panel.id = 'gooseSharePanel';
@@ -154,17 +167,21 @@
       '<button class="goose-share-item" id="gooseCopyLink">' + ICON_COPY + '<span>复制链接</span></button>' +
       '<button class="goose-share-item" id="gooseGenPoster">' + ICON_POSTER + '<span>生成海报</span></button>';
 
-    document.body.appendChild(ball);
     document.body.appendChild(panel);
 
     var active = false;
-    function setActive(v) { active = v; panel.classList.toggle('active', v); }
+    function setActive(v) {
+      active = v;
+      if (v) placePanel(ball, panel);
+      panel.classList.toggle('active', v);
+    }
 
     ball.addEventListener('click', function () { setActive(!active); });
     document.addEventListener('click', function (e) {
       if (active && !ball.contains(e.target) && !panel.contains(e.target)) setActive(false);
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && active) setActive(false); });
+    window.addEventListener('resize', function () { if (active) placePanel(ball, panel); });
 
     panel.querySelector('#gooseCopyLink').addEventListener('click', function () { copyLink(); setActive(false); });
     panel.querySelector('#gooseGenPoster').addEventListener('click', function () { genPoster(); setActive(false); });

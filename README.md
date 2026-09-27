@@ -33,6 +33,7 @@
 | 代码高亮、复制按钮、TOC、字数统计 | 主题自带（Hexo 内置 highlight.js，原 `code-copy.js` / `toc-ball.js` 由主题承接） |
 | OG / Twitter 卡片 | 主题 `open_graph`，默认图 = `og-default.jpg` |
 | 阅读进度条、站内搜索 | 主题自带（原站没有搜索，静态站补上了） |
+| 分享（复制链接 / 生成海报） | `source/js/goose/share.js`，按钮挂在主题右下角工具栏内，随齿轮展开 |
 | **评论（新增）** | giscus → GitHub Discussions，配置见下文 |
 
 导航栏与首页侧栏统一用英文（HOME / ARCHIVES / TAGS / CATEGORIES / PROJECTS / FRIENDS / ABOUT），
@@ -59,7 +60,7 @@
 │   ├── about/  friends/  projects/  tags/  categories/
 │   ├── images/                 ★ Goose 原站图片资源
 │   ├── vendor/prism/           ★ prism 与语言包
-│   ├── css/goose-skin.css      Goose 组件皮肤（热力图/分享球/海报/链接卡片）
+│   ├── css/goose-skin.css      Goose 组件皮肤（热力图/分享/海报/链接卡片）
 │   └── js/goose/               Goose 组件脚本
 └── themes/redefine/            hexo-theme-redefine（源码内置，含 Goose 定制 _config.yml）
 ```
@@ -127,6 +128,7 @@ tag 记品牌与类型（GooseHost / 文档 / 教程…），分类记内容域�
 | `layout/components/header/navbar.ejs` | 导航项文字优先取 `theme.navbar.links[*].text` |
 | `layout/pages/home/home-sidebar.ejs` | 侧栏链接文字优先取 `theme.home.sidebar.links[*].text` |
 | `layout/components/sidebar/statistics.ejs` | 侧栏计数标签取 `theme.home.sidebar.statistics_labels` |
+| `layout/utils/side-tools.ejs` | 右下角工具栏里加了一个分享项 `#gooseShareTool` |
 
 ## 链接预览 Worker
 
@@ -150,6 +152,22 @@ tag 记品牌与类型（GooseHost / 文档 / 教程…），分类记内容域�
 **站内链接不走 Worker**：原站是让 Worker 发现链接指向自己就去查库（注释写着「绝不走公网回环 fetch」），现在改成构建期生成索引 `js/goose/self-links.js`，前端直接查表 —— 零请求、100% 命中，也彻底避开 Worker 回环 fetch 自己域名被 Cloudflare 拦下的老问题。
 
 换域名（比如改用 `*.workers.dev`）时，改 `themes/redefine/_config.yml` 里 `inject.head` 的 `window.__GOOSE_LINK_PREVIEW__` 一行即可。
+
+## 配色
+
+主色走主题配置 `colors.primary`，全站所有强调色（链接、hover、按钮、active、页脚心跳图标）都读这个变量，改一处即可。
+
+```yaml
+colors:
+  primary: "#8B5CF6"    # violet-500
+```
+
+出厂是 `#A31F34`（Redefine 的深红），已按需求改成紫。顺带调整的地方：
+
+- **页脚心跳图标**：原本写死 `#f54545` 红色，改成 `var(--primary-color)`，跟主色联动
+- **导航栏渐变**：出厂是 橙 `#f78736` → 蓝 `#367df7`，在紫色主题下会打架，改成紫的深浅渐变 `#A78BFA` → `#7C3AED`（同 violet 色族）。想换回橙蓝见配置里的注释
+
+Goose 自己的组件样式（`source/css/goose-skin.css`）**一律用 CSS 变量不写死色值**，所以改主色不需要动它。
 
 ## 已知取舍
 

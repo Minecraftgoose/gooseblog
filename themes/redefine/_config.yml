@@ -27,7 +27,9 @@ defaults:
 
 # COLORS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 colors:
-  primary: "#A31F34"        # Redefine 出厂主色（原站紫色玻璃已弃用）
+  # 【Goose】出厂是 #A31F34（深红），按需求全站改紫。
+  # #8B5CF6 = violet-500，深浅两套主题下都够亮，hover / 链接 / 按钮 / 强调色全走它。
+  primary: "#8B5CF6"
   secondary:
   default_mode: dark        # 【Goose】原站默认深色
 # COLORS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
@@ -212,8 +214,11 @@ home_banner:
 navbar:
   auto_hide: false
   color:
-    left: "#f78736"
-    right: "#367df7"
+    # 出厂是 橙→蓝 渐变。主色改紫后，橙蓝会跟紫色打架，
+    # 所以调成紫的深浅渐变（violet-400 → violet-600），跟主色 #8B5CF6 同族。
+    # 想换回橙蓝：left "#f78736" / right "#367df7"
+    left: "#A78BFA"
+    right: "#7C3AED"
     transparency: 35
   width:
     home: 1200px
@@ -426,7 +431,8 @@ links: []
 # FOOTER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 footer:
   runtime: true
-  icon: '<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>'
+  # 原来是红色 #f54545，跟主色一起改成紫，用 var 跟随主色而不是写死
+  icon: '<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: var(--primary-color)"></i>'
   start: 2026/7/19 20:10:08     # 【Goose】真实首篇文章日期（goosehost-tutorial，UTC+8）
   statistics: true
   customize: '<p>GooseBlog · 由 Hexo + Redefine 驱动</p>'   # 【Goose】

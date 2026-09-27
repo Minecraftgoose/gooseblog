@@ -1,9 +1,12 @@
 /* ==========================================================================
    GooseBlog × Redefine —— Goose 遗留能力的皮肤
    做三件事：
-     1. 承载 Goose 组件所需样式（热力图 / 分享悬浮球 / 海报 / Toast / 链接卡片）
+     1. 承载 Goose 组件所需样式（热力图 / 分享 / 海报 / Toast / 链接卡片）
      2. 微调 giscus 评论区（宽度、加载留白、iframe 边框）
-     3. 沿用 Redefine 的 CSS 变量，深浅色自动跟随，不引入紫色玻璃
+     3. 沿用 Redefine 的 CSS 变量，深浅色自动跟随
+
+   颜色一律走主题 CSS 变量（--primary-color 等），不写死色值 ——
+   这样改主色时全站跟着变，不用挨个找。
 
    字体一律用主题自带的（Chillax / Geist），不再引入钉钉进步体。
    ========================================================================== */
@@ -46,36 +49,18 @@
   fill: transparent;
 }
 
-/* ---------- 2. 分享悬浮球 + 面板 ---------- */
-.goose-share-ball {
-  position: fixed;
-  bottom: 130px;
-  right: 24px;
-  z-index: 898;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 4px 18px var(--shadow-color-2);
-  transition: transform 0.2s, opacity 0.2s;
-}
-.goose-share-ball:hover {
-  transform: scale(1.08);
-}
-.goose-share-ball.hidden {
+/* ---------- 2. 分享（工具栏内）+ 面板 ---------- */
+/* 分享：按钮挂在主题自带的右下角工具栏里（#gooseShareTool），
+   由主题 side-tools.styl 统一给尺寸/圆角/hover，这里只补两件事：
+     1. 非文章页隐藏
+     2. 面板贴着按钮左侧弹出（坐标由 share.js 按按钮位置算，不写死） */
+.tool-goose-share.hidden,
+#gooseShareTool.hidden {
   display: none;
 }
 
 .goose-share-panel {
   position: fixed;
-  bottom: 186px;
-  right: 24px;
   z-index: 897;
   background: var(--background-color-transparent-80);
   border: 1px solid var(--border-color);
@@ -117,16 +102,12 @@
   flex-shrink: 0;
 }
 
+/* 窄屏：工具栏本身由主题缩小了，按钮不用管；
+   面板要防止贴到屏幕边缘，给它一个最小右边距。
+   注意面板坐标由 share.js 按按钮位置算，这里只做兜底约束。 */
 @media (max-width: 768px) {
-  .goose-share-ball {
-    bottom: 120px;
-    right: 14px;
-    width: 40px;
-    height: 40px;
-  }
   .goose-share-panel {
-    bottom: 172px;
-    right: 14px;
+    max-width: calc(100vw - 28px);
   }
 }
 
