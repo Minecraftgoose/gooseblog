@@ -28,9 +28,15 @@ permissions:
 # └───────────────────────────────────────────────────────────────┘
 
 env:
-  # wrangler CLI 版本（锁定大版本，避免 major 升级直接炸流水线）
-  WRANGLER_VERSION: '4'
-  NODE_VERSION: '20'
+  # ⚠️ wrangler 版本要锁死到具体号：之前写 '4' 让它每次拉最新 4.x，
+  #    结果 4.141.0 把 Node 要求从 20 提到 22，流水线一夜之间挂掉。
+  #    pages deploy 和 worker deploy 都受影响，所以两个 job 一起锁。
+  WRANGLER_VERSION: '4.141.0'
+
+  # Node 22：wrangler 4.141 的硬性要求（engines: node >=22.0.0），
+  # 低于 22 它直接退出、连配置都不解析。
+  # hexo 8.1.2 要求 >= 20.19，22 同样满足，所以两个 job 统一用 22。
+  NODE_VERSION: '22'
 
   # ⚠️ 必须与 Cloudflare Pages 项目里设置的「Production branch」完全一致
   PRODUCTION_BRANCH: production
@@ -52,7 +58,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          # hexo 8.1.2 要求 node >= 20.19.0
+          # Node 22：wrangler 4.141 要求 >= 22；hexo 8.1.2 要求 >= 20.19，22 满足
           node-version: ${{ env.NODE_VERSION }}
           # 需要 package-lock.json 才能命中缓存；仓库里已提交该文件
           cache: npm
@@ -146,6 +152,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      # wrangler 4.141 要求 Node >= 22，用环境变量统一，和 build job 保持一致
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Deploy to Cloudflare Workers
         run: |

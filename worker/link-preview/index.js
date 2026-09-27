@@ -159,19 +159,44 @@ async function scrape(target) {
 
   let image = og('image') || og('image:url') || meta('twitter:image');
 
-  // 相对路径补全成绝对地址
-  if (image && !/^https?:\/\//i.test(image)) {
-    try {
-      image = new URL(image, target).toString();
-    } catch {
-      image = '';
-    }
+  // favicon：直接从目标站自己的 <link rel="icon"> 拿。
+  // 不用 api.faviconkit.com 这类第三方服务 —— 它们对没有 favicon 的站点会
+  // 返回一个默认的蓝色圆点，卡片上就顶着一个莫名的蓝点。
+  // 站点没声明 icon 就返回空，前端改画域名首字母标。
+  let favicon = '';
+  const iconPatterns = [
+    /<link[^>]+rel=["\'](?:shortcut )?icon["\'][^>]*href=["\']([^"\']+)["\']/i,
+    /<link[^>]+href=["\']([^"\']+\.ico[^"\']*)["\'][^>]*rel=["\'](?:shortcut )?icon["\']/i,
+    /<link[^>]+rel=["\']apple-touch-icon["\'][^>]*href=["\']([^"\']+)["\']/i,
+    /<link[^>]+rel=["\']mask-icon["\'][^>]*href=["\']([^"\']+)["\']/i
+  ];
+  for (const re of iconPatterns) {
+    const m = html.match(re);
+    if (m && m[1]) { favicon = m[1]; break; }
   }
+  if (!favicon) {
+    // 什么都没声明，退回站点根目录的 favicon.ico（约定俗成的位置）
+    favicon = new URL(target).origin + '/favicon.ico';
+  }
+
+  // 相对路径补全成绝对地址
+  const base = new URL(target);
+  const abs = (u) => {
+    if (!u) return '';
+    if (/^https?:\/\//i.test(u)) return u;
+    if (/^\/\//.test(u)) return base.protocol + u;     // 协议相对 //cdn.xxx/a.png
+    try { return new URL(u, target).toString(); } catch { return ''; }
+  };
+
+  image = abs(image);
+  favicon = favicon ? favicon.replace(/&amp;/g, '&') : '';
+  favicon = abs(favicon);
 
   return {
     title: (title || '').slice(0, 200),
     description: (description || '').slice(0, 300),
-    image: (image || '').slice(0, 1000)
+    image: image ? image.slice(0, 1000) : '',
+    favicon: favicon ? favicon.slice(0, 500) : ''
   };
 }
 

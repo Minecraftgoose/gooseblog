@@ -46,6 +46,7 @@
 ├── package.json
 ├── scripts/                    ⚠️ Hexo 会把这里的文件当插件加载，只能放 .js
 │   ├── generate-heatmap.js     构建期生成热力图数据
+│   ├── generate-self-links.js  构建期生成站内文章索引（链接卡片用，零请求解析站内链接）
 │   └── extra-assets.js         把 source/_headers 带进 public/（hexo 默认忽略 _ 开头）
 ├── tools/
 │   └── import-from-csv.mjs     从自备 CSV 恢复文章/友链/关于页/公告（含分类映射）
@@ -131,20 +132,32 @@ tag 记品牌与类型（GooseHost / 文档 / 教程…），分类记内容域�
 
 `worker/link-preview/` 是全站唯一保留的 Worker。原站这套能力挂在 `gooseblog-api` 里，和数据库耦合；现在拆成独立 Worker：
 
-- **做什么**：`GET /api/link-preview?url=...` → 抓目标页的 `og:image` / `og:title` / `og:description`
+- **做什么**：`GET /api/link-preview?url=...` → 抓目标页的 `og:image` / `og:title` / `og:description`，顺带解析 `<link rel="icon">` 拿 favicon
 - **不做什么**：不连数据库、不读任何环境变量、不需要 Secret
 - **缓存**：Cloudflare Cache API，24 小时
 - **路由**：`blog.goose.cc.cd/api/link-preview*`（只接管这一个路径，其余仍走 Pages）
-- **部署**：推 `main` / `production` 时 CI 自动 `wrangler deploy`；也可本地 `npx wrangler deploy --config worker/link-preview/wrangler.toml`
+- **部署**：推 `main` / `production` 时 CI 自动 `wrangler deploy`；也可本地 `npx wrangler@4.141.0 deploy --config worker/link-preview/wrangler.toml`
+
+排错备忘（这几个坑都真实踩过）：
+
+- `wrangler.toml` 里**所有顶层字段必须写在 `[[routes]]` 之前**。TOML 规则：写在表声明后面的顶层字段会被当成那张表的字段，于是 wrangler 报 `Expected "routes" to be an array of ...` 并整个部署失败。
+- 自定义域名的 route 必须带 `zone_name`（或 `zone_id`），只写 `pattern` 不行。
+- `workers_dev` 是顶层字段，不属于 route。
+- wrangler 4.141 起**硬性要求 Node ≥ 22**，低于 22 直接退出、连配置都不解析（所以 CI 里 `NODE_VERSION` 是 22）。
 
 前端 `source/js/goose/link-card.js` 先把卡片渲染出来，再去异步补图，并发上限 4、超时 8 秒。代理挂了也不影响页面。
+
+**站内链接不走 Worker**：原站是让 Worker 发现链接指向自己就去查库（注释写着「绝不走公网回环 fetch」），现在改成构建期生成索引 `js/goose/self-links.js`，前端直接查表 —— 零请求、100% 命中，也彻底避开 Worker 回环 fetch 自己域名被 Cloudflare 拦下的老问题。
 
 换域名（比如改用 `*.workers.dev`）时，改 `themes/redefine/_config.yml` 里 `inject.head` 的 `window.__GOOSE_LINK_PREVIEW__` 一行即可。
 
 ## 已知取舍
 
 - **评论**：原站本来就没有评论功能。这次新增 giscus，评论存进 `Minecraftgoose/gooseblog` 的 GitHub Discussions，零后端、免费、支持 Reactions。**已启用**（`comment.enable: true`），分类 = Announcements（只有仓库维护者和 giscus bot 能开帖，防垃圾）。
-- **链接卡片**：保留原效果，靠 `worker/link-preview` 这个纯代理抓 og:图（浏览器直接 fetch 外站会被 CORS 拦死，所以必须有中转）。它不连数据库、不需要任何 Secret。抓不到时卡片自动降级成「域名 + favicon + 标题」，不会开天窗。
+- **链接卡片**：保留原效果。数据分两路：
+  - **站内链接** → `scripts/generate-self-links.js` 构建期生成的 `js/goose/self-links.js` 索引，零网络请求、必定命中，拿到的是本地的标题/摘要/封面（原站靠 Worker 绕开公网回环去查库，现在本地解决，更快也更准）
+  - **外站链接** → `worker/link-preview` 纯代理抓 og:图（浏览器直接 fetch 外站会被 CORS 拦死，必须有中转），不连数据库、不需要 Secret
+  - 抓不到图就只显示「域名标识 + 标题」，不会开天窗。favicon 由 Worker 从目标站自己的 `<link rel="icon">` 解析，拿不到就画域名首字母标（纯 CSS）——**别用 faviconkit 那类第三方服务**，它们对没 favicon 的站点会返回默认蓝点，卡片上就顶着一个莫名的小蓝点
 - **代码高亮**：用 Hexo 内置 highlight.js（构建期生成 `.hljs-*` 类），主题自带 github / vs2015 深浅色主题。`_config.yml` 里 `highlight.enable` 必须为 `true`，否则一块色都没有。注意 highlight.js 对 shell 的 token 类型偏少（只有注释、内置命令如 `cd`、字符串会着色），普通命令名不上色，这是 hljs 的固有行为。
 - **写文章**：原来的 `/admin` 后台（Supabase 写库）随后端一起删除，改为本地写 Markdown 后 `git push`。
 - **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉与字体全走 Redefine 原味（Chillax / Geist），只有壁纸、头像、OG 图还是 Goose 的。

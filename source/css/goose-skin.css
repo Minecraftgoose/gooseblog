@@ -328,11 +328,36 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* 站点标识位：favicon 拿不到时显示首字母标（纯 CSS，零网络，不会出怪图标） */
+.goose-link-card-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
 .goose-link-card-favicon {
   width: 14px;
   height: 14px;
   border-radius: 2px;
-  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.goose-link-card-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--third-background-color);
+  color: var(--third-text-color);
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
 }
 .goose-link-card-title {
   font-size: 14px;
@@ -409,9 +434,8 @@
   border: none;
 }
 
-/* ---------- 8. 项目页卡片（tools/export-projects.mjs 生成的结构） ----------
-   项目数据来自旧站 Supabase gc_projects 表，导出后落在 source/projects/index.md
-   里，结构与原站项目页一致：分「Goose 系列 / 其他项目」两组卡片。 */
+/* ---------- 8. 项目页卡片（source/projects/index.md 手写维护） ----------
+   分「Goose 系列 / 其他项目」两组。加卡片直接复制文件底部注释里的模板。 */
 .goose-projects h2 {
   font-size: 1.4rem;
   font-weight: 700;
