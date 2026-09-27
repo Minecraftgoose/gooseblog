@@ -1,0 +1,33 @@
+# Cloudflare Pages 静态头信息
+# 对应原站 blog/_headers，路径按 Hexo 产物目录重排
+
+# 站点自身的 JS / CSS：改动频繁，每次都要校验
+/js/*
+  Cache-Control: public, max-age=0, must-revalidate
+/css/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+# 第三方库（prism 等）：带 hash 且几乎不变，长缓存
+/vendor/*
+  Cache-Control: public, max-age=604800
+
+# Goose 原站资源：图片/字体不常变，缓存一天
+/images/*
+  Cache-Control: public, max-age=86400
+/fonts/*
+  Cache-Control: public, max-age=2592000
+
+# 搜索索引 / RSS / sitemap：要能被及时抓到最新
+/search.xml
+  Cache-Control: public, max-age=0, must-revalidate
+/atom.xml
+  Cache-Control: public, max-age=3600
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+/sitemap.txt
+  Cache-Control: public, max-age=3600
+
+# 全站兜底安全头
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

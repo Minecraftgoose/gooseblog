@@ -1,0 +1,388 @@
+/* ==========================================================================
+   GooseBlog × Redefine —— Goose 遗留能力的皮肤
+   只做三件事：
+     1. 把 Goose 的钉钉进步体用到品牌位（Logo / 站点名 / Banner 标题）
+     2. 承载 Goose 组件所需样式（热力图 / 分享悬浮球 / 海报 / Toast / 链接卡片）
+     3. 沿用 Redefine 的 CSS 变量，深浅色自动跟随，不引入紫色玻璃
+   ========================================================================== */
+
+/* ---------- 1. 钉钉进步体（Goose 原站品牌字体） ---------- */
+.navbar-logo,
+.navbar-logo .logo-text,
+.home-banner-container .description,
+.home-banner-container .description > *,
+.site-info .site-name,
+.sidebar-content .site-name {
+  font-family: "DingTalk JinBuTi", "Noto Sans SC", var(--redefine-font-family, sans-serif);
+  letter-spacing: 0.02em;
+}
+
+/* Logo 图片尺寸收敛（原站 brand-logo 视觉） */
+.navbar-logo img,
+.brand-logo {
+  height: 28px;
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ---------- 2. 首页热力图（原 Goose heatmap.js） ---------- */
+.goose-heatmap-wrap {
+  background: var(--second-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 16px 20px;
+  margin: 0 0 20px;
+  overflow-x: auto;
+  box-shadow: var(--redefine-box-shadow-flat);
+}
+.goose-heatmap-title {
+  font-size: 0.85rem;
+  color: var(--third-text-color);
+  margin-bottom: 8px;
+}
+.goose-heatmap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+.goose-heatmap-month,
+.goose-heatmap-weekday {
+  fill: var(--third-text-color);
+  font-size: 9px;
+}
+.goose-heatmap-cell {
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  transform-origin: center;
+}
+.goose-heatmap-cell:hover {
+  opacity: 0.65;
+}
+.goose-heatmap-cell-future {
+  fill: transparent;
+}
+
+/* ---------- 3. 分享悬浮球 + 面板 ---------- */
+.goose-share-ball {
+  position: fixed;
+  bottom: 130px;
+  right: 24px;
+  z-index: 898;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 18px var(--shadow-color-2);
+  transition: transform 0.2s, opacity 0.2s;
+}
+.goose-share-ball:hover {
+  transform: scale(1.08);
+}
+.goose-share-ball.hidden {
+  display: none;
+}
+
+.goose-share-panel {
+  position: fixed;
+  bottom: 186px;
+  right: 24px;
+  z-index: 897;
+  background: var(--background-color-transparent-80);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 140px;
+  box-shadow: 0 8px 32px var(--shadow-color-2);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.goose-share-panel.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.goose-share-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--second-text-color);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.goose-share-item:hover {
+  background: var(--third-background-color);
+  color: var(--primary-color);
+}
+.goose-share-item svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .goose-share-ball {
+    bottom: 120px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+  }
+  .goose-share-panel {
+    bottom: 172px;
+    right: 14px;
+  }
+}
+
+/* ---------- 4. Toast ---------- */
+.goose-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  padding: 10px 24px;
+  border-radius: 20px;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.goose-toast.active {
+  opacity: 1;
+}
+
+/* ---------- 5. 海报弹层 ---------- */
+.goose-poster-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.goose-poster-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.goose-poster-box {
+  position: relative;
+  max-width: 340px;
+  width: calc(100% - 48px);
+}
+.goose-poster-close {
+  position: absolute;
+  top: -32px;
+  right: 0;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.7);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.goose-poster-close:hover {
+  color: #fff;
+}
+.goose-poster-download {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 0;
+  border-radius: 8px;
+  border: none;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.goose-poster-download:hover {
+  opacity: 0.85;
+}
+
+.goose-poster-html {
+  width: 320px;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #15131f;
+  color: #f4f0fb;
+}
+.goose-poster-html-bg {
+  width: 100%;
+  height: 200px;
+  background-color: var(--second-background-color);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+.goose-poster-html-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.goose-poster-html-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, #15131f);
+}
+.goose-poster-html-title {
+  padding: 8px 20px 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #f4f0fb;
+}
+.goose-poster-html-divider {
+  margin: 12px 20px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.goose-poster-html-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 20px;
+}
+.goose-poster-html-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.goose-poster-html-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.goose-poster-html-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.goose-poster-html-domain {
+  font-size: 12px;
+  color: #f4f0fb;
+}
+.goose-poster-html-hint {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.goose-poster-html-qr {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: #fff;
+  padding: 3px;
+}
+
+/* ---------- 6. 链接卡片（原 Goose link-card.js，去后端后走静态渲染） ---------- */
+.goose-link-card {
+  display: flex;
+  gap: 0;
+  margin: 16px 0;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  background: var(--second-background-color);
+  text-decoration: none;
+  color: var(--first-text-color);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  max-width: 520px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.goose-link-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--redefine-box-shadow-flat);
+}
+.goose-link-card-body {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.goose-link-card-domain {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--third-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.goose-link-card-favicon {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.goose-link-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--first-text-color);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  word-break: break-word;
+}
+.goose-link-card-desc {
+  font-size: 12px;
+  color: var(--third-text-color);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@media (max-width: 480px) {
+  .goose-link-card {
+    flex-direction: column;
+    font-size: 12px;
+  }
+}
+
+/* ---------- 7. 微调：文章内音视频播放器（原站 Worker 渲染的同款） ---------- */
+.markdown-body audio,
+.markdown-body video {
+  width: 100%;
+  border-radius: 10px;
+  margin: 12px 0;
+}

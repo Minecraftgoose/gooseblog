@@ -1,3 +1,0 @@
-/src/*  /src/:splat  200
-/fonts/*  /fonts/:splat  200
-/*  /index.html  200

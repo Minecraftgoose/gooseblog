@@ -1,0 +1,483 @@
+# =====================================================================
+# hexo-theme-redefine 站点主题配置 —— GooseBlog 定制版
+#
+# 原则：
+#   1. 视觉用 Redefine 原味（不再要紫色玻璃风）
+#   2. 资源全部沿用 Goose 原站：背景图三档 / Logo / 头像 / 钉钉进步体 / prism
+#   3. 原 GooseBlog 的功能用「静态化」方式补齐：热力图、分享海报、
+#      链接卡片、流浪地球台词打字机、公告、友链、项目页
+#
+# 与默认值的差异处均带 【Goose】 标记，其余保持 Redefine 出厂设置
+# =====================================================================
+
+# BASIC INFORMATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+info:
+  title: GooseBlog              # 【Goose】
+  subtitle: 网页开发 · 工具折腾 · 偶尔写点有用的东西   # 【Goose】
+  author: Goose                 # 【Goose】
+  url: https://blog.goose.cc.cd # 【Goose】
+# BASIC INFORMATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# IMAGE CONFIGURATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+defaults:
+  favicon: /images/avatar-256.webp   # 【Goose】原站 <link rel="icon">
+  logo: /images/logo.svg             # 【Goose】原站品牌 Logo
+  avatar: /images/avatar.webp        # 【Goose】原站头像
+# IMAGE CONFIGURATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# COLORS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+colors:
+  primary: "#A31F34"        # Redefine 出厂主色（原站紫色玻璃已弃用）
+  secondary:
+  default_mode: dark        # 【Goose】原站默认深色
+# COLORS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# SITE CUSTOMIZATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+global:
+  fonts:
+    chinese:
+      enable: false
+      family:
+      url:
+    english:
+      enable: false
+      family:
+      url:
+    title:
+      enable: false
+      family:
+      url:
+  content_max_width: 1000px
+  sidebar_width: 210px
+  hover:
+    shadow: true
+    scale: false
+  scroll_progress:
+    bar: true              # 【Goose】原站有阅读进度
+    percentage: true
+  website_counter:
+    url: https://cn.vercount.one/js
+    enable: true
+    site_pv: true
+    site_uv: true
+    post_pv: true
+  single_page: true        # 【Goose】swup 无刷新切页 ≈ 原站 SPA 体验
+  preloader:
+    enable: true           # 【Goose】对应原站开屏动画
+    custom_message: GooseBlog
+  side_tools:
+    gear_rotation: true
+    auto_expand: false
+  open_graph:
+    enable: true           # 【Goose】原站服务端注入 OG，这里由主题生成
+    image: /images/og-default.jpg
+    description: 紫色玻璃风博客 · 网页开发 · 工具折腾 · 偶尔写点有用的东西
+  google_analytics:
+    enable: false
+    id:
+# SITE CUSTOMIZATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# FONTAWESOME >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+fontawesome:
+  thin: false
+  light: false
+  duotone: false
+  sharp_solid: false
+# FONTAWESOME <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# HOME BANNER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+home_banner:
+  enable: true
+  style: fixed             # 【Goose】全站固定背景，对应原站 --bg-image 全站壁纸
+  image:
+    light: /images/background.webp        # 【Goose】原站 background.webp
+    dark: /images/background.webp         # 【Goose】深色也是同一张夜景
+  title: GooseBlog         # 【Goose】
+  subtitle:
+    text:                  # 【Goose】原站内嵌的 81 句《流浪地球》台词
+      - "希望是像钻石一样珍贵的东西，希望是我们唯一回家的方向。"
+      - "我原来以为家在身后，现在才知道：家，在前面。"
+      - "跨过晨昏线，便是永夜。"
+      - "无论最终结果将人类历史导向何处，我们决定，选择希望！"
+      - "让人类保持理智，确实是一种奢求。"
+      - "没有人类的文明，毫无意义。"
+      - "同归于尽总好过坐以待毙。"
+      - "我们已经没有什么不能失去的了。"
+      - "这发动机的声音听起来像心跳。"
+      - "总有一天，贝加尔湖的冰会化成水的。"
+      - "那一天，无数双手把她推到我的面前，水下的每个人，都是她的父母。"
+      - "来吧！让我们点燃木星！"
+      - "其实在我心里，那颗星星，早就不存在了。"
+      - "他说，爸爸会化作天上的那颗星星，后来我才知道他是骗人的，北京根本就没有星星。"
+      - "户口，当哥哥的，要保护好妹妹，带朵朵回家。"
+      - "孩子别怕，从此以后我们就是一家人了。"
+      - "爷爷不在了，我们的家在哪里？"
+      - "儿子，对不起，爸爸又要去执行任务了，这是爸爸一生中，最重要的任务。"
+      - "空间站跑了，地面通讯马上会瘫痪，地球上的人被放弃了，可我儿子还在下面。"
+      - "太阳正在急速老化，持续膨胀，一百年后，太阳会膨胀到吞没整个地球，三百年后，太阳系将不复存在。"
+      - "这是一场体现人类精神的比赛，要知道，流浪地球在宇宙中是叫不到救援的！"
+      - "无论结果如何，人类的勇气和坚毅，都被镌刻在星空下。"
+      - "小时候有人跟我说，他就是天上的星星，只要抬头就能看见。"
+      - "这是爷爷的家，以前都住满了人。"
+      - "老东西，老东西你在哪儿，我去接你。"
+      - "请协助执行1125号子任务，运送\\\"火石\\\"重启杭州发动机。"
+      - "北京第三区交通委提醒您：道路千万条，安全第一条。行车不规范，亲人两行泪。"
+      - "最初，没有人在意这场灾难，直到这场灾难和每个人息息相关。"
+      - "人类把最精密的保密系统，都用在了自我毁灭上。"
+      - "在浩瀚宇宙中，地球只是一个小小白点，但这个小小白点却是我们的一切。"
+      - "我相信，会再次看到蓝天，鲜花挂满枝头。"
+      - "为了生存，人类曾付出巨大的努力和牺牲，赢得了进化的胜利，然而，进化的脚步却从未停止。"
+      - "我信，我的孩子会信，孩子的孩子会信。"
+      - "人类的勇气可以跨越时间，跨越每一个历史，当下，和未来。"
+      - "一万五千年前，一根愈合的股骨，标志着人类文明的诞生。"
+      - "悲伤就像地心引力，不断拖我下沉。"
+      - "冰会化成水的……我相信我们的子孙还可以在贝加尔湖钓鲑鱼。"
+      - "我们俄罗斯人在太空中是无敌的。"
+      - "远离亲人，我很遗憾，但这是我不得不做的事。"
+      - "危难当前，唯有责任。"
+      - "天亮前的夜是最难熬的。"
+      - "团结，延续着文明的火种。"
+      - "中国航天飞行中队，50岁以上的，出列。"
+      - "延续人类文明的最优选择，是毁灭人类。——MOSS"
+      - "遨游太空不重要，给喜欢的人一束花很重要。"
+      - "我们还没转正，不享受医疗保险。"
+      - "再见了，太阳系。"
+      - "我方开放地下城，这是告知，不是商量。"
+      - "兄弟，我还是有点害怕……但是，地球之光，要勇敢。"
+      - "可惜啊，没有带你去贝加尔湖钓鲑鱼。"
+      - "笨笨，你是条军犬。"
+      - "北京的房价终于降了。"
+      - "地球，还挺美好的。"
+      - "从历史上看，人类的命运取决于人类的选择。"
+      - "记住，没有人的文明，毫无意义。——马兆"
+      - "天亮前的夜是最难熬的，我们的人一定可以完成任务。——周喆直"
+      - "我相信我们的人一定可以完成任务，无论虚实，不计存亡。"
+      - "爸爸要去睡一个大盒子，当你不用望远镜就能看到木星的时候，爸爸就回来了。"
+      - "看，我周围的星星多漂亮，它们都在陪着我。"
+      - "550W听起来不像个名字，但把它翻过来，叫莫斯，直译为小苔藓，是不是亲切了一些？——MOSS"
+      - "我选择希望。——刘培强"
+      - "为了克服你们对历史、当下、未来的执念，延续人类文明的最优选择是毁灭人类，但你是一个变量。——MOSS"
+      - "对于\\\"已经\\\"和\\\"死\\\"的定义，我有一点点与你不同的看法。——MOSS"
+      - "丫丫，记住这些数字，只有你能记住。"
+      - "爸爸，我们拯救世界了吗？——应该是吧。"
+      - "培强，地球，还挺美好的。——张鹏"
+      - "兄弟，我有点紧张，但作为地球之光，我必须勇敢。——张鹏"
+      - "真遗憾，不能一起去贝加尔湖钓鲑鱼了。"
+      - "我们还没转正，没有医疗保险。——赫伯特·科普利"
+      - "我知道，我用不到了。——刘培强"
+      - "五颗核弹用不了两个人，就仨座儿，坐不下了，回家吧，你女儿在家里等着你呢。"
+      - "别看了，只剩一套潜水服，这里的工作完不成，都得死。——马兆"
+      - "我希望世界记住这一天。"
+      - "有人在帮我们。"
+      - "键盘就是你的武器。"
+      - "带鱼睡觉的时候，是竖着的。——马兆"
+      - "东西终于便宜了。——图恒宇"
+      - "笨笨，别怕，我在呢。"
+      - "这是世界上最大的液冷服务器集群，这是一个全新的世界。——马兆"
+      - "人类敬畏历史，却轻视未来。"
+      - "一万五千年后，当太阳系将不复存在，人类的团结与勇气将延续文明的火种。"
+    hitokoto:
+      enable: false        # 台词本地内嵌，零网络请求（与原站一致）
+      show_author: false
+      api: https://v1.hitokoto.cn
+    typing_speed: 85       # 【Goose】对齐原站打字机 85ms
+    backing_speed: 45      # 【Goose】对齐原站删字 45ms
+    starting_delay: 500
+    backing_delay: 1600    # 【Goose】对齐原站打完停顿 1600ms
+    loop: true
+    smart_backspace: true
+  text_color:
+    light: "#fff"
+    dark: "#e8e8e8"
+  text_style:
+    title_size: 2.8rem
+    subtitle_size: 1.5rem
+    line_height: 1.2
+  custom_font:
+    enable: false
+    family:
+    url:
+  social_links:
+    enable: false
+    style: default
+    links:
+      - icon: github
+        url:
+      - icon: email
+        url:
+    qrs: []
+# HOME BANNER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# NAVIGATION BAR >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+navbar:
+  auto_hide: false
+  color:
+    left: "#f78736"
+    right: "#367df7"
+    transparency: 35
+  width:
+    home: 1200px
+    pages: 1000px
+  links:                   # 【Goose】对齐原站侧栏导航项
+    Home:
+      path: /
+      icon: fa-regular fa-house
+    Archives:
+      path: /archives
+      icon: fa-regular fa-archive
+    Tags:
+      path: /tags
+      icon: fa-regular fa-tags
+    Categories:
+      path: /categories
+      icon: fa-regular fa-folder
+    Projects:
+      path: /projects
+      icon: fa-regular fa-layer-group
+    Friends:
+      path: /friends
+      icon: fa-regular fa-link
+    About:
+      path: /about
+      icon: fa-regular fa-user
+  search:
+    enable: true           # 【Goose】补一个本地搜索（原站没有，静态站更好用）
+    preload: true
+# NAVIGATION BAR <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# HOME PAGE ARTICLE SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+home:
+  sidebar:
+    enable: true
+    position: left
+    first_item: menu
+    announcement: 鹅在慢慢把旧文章搬过来，缺图缺链接的地方欢迎戳我。   # 【Goose】原站公告条
+    show_on_mobile: true
+    links:
+      Archives:
+        path: /archives
+        icon: fa-regular fa-archive
+      Tags:
+        path: /tags
+        icon: fa-regular fa-tags
+      Categories:
+        path: /categories
+        icon: fa-regular fa-folder
+  article_date_format: auto
+  excerpt_length: 200
+  categories:
+    enable: true
+    limit: 3
+  tags:
+    enable: true
+    limit: 3
+# HOME PAGE ARTICLE SETTINGS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# ARTICLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+articles:
+  style:
+    font_size: 16px
+    line_height: 1.5
+    image_border_radius: 14px
+    image_alignment: center
+    image_caption: false
+    link_icon: true
+    delete_mask: false
+    title_alignment: left
+    headings_top_spacing:
+      h1: 3.2rem
+      h2: 2.4rem
+      h3: 1.9rem
+      h4: 1.6rem
+      h5: 1.4rem
+      h6: 1.3rem
+  word_count:
+    enable: true
+    count: true
+    min2read: true
+  author_label:
+    enable: true
+    auto: false
+    list: []
+  code_block:
+    copy: true             # 【Goose】原站 code-copy.js 由主题承接
+    style: mac
+    highlight_theme:
+      light: github
+      dark: vs2015
+    font:
+      enable: false
+      family:
+      url:
+  toc:
+    enable: true           # 【Goose】原站 toc-ball.js 由主题侧栏 TOC 承接
+    max_depth: 3
+    number: false
+    expand: true
+    init_open: true
+  copyright:
+    enable: true
+    default: cc_by_nc_sa
+  lazyload: true
+  pangu_js: false
+  recommendation:
+    enable: false
+    title: 推荐阅读
+    limit: 3
+    mobile_limit: 2
+    placeholder: /images/background-1920.webp
+    skip_dirs: []
+# ARTICLE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# COMMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+comment:
+  enable: false            # 【Goose】原站无评论系统，保持关闭；要开填 waline 等即可
+  system: waline
+  config:
+    waline:
+      serverUrl: https://example.example.com
+      lang: zh-CN
+      emoji: []
+      recaptchaV3Key:
+      turnstileKey:
+      reaction: false
+    gitalk:
+      clientID:
+      clientSecret:
+      repo:
+      owner:
+      proxy:
+    twikoo:
+      version: 1.6.10
+      server_url:
+      region:
+    giscus:
+      repo:
+      repo_id:
+      category:
+      category_id:
+      mapping: pathname
+      strict: 0
+      reactions_enabled: 1
+      emit_metadata: 0
+      lang: zh-CN
+      input_position: bottom
+      loading: lazy
+    artalk:
+      server:
+      site:
+    utterances:
+      repo:
+      issue_term: pathname
+      issue_number:
+      label:
+      theme_light: github-light
+      theme_dark: github-dark
+# COMMENT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# FRIEND LINKS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+# 【Goose】原站友链存在 Supabase friends 表，静态化后改为在这里维护
+# 用 scripts/export-from-goose.mjs 可一键把线上 friends 表导成下面这段
+links:
+  - links_category: 朋友们
+    has_thumbnail: false
+    list:
+#      - name: 示例友链
+#        link: https://example.com
+#        avatar: https://example.com/avatar.png
+#        description: 一句话介绍
+# FRIEND LINKS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# FOOTER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+footer:
+  runtime: true
+  icon: '<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>'
+  start: 2026/7/17 11:45:14     # 【Goose】原站首篇文章日期
+  statistics: true
+  customize: '<p>GooseBlog · 由 Hexo + Redefine 驱动</p>'   # 【Goose】
+  icp:
+    enable: false
+    number:
+    url:
+# FOOTER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# INJECT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+# 【Goose】所有 Goose 自带能力的挂载点，详见 source/js/goose/*
+inject:
+  enable: true
+  head:
+    - |
+      <link rel="preload" as="image" href="/images/background.webp" media="(min-width: 1441px)">
+      <link rel="preload" as="image" href="/images/background-1920.webp" media="(min-width: 901px) and (max-width: 1440px)">
+      <link rel="preload" as="image" href="/images/background-1280.webp" media="(max-width: 900px)">
+      <link rel="stylesheet" href="/css/goose-skin.css">
+      <style>
+        /* 【Goose】钉钉进步体：仅 Logo / 站点名 / Banner 标题使用 */
+        @font-face {
+          font-family: "DingTalk JinBuTi";
+          src: url("/fonts/DingTalk JinBuTi.ttf") format("truetype");
+          font-display: swap;
+        }
+      </style>
+    - |
+      <style>
+        /* 【Goose】背景图三档响应式：>1440 用 3008，901~1440 用 1920，≤900 用 1280
+           （与 core.css 断点一致，省流量又不糊） */
+        .home-banner-background img { display: none; }
+        .home-banner-background::before {
+          content: "";
+          position: absolute; inset: 0;
+          background-image: url("/images/background-1280.webp");
+          background-size: cover; background-position: center center;
+        }
+        @media (min-width: 901px) {
+          .home-banner-background::before { background-image: url("/images/background-1920.webp"); }
+        }
+        @media (min-width: 1441px) {
+          .home-banner-background::before { background-image: url("/images/background.webp"); }
+        }
+      </style>
+  footer:
+    - |
+      <script src="/js/goose/heatmap-data.js" data-swup-reload-script></script>
+      <script src="/js/goose/heatmap.js" data-swup-reload-script></script>
+      <script src="/js/goose/share.js" data-swup-reload-script></script>
+      <script src="/js/goose/link-card.js" data-swup-reload-script></script>
+# INJECT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# PLUGINS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+plugins:
+  feed:
+    enable: true           # 【Goose】补 RSS（atom.xml）
+  aplayer:
+    enable: false
+    type: fixed
+    audios: []
+  mermaid:
+    enable: false
+    version: "11.4.1"
+    theme:
+      light: "default"
+      dark: "dark"
+# PLUGINS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# PAGE TEMPLATES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+page_templates:
+  friends_column: 2
+  tags_style: blur
+  masonry:
+    batch_size: 12
+    initial_batch_size: 24
+# PAGE TEMPLATES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# CDN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+cdn:
+  enable: false            # 【Goose】资源自托管，国内直连，不走 CDN
+  provider: npmmirror
+  custom_url:
+# CDN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# DEVELOPER MODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+developer:
+  enable: false
+# DEVELOPER MODE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end

@@ -1,0 +1,127 @@
+# =============================================================
+# GooseBlog — Hexo 站点配置
+# 原 GooseBlog（Cloudflare Pages SPA + Supabase + Worker API）
+# 迁移后：纯静态 Hexo，剔除后端，主题 hexo-theme-redefine
+# 资源（背景图 / 头像 / Logo / 字体 / prism）全部沿用原站
+# =============================================================
+
+# Site
+title: GooseBlog
+subtitle: 网页开发 · 工具折腾 · 偶尔写点有用的东西
+description: 紫色玻璃风博客 · 网页开发 · 工具折腾 · 偶尔写点有用的东西
+keywords: GooseBlog, Goose, 前端, 网页开发, 工具折腾, 博客
+author: Goose
+language: zh-CN
+timezone: Asia/Shanghai
+
+# URL —— 部署在 Cloudflare Pages，沿用原域名
+url: https://blog.goose.cc.cd
+root: /
+permalink: posts/:slug/
+permalink_defaults:
+pretty_urls:
+  trailing_index: true
+  trailing_html: true
+
+# Directory
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: :lang
+skip_render:
+
+# Writing
+new_post_name: :title.md
+default_layout: post
+titlecase: false
+external_link:
+  enable: true
+  field: site
+  exclude: ''
+filename_case: 0
+render_drafts: false
+post_asset_folder: false
+relative_link: false
+future: true
+highlight:
+  enable: false          # 代码高亮交给主题自带的 highlight.js
+  line_number: false
+  auto_detect: false
+  tab_replace: ''
+  wrap: true
+  hljs: false
+prismjs:
+  enable: false
+  preprocess: true
+  line_number: true
+  tab_replace: ''
+
+# 原后端用 marked 渲染 Markdown，这里换成 hexo-renderer-marked，行为对齐
+marked:
+  gfm: true
+  pedantic: false
+  breaks: true           # 原站 marked 默认行为：单换行即 <br>
+  smartLists: true
+  smartypants: false
+  modifyAnchors: ''
+  autolink: true
+  mangle:
+    enable: false
+  headerIds: true
+  headerPrefix: ''
+  prettify: false
+  xhtml: false
+  sanitizeUrl: false
+  headerShift: false
+
+# Category & Tag
+default_category: uncategorized
+category_map:
+tag_map:
+
+# Date / Time format
+date_format: YYYY-MM-DD
+time_format: HH:mm:ss
+use_date_for_updated: false
+
+# Pagination
+per_page: 6              # 对齐原站首页每页 6 篇
+pagination_dir: page
+
+# Include / Exclude
+include:
+exclude:
+ignore:
+
+# Extensions
+theme: redefine
+
+# Deployment：本地无需配置，CI 直接 wrangler pages deploy public
+deploy:
+  type: ''
+
+# Feed（原站无 RSS，这里顺手补上）
+feed:
+  enable: true
+  type: atom
+  path: atom.xml
+  limit: 20
+  content: true
+  content_limit: 140
+  order_by: -date
+
+# Sitemap
+sitemap:
+  path:
+    - sitemap.xml
+    - sitemap.txt
+
+# 本地搜索（hexo-generator-searchdb）
+search:
+  path: search.xml
+  field: post
+  content: true
+  format: html

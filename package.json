@@ -1,0 +1,27 @@
+{
+  "name": "gooseblog-hexo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GooseBlog — 从 Cloudflare Pages SPA + Supabase 迁移到 Hexo 静态站（主题：hexo-theme-redefine）",
+  "scripts": {
+    "build": "hexo generate",
+    "clean": "hexo clean",
+    "server": "hexo server",
+    "deploy": "hexo clean && hexo generate",
+    "export:goose": "node scripts/export-from-goose.mjs",
+    "export:projects": "node scripts/export-projects.mjs"
+  },
+  "hexo": {
+    "version": "8.1.2"
+  },
+  "dependencies": {
+    "hexo": "^8.1.2",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^7.0.0",
+    "hexo-renderer-stylus": "^3.0.0",
+    "hexo-generator-searchdb": "^1.4.1",
+    "hexo-wordcount": "^6.0.1",
+    "hexo-generator-feed": "^3.0.0",
+    "hexo-generator-sitemap": "^3.0.1"
+  }
+}
