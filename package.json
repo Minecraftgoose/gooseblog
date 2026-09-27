@@ -8,8 +8,6 @@
     "clean": "hexo clean",
     "generate": "hexo generate",
     "server": "hexo server",
-    "export:goose": "node tools/export-from-goose.mjs",
-    "export:projects": "node tools/export-projects.mjs",
     "import:csv": "node tools/import-from-csv.mjs"
   },
   "engines": {

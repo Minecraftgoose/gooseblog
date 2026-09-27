@@ -18,7 +18,7 @@ comment: false
           avatar: https://example.com/avatar.png
           description: 一句话介绍
 
-  也可以直接跑 `npm run export:goose` 把旧站 Supabase friends 表导出来。
+  友链已导入完毕（5 条）。要重新拉，可用 `npm run import:csv -- --dir=<CSV目录>`。
 -->
 
 想加友链的，直接发 issue 或者在关于页里找联系方式戳我。

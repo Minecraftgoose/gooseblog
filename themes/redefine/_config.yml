@@ -446,6 +446,12 @@ inject:
       <link rel="preload" as="image" href="/images/background-1920.webp" media="(min-width: 901px) and (max-width: 1440px)">
       <link rel="preload" as="image" href="/images/background-1280.webp" media="(max-width: 900px)">
       <link rel="stylesheet" href="/css/goose-skin.css">
+      <script>
+        /* 【Goose】链接预览代理地址（Cloudflare Worker，见 worker/link-preview/）。
+           抓不到图时卡片会自动降级成「域名 + favicon + 标题」，不会报错。
+           Worker 换域名 / 改用 workers.dev 时只改这一行。 */
+        window.__GOOSE_LINK_PREVIEW__ = "https://blog.goose.cc.cd/api/link-preview";
+      </script>
     - |
       <style>
         /* 【Goose】背景图三档响应式：>1440 用 3008，901~1440 用 1920，≤900 用 1280

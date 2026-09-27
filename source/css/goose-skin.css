@@ -354,10 +354,33 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* 缩略图：由 worker/link-preview 抓到的 og:image，加载成功才显示 */
+.goose-link-card-thumb {
+  flex-shrink: 0;
+  width: 120px;
+  overflow: hidden;
+  background: var(--third-background-color);
+}
+.goose-link-card-thumb[hidden] {
+  display: none;
+}
+.goose-link-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 @media (max-width: 480px) {
   .goose-link-card {
     flex-direction: column;
     font-size: 12px;
+  }
+  .goose-link-card.has-thumb .goose-link-card-thumb {
+    width: 100%;
+    height: 160px;
+    order: -1;   /* 窄屏时图放上面，文字在下更好读 */
   }
 }
 
@@ -384,4 +407,84 @@
 #giscus-container iframe.giscus-frame {
   width: 100%;
   border: none;
+}
+
+/* ---------- 8. 项目页卡片（tools/export-projects.mjs 生成的结构） ----------
+   项目数据来自旧站 Supabase gc_projects 表，导出后落在 source/projects/index.md
+   里，结构与原站项目页一致：分「Goose 系列 / 其他项目」两组卡片。 */
+.goose-projects h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 28px 0 16px;
+  color: var(--first-text-color);
+}
+.goose-projects h2 i {
+  margin-right: 6px;
+  color: var(--primary-color);
+}
+
+.goose-project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.goose-project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--second-background-color);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.goose-project-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-color);
+  box-shadow: var(--redefine-box-shadow-flat);
+}
+
+.goose-project-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--first-text-color);
+}
+.goose-project-name i {
+  margin-right: 6px;
+  color: var(--primary-color);
+}
+
+.goose-project-desc {
+  flex: 1;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--third-text-color);
+}
+
+.goose-project-link a {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+.goose-project-link a:hover {
+  text-decoration: underline;
+}
+.goose-project-link i {
+  margin-left: 4px;
+  font-size: 0.75rem;
+}
+
+.goose-project-empty {
+  grid-column: 1 / -1;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--third-text-color);
+}
+
+@media (max-width: 640px) {
+  .goose-project-grid {
+    grid-template-columns: 1fr;
+  }
 }

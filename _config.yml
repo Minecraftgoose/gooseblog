@@ -46,13 +46,19 @@ render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
+# 代码高亮：Redefine 用的是 Hexo 内置 highlight（构建期生成 hljs 类名），
+# 主题的 hljs-themes CSS 只负责给这些类上色。
+# ⚠️ 这里必须 enable: true —— 关掉的话代码块不会生成 .hljs-* 类，
+#    主题 CSS 再全也没东西可上色，页面上的代码就是纯白一片。
+# hljs: true = 输出 highlight.js 的类名（Redefine 的 CSS 认这套，
+#              prism 那套 token 类名不兼容，所以 prismjs 保持关闭）。
 highlight:
-  enable: false          # 代码高亮交给主题自带的 highlight.js
+  enable: true
   line_number: false
-  auto_detect: false
-  tab_replace: ''
+  auto_detect: true      # 78 个没标语言的 ``` 裸块也尽量给高亮
+  tab_replace: '  '
   wrap: true
-  hljs: false
+  hljs: true
 prismjs:
   enable: false
   preprocess: true

@@ -8,7 +8,7 @@
 | 生成 | 运行时 `fetch('/api/posts')` | `hexo generate` 构建期 |
 | 数据 | Supabase `posts` 表 | `source/_posts/*.md` |
 | 主题 | 自写紫色玻璃风 SPA | hexo-theme-redefine 2.9.0 |
-| 后端 | Worker + Pages Functions | 无 |
+| 后端 | Worker + Pages Functions 查库 | 仅一个抓 og:图的代理 Worker（不连库） |
 | 部署 | `wrangler pages deploy blog/` | `hexo g` → `wrangler pages deploy public` |
 | 域名 | blog.goose.cc.cd | 不变 |
 
@@ -18,7 +18,7 @@
 
 - `background.webp` / `background-1920.webp` / `background-1280.webp` —— 三档响应式壁纸
 - `avatar.webp`（导航栏 Logo + 侧栏头像）、`avatar-256.webp`（favicon）、`og-default.jpg`
-- `vendor/prism/` —— 主题与全部 18 个语言包（代码高亮资产不丢）
+- `vendor/prism/` —— 原站 prism 与 18 个语言包（**保留但未启用**：Redefine 用 highlight.js 的类名，与 prism 的 token 类名不兼容，所以实际高亮由 Hexo 内置 highlight 负责）
 
 **功能**
 
@@ -30,7 +30,7 @@
 | 侧栏《流浪地球》台词打字机 | 81 句台词写进主题配置 `home_banner.subtitle.text`，零网络请求 |
 | 公告横幅 | 主题配置 `home.sidebar.announcement` |
 | 归档 / 标签 / 友链 / 项目 / 关于 | Hexo 原生归档标签 + `source/friends`、`source/projects`、`source/about` |
-| 代码高亮、复制按钮、TOC、字数统计 | 主题自带（原 `code-copy.js` / `toc-ball.js` 由主题承接） |
+| 代码高亮、复制按钮、TOC、字数统计 | 主题自带（Hexo 内置 highlight.js，原 `code-copy.js` / `toc-ball.js` 由主题承接） |
 | OG / Twitter 卡片 | 主题 `open_graph`，默认图 = `og-default.jpg` |
 | 阅读进度条、站内搜索 | 主题自带（原站没有搜索，静态站补上了） |
 | **评论（新增）** | giscus → GitHub Discussions，配置见下文 |
@@ -47,10 +47,10 @@
 ├── scripts/                    ⚠️ Hexo 会把这里的文件当插件加载，只能放 .js
 │   ├── generate-heatmap.js     构建期生成热力图数据
 │   └── extra-assets.js         把 source/_headers 带进 public/（hexo 默认忽略 _ 开头）
-├── tools/                      独立 CLI 脚本，不参与 hexo 构建
-│   ├── import-from-csv.mjs     从自备 CSV 恢复文章/友链/关于页/公告（含分类映射）
-│   ├── export-from-goose.mjs   从旧站 Supabase 导出文章/友链/关于页
-│   └── export-projects.mjs     从旧站导出项目页
+├── tools/
+│   └── import-from-csv.mjs     从自备 CSV 恢复文章/友链/关于页/公告（含分类映射）
+├── worker/
+│   └── link-preview/           ★ 全站唯一保留的 Worker：抓外链 og:图（不连数据库）
 ├── source/
 │   ├── _posts/                 ★ 15 篇旧文章（Markdown，只有 drive 是 HTML）
 │   ├── _headers                Cloudflare Pages 缓存头
@@ -73,19 +73,15 @@ npm run build        # 产物在 public/
 
 ## 内容迁移
 
-旧站数据已经导入完毕：**15 篇文章 + 5 条友链 + 关于页 + 公告**。
+**已完成**：15 篇文章 + 5 条友链 + 关于页 + 公告。
+**全部完成**：15 篇文章 + 5 条友链 + 关于页 + 公告 + 项目页（手写）。
 
-两种方式，任选：
+和 Supabase 已彻底脱钩 —— 不再需要 `SUPABASE_URL` / `SUPABASE_KEY`，也没有任何脚本会去连它。
+数据以后就是仓库里的 Markdown，改完 `git push` 即可。
 
 ```bash
-# 方式一：从导出的 CSV 恢复（CSV 不入库，按需自备）
+# 备查：如果哪天还要从导出的 CSV 重新恢复一遍
 npm run import:csv -- --dir=/path/to/csv
-
-# 方式二：直接从线上 Supabase 拉
-export SUPABASE_URL=https://xxxx.supabase.co
-export SUPABASE_KEY=<service_role key>      # 用 service_role 才能绕过 RLS 读到草稿
-npm run export:goose                        # posts → source/_posts，friends → source/_data/links.yml
-npm run export:projects                     # gc_projects → source/projects/index.md
 ```
 
 导入要点：
@@ -131,9 +127,24 @@ tag 记品牌与类型（GooseHost / 文档 / 教程…），分类记内容域�
 | `layout/pages/home/home-sidebar.ejs` | 侧栏链接文字优先取 `theme.home.sidebar.links[*].text` |
 | `layout/components/sidebar/statistics.ejs` | 侧栏计数标签取 `theme.home.sidebar.statistics_labels` |
 
+## 链接预览 Worker
+
+`worker/link-preview/` 是全站唯一保留的 Worker。原站这套能力挂在 `gooseblog-api` 里，和数据库耦合；现在拆成独立 Worker：
+
+- **做什么**：`GET /api/link-preview?url=...` → 抓目标页的 `og:image` / `og:title` / `og:description`
+- **不做什么**：不连数据库、不读任何环境变量、不需要 Secret
+- **缓存**：Cloudflare Cache API，24 小时
+- **路由**：`blog.goose.cc.cd/api/link-preview*`（只接管这一个路径，其余仍走 Pages）
+- **部署**：推 `main` / `production` 时 CI 自动 `wrangler deploy`；也可本地 `npx wrangler deploy --config worker/link-preview/wrangler.toml`
+
+前端 `source/js/goose/link-card.js` 先把卡片渲染出来，再去异步补图，并发上限 4、超时 8 秒。代理挂了也不影响页面。
+
+换域名（比如改用 `*.workers.dev`）时，改 `themes/redefine/_config.yml` 里 `inject.head` 的 `window.__GOOSE_LINK_PREVIEW__` 一行即可。
+
 ## 已知取舍
 
 - **评论**：原站本来就没有评论功能。这次新增 giscus，评论存进 `Minecraftgoose/gooseblog` 的 GitHub Discussions，零后端、免费、支持 Reactions。**已启用**（`comment.enable: true`），分类 = Announcements（只有仓库维护者和 giscus bot 能开帖，防垃圾）。
-- **链接卡片**：原站靠 `/api/link-preview` 实时抓标题和缩略图，静态站没有后端，降级为「域名 + favicon + 链接文字」。想要原效果可在 Markdown 里直接贴卡片 HTML。
+- **链接卡片**：保留原效果，靠 `worker/link-preview` 这个纯代理抓 og:图（浏览器直接 fetch 外站会被 CORS 拦死，所以必须有中转）。它不连数据库、不需要任何 Secret。抓不到时卡片自动降级成「域名 + favicon + 标题」，不会开天窗。
+- **代码高亮**：用 Hexo 内置 highlight.js（构建期生成 `.hljs-*` 类），主题自带 github / vs2015 深浅色主题。`_config.yml` 里 `highlight.enable` 必须为 `true`，否则一块色都没有。注意 highlight.js 对 shell 的 token 类型偏少（只有注释、内置命令如 `cd`、字符串会着色），普通命令名不上色，这是 hljs 的固有行为。
 - **写文章**：原来的 `/admin` 后台（Supabase 写库）随后端一起删除，改为本地写 Markdown 后 `git push`。
 - **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉与字体全走 Redefine 原味（Chillax / Geist），只有壁纸、头像、OG 图还是 Goose 的。

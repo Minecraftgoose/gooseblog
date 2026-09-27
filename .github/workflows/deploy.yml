@@ -16,11 +16,15 @@ permissions:
   contents: read
 
 # ┌───────────────────────────────────────────────────────────────┐
-# │ 本流水线已剔除后端：不再部署 gooseblog-api Worker，             │
-# │ 也不需要 SUPABASE_* / ADMIN_PASSWORD 这些 Secret。             │
+# │ 数据库后端已剔除（Supabase / /admin 后台全没了），也不需要      │
+# │ SUPABASE_* / ADMIN_PASSWORD 这些 Secret。                      │
 # │ 只需 2 个 Secret：                                             │
 # │   CLOUDFLARE_API_TOKEN   Cloudflare API Token（Pages 写权限）  │
 # │   CLOUDFLARE_ACCOUNT_ID  Cloudflare Account ID                │
+# │                                                               │
+# │ 两个 job：                                                     │
+# │   1. build       → hexo generate → Pages                       │
+# │   2. deploy-worker → 链接预览代理（抓 og:图，不连数据库）       │
 # └───────────────────────────────────────────────────────────────┘
 
 env:
@@ -77,10 +81,6 @@ jobs:
 
       - name: Build Hexo site
         run: npm run build
-        env:
-          # 导出旧文章用（可选）：配了才会跑，不配也不影响构建
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
       - name: Verify build output
         run: |
@@ -128,10 +128,41 @@ jobs:
             echo "- Commit: \`${GITHUB_SHA::7}\`"
             echo "- Pages 项目: \`gooseblog\`"
             echo "- 构建: \`hexo generate\` → \`public/\`"
-            echo "- 后端: 无（已剔除 Worker API）"
+            echo "- 后端: 无数据库（Supabase 已剔除）"
             if [ "${{ steps.target.outputs.is_production }}" = "true" ]; then
               echo "- 环境: **生产**（自定义域名已更新）"
             else
               echo "- 环境: ⚠️ **Preview**（生产分支为 \`${PRODUCTION_BRANCH}\`）"
             fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy-worker:
+    name: Deploy link-preview Worker
+    runs-on: ubuntu-latest
+    # 只在生产分支推送时更新线上的代理；其他分支不动，避免预览环境互相打架
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Deploy to Cloudflare Workers
+        run: |
+          npx --yes wrangler@$WRANGLER_VERSION deploy \
+            --config worker/link-preview/wrangler.toml
+        working-directory: ${{ github.workspace }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Summary
+        run: |
+          {
+            echo "### 链接预览 Worker 部署完成 ✅"
+            echo ""
+            echo "- Worker: \`gooseblog-link-preview\`"
+            echo "- 路由: \`blog.goose.cc.cd/api/link-preview*\`"
+            echo "- 作用: 抓外链 og:图，渲染文章里的链接卡片"
+            echo "- 依赖: 无（不连数据库、不需要任何 Secret 之外的配置）"
           } >> "$GITHUB_STEP_SUMMARY"
