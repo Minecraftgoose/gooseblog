@@ -1,3 +1,10 @@
+<% /*
+   【Goose 定制】原模板用 `||` 做默认值兜底，配置里显式写 0 时会被 JS 判为
+   falsy 而翻转成 1（emit_metadata: 0 → 实际输出 data-emit-metadata="1"）。
+   已全部改成 `??`：只有 undefined / null 才走默认值，0 保持 0。
+   data-theme 固定 preferred_color_scheme，跟随站点深浅色。
+*/
+%>
 <% if (
         theme.comment.system==='giscus' &&
         theme.comment.config.giscus.repo &&
@@ -11,13 +18,22 @@
             const mapping = "<%= theme.comment.config.giscus.mapping || 'pathname' %>";
             const lang = "<%= theme.comment.config.giscus.lang || 'en' %>";
             const inputPosition = "<%= theme.comment.config.giscus.input_position || 'bottom' %>";
-            const reactionsEnabled = "<%= theme.comment.config.giscus.reactions_enabled || '1' %>" === "1";
-            const emitMetadata = "<%= theme.comment.config.giscus.emit_metadata || '1' %>" === "1";
-            const strict = "<%= theme.comment.config.giscus.strict || '0' %>" === "1";
+            const reactionsEnabled = "<%= theme.comment.config.giscus.reactions_enabled ?? '1' %>" === "1";
+            const emitMetadata = "<%= theme.comment.config.giscus.emit_metadata ?? '0' %>" === "1";
+            const strict = "<%= theme.comment.config.giscus.strict ?? '0' %>" === "1";
             const loading = "<%= theme.comment.config.giscus.loading || 'lazy' %>";
 
+            // 【Goose 定制】必须和 giscus client.js 内部的算法逐字一致，否则
+            // sendUpdate() 发给 iframe 的 term 会和首次加载时算出的不一样，
+            // 导致查不到 discussion（Announcements 分类下还建不出新的）。
+            // 官方实现（client.js 的 switch default 分支）：
+            //   pathname.length < 2 ? "index" : pathname.substring(1).replace(/\.\w+$/, "")
+            // 即：去掉开头的斜杠，并剥掉末尾的扩展名。
             const getTerm = () => {
-                if (mapping === "pathname") return location.pathname;
+                if (mapping === "pathname") {
+                    const path = location.pathname;
+                    return path.length < 2 ? "index" : path.substring(1).replace(/\.\w+$/, "");
+                }
                 if (mapping === "url") return location.href;
                 if (mapping === "title") return document.title;
                 if (mapping === "og:title") {
@@ -78,9 +94,9 @@
                     "data-category": "<%= theme.comment.config.giscus.category %>",
                     "data-category-id": "<%= theme.comment.config.giscus.category_id %>",
                     "data-mapping": mapping,
-                    "data-strict": "<%= theme.comment.config.giscus.strict || '0' %>",
-                    "data-reactions-enabled": "<%= theme.comment.config.giscus.reactions_enabled || '1' %>",
-                    "data-emit-metadata": "<%= theme.comment.config.giscus.emit_metadata || '1' %>",
+                    "data-strict": "<%= theme.comment.config.giscus.strict ?? '0' %>",
+                    "data-reactions-enabled": "<%= theme.comment.config.giscus.reactions_enabled ?? '1' %>",
+                    "data-emit-metadata": "<%= theme.comment.config.giscus.emit_metadata ?? '0' %>",
                     "data-theme": "preferred_color_scheme",
                     "data-lang": lang,
                     "data-input-position": inputPosition,

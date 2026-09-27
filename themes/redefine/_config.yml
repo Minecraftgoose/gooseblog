@@ -330,9 +330,21 @@ articles:
 # ARTICLE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # COMMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+# 【Goose】原站本来就没有评论功能（post.js 里的 "// comment" 只是代码注释标记，
+# Worker API 也没有 comments 路由和表）。这里改用 giscus：评论存进
+# GitHub Discussions，零后端、无广告、免费，还能 Reactions 点赞。
+#
+# ✅ 已全部配置完成：giscus app 装在 Minecraftgoose/gooseblog，
+#    repo / repo_id / category / category_id 四件套齐全。
+#
+# ✅ 分类 = Announcements：只有仓库维护者和 giscus bot 能开新帖，访客只能回复，
+#    天然防垃圾评论（这是 giscus 官方推荐的做法）。
+#
+# ⚠️ 仓库必须 Public 且 Settings → Features → Discussions 已启用，否则访客
+#    看不到也发不了评论。
 comment:
-  enable: false            # 【Goose】原站无评论系统，保持关闭；要开填 waline 等即可
-  system: waline
+  enable: true
+  system: giscus
   config:
     waline:
       serverUrl: https://example.example.com
@@ -352,13 +364,13 @@ comment:
       server_url:
       region:
     giscus:
-      repo:
-      repo_id:
-      category:
-      category_id:
-      mapping: pathname
+      repo: Minecraftgoose/gooseblog
+      repo_id: R_kgDOUnTIVg
+      category: Announcements
+      category_id: DIC_kwDOUnTIVs4DGfPv
+      mapping: pathname        # 用文章路径定位评论，最稳
       strict: 0
-      reactions_enabled: 1
+      reactions_enabled: 1     # 开启点赞表情
       emit_metadata: 0
       lang: zh-CN
       input_position: bottom

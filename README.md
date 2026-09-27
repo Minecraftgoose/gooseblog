@@ -33,6 +33,7 @@
 | 代码高亮、复制按钮、TOC、字数统计 | 主题自带（原 `code-copy.js` / `toc-ball.js` 由主题承接） |
 | OG / Twitter 卡片 | 主题 `open_graph`，默认图 = `og-default.jpg` |
 | 阅读进度条、站内搜索 | 主题自带（原站没有搜索，静态站补上了） |
+| **评论（新增）** | giscus → GitHub Discussions，配置见下文 |
 
 ## 目录结构
 
@@ -96,7 +97,7 @@ npm run export:projects                     # gc_projects → source/projects/in
 
 ## 已知取舍
 
-- **评论**：原站就没接评论系统，主题配置里 `comment.enable: false`。要开填 waline / twikoo / giscus 任一即可。
+- **评论**：原站本来就没有评论功能。这次新增 giscus，评论存进 `Minecraftgoose/gooseblog` 的 GitHub Discussions，零后端、免费、支持 Reactions。**已启用**（`comment.enable: true`），分类 = Announcements（只有仓库维护者和 giscus bot 能开帖，防垃圾）。
 - **链接卡片**：原站靠 `/api/link-preview` 实时抓标题和缩略图，静态站没有后端，降级为「域名 + favicon + 链接文字」。想要原效果可在 Markdown 里直接贴卡片 HTML。
 - **写文章**：原来的 `/admin` 后台（Supabase 写库）随后端一起删除，改为本地写 Markdown 后 `git push`。
 - **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉与字体全走 Redefine 原味（Chillax / Geist），只有壁纸、头像、OG 图还是 Goose 的。

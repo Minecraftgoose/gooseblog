@@ -1,8 +1,9 @@
 /* ==========================================================================
    GooseBlog × Redefine —— Goose 遗留能力的皮肤
-   只做两件事：
+   做三件事：
      1. 承载 Goose 组件所需样式（热力图 / 分享悬浮球 / 海报 / Toast / 链接卡片）
-     2. 沿用 Redefine 的 CSS 变量，深浅色自动跟随，不引入紫色玻璃
+     2. 微调 giscus 评论区（宽度、加载中占位、iframe 圆角）
+     3. 沿用 Redefine 的 CSS 变量，深浅色自动跟随，不引入紫色玻璃
 
    字体一律用主题自带的（Chillax / Geist），不再引入钉钉进步体。
    ========================================================================== */
@@ -366,4 +367,21 @@
   width: 100%;
   border-radius: 10px;
   margin: 12px 0;
+}
+
+/* ---------- 7. giscus 评论区微调 ---------- */
+/* 只做容器层面的占位与对齐，iframe 内部的样式由 giscus 自己的 default.css 负责。
+   两点别碰：
+     - 不要给 iframe 设 opacity：client.js 自己会在 load 时清掉内联 opacity，
+       CSS 里再写死会让评论区永久隐形。
+     - 不要写 color-scheme：主题自带的 lightDarkSwitch.js 会在切换深浅色时
+       用 postMessage 把新 theme 推给 giscus，这里插手反而会打架。 */
+#giscus-container {
+  width: 100%;
+  min-height: 180px;   /* 懒加载未触发时占位，避免滚到底时页面跳动 */
+}
+
+#giscus-container iframe.giscus-frame {
+  width: 100%;
+  border: none;
 }
