@@ -12,6 +12,9 @@
  * 路由：GET /api/link-preview?url=https://example.com
  * 返回：{ title, description, image, domain }
  */
+const OK_TTL = 86400;   // 抓成功的 og 数据缓存 24h（外站 og 基本不变）
+const ERR_TTL = 60;     // 抓失败的只留 60s：挡住刷新风暴，又能很快自愈
+
 export default {
   async fetch(request, env, ctx) {
     // CORS 预检
@@ -46,11 +49,20 @@ export default {
       host === 'localhost' ||
       host === '127.0.0.1' ||
       host === '0.0.0.0' ||
+      host === '::1' ||
+      host === '[::1]' ||
       host.endsWith('.local') ||
       host.endsWith('.internal') ||
       /^10\./.test(host) ||
       /^192\.168\./.test(host) ||
-      /^172\.(1[6-9]|2\d|3[01])\./.test(host)
+      /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+      // 链路本地地址 169.254.0.0/16，云厂商的元数据服务就挂在这段上
+      // （AWS/Azure/GCP/阿里云都是 169.254.169.254）。Worker 跑在公网够不到，
+      // 但它是 SSRF 里最常被点名的一段，显式挡掉更省心。
+      /^169\.254\./.test(host) ||
+      // IPv6 唯一本地地址 fc00::/7 与链路本地 fe80::/10
+      /^\[?(?:fc|fd)[0-9a-f]{2}:/i.test(host) ||
+      /^\[?fe[89ab][0-9a-f]:/i.test(host)
     ) {
       return json({ error: 'forbidden host' }, 403, request);
     }
@@ -58,7 +70,7 @@ export default {
     const cache = caches.default;
     const cacheKey = new Request(request.url, { method: 'GET' });
 
-    // 先看缓存：外站 og 图基本不变，缓存 24h，省得每次都去抓一遍
+    // 先看缓存：外站 og 图基本不变，成功的结果缓存 24h，省得每次都去抓一遍
     const hit = await cache.match(cacheKey);
     if (hit) {
       const body = new Response(hit.body, hit);
@@ -75,9 +87,17 @@ export default {
     }
     result.domain = parsed.hostname.replace(/^www\./, '');
 
+    // 【Goose】失败的结果只短暂缓存（ERR_TTL），不能跟成功一样存 24h。
+    // 原来一律 86400：目标站偶尔 502 或超时一次，这条链接接下来一整天的卡片
+    // 都是空的，对方恢复了也不刷新 —— 等于把一个瞬时故障钉成了长期空白。
+    // 但也不能完全不缓存：一个死链在页面上被反复刷新就会反复去打对方，
+    // 所以折中留 60s，既能挡住刷新风暴，又能很快自愈。
+    const failed = Boolean(result.error);
+    const ttl = failed ? ERR_TTL : OK_TTL;
+
     const res = json(result, 200, request);
-    res.headers.set('Cache-Control', 'public, max-age=86400');
-    res.headers.set('X-Goose-Cache', 'MISS');
+    res.headers.set('Cache-Control', 'public, max-age=' + ttl);
+    res.headers.set('X-Goose-Cache', failed ? 'MISS-ERR' : 'MISS');
     ctx.waitUntil(cache.put(cacheKey, res.clone()));
     return res;
   }

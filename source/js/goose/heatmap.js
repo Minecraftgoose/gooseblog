@@ -14,7 +14,17 @@
   // 出厂主色是 #A31F34（深红），全站改紫后这里自动跟着变紫；
   // 以后再换主色（蓝 / 绿…）也不用动这个文件。
   var FALLBACK_RGB = [139, 92, 246];        // #8B5CF6 violet-500，读不到变量时兜底
-  var LEVEL_ALPHA = [0.10, 0.30, 0.50, 0.72, 1];
+
+  // 【Goose】LEVEL_ALPHA[0] 是「这天没发文」的底色，[1]~[4] 是有发文的四档。
+  // 原来四档是 0.30 / 0.50 / 0.72 / 1：深色卡片上 0.30 跟空格子几乎同色，
+  // 而全站 9 个发文日里有 6 天是「当天 1 篇」（max 被 2026-09-24 那天的 4 篇拉高，
+  // 1/4 = 0.25 正好落进最低档），结果 7 月发了 8 篇、图上看着却是空的。
+  // 现在：有发文一律从 0.55 起跳，保证「发了」和「没发」一眼能分开。
+  var LEVEL_ALPHA = [0.14, 0.55, 0.70, 0.85, 1];
+
+  // 空格子用中性灰、不跟随主色：主色是紫，淡紫底 + 淡紫格子 = 分不清哪天发了。
+  var EMPTY_RGB = [128, 128, 140];
+  var EMPTY_ALPHA = 0.16;
 
   /** 把 --primary-color 解析成 [r,g,b]，支持 #rgb / #rrggbb / rgb() / rgba() */
   function primaryRgb() {
@@ -51,21 +61,22 @@
   var _rgb = null;   // 主色只解析一次
   function getColor(count, max) {
     if (_rgb === null) _rgb = primaryRgb();
-    var a = LEVEL_ALPHA[0];
-    if (count) {
-      var ratio = count / max;
-      a = ratio <= 0.25 ? LEVEL_ALPHA[1]
-        : ratio <= 0.5 ? LEVEL_ALPHA[2]
-        : ratio <= 0.75 ? LEVEL_ALPHA[3]
-        : LEVEL_ALPHA[4];
-    }
-    return 'rgba(' + _rgb[0] + ', ' + _rgb[1] + ', ' + _rgb[2] + ', ' + a + ')';
+    // 没发文 → 中性灰底（不跟随主色，见 EMPTY_RGB 注释）
+    if (!count) return 'rgba(' + EMPTY_RGB.join(', ') + ', ' + EMPTY_ALPHA + ')';
+    var ratio = count / max;
+    var a = ratio <= 0.25 ? LEVEL_ALPHA[1]
+      : ratio <= 0.5 ? LEVEL_ALPHA[2]
+      : ratio <= 0.75 ? LEVEL_ALPHA[3]
+      : LEVEL_ALPHA[4];
+    return 'rgba(' + _rgb.join(', ') + ', ' + a + ')';
   }
 
   function render(container, data) {
     data = data || {};
     var vw = window.innerWidth || 1200;
-    var weeks = vw < 540 ? 18 : (vw < 900 ? 32 : 53);
+    // 原来窄屏只回溯 18 周（≈4 个月），月份轴只剩 Jun–Sep，看着不像「年度」热力图。
+    // 放宽到 26 / 40 / 53：窄屏也能看半年，放不下时由容器 overflow-x 横向滚动兜住。
+    var weeks = vw < 540 ? 26 : (vw < 900 ? 40 : 53);
 
     var counts = Object.keys(data).map(function (k) { return Number(data[k]); });
     var max = Math.max.apply(null, counts.concat([1]));
@@ -143,8 +154,13 @@
     wrap.id = 'goose-heatmap';
     wrap.innerHTML = '<div class="goose-heatmap-title">发文热力图</div><div id="goose-heatmap-svg"></div>';
 
-    // 插在文章列表之前（原站也是列表上方）
-    list.parentNode.insertBefore(wrap, list);
+    // 【Goose】必须插进 .home-content-container「里面」，不能插在它前面。
+    // 原因：侧栏在左时主题给 .home-content-container 加了 margin-right: 38px
+    // （见 themes/redefine/source/css/layout/home-content.styl）。插在容器外面
+    // 就绕过了这个 margin，热力图卡片会比下面的文章卡片宽 38px、右边凸出来一截。
+    // 插到 ul.home-article-list 之前 = 列表上方，且和文章卡片同宽。
+    var ul = list.querySelector('.home-article-list') || list.firstChild;
+    list.insertBefore(wrap, ul);
     try {
       render(document.getElementById('goose-heatmap-svg'), window.__GOOSE_HEATMAP__ || {});
     } catch (e) {

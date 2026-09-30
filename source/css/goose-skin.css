@@ -15,9 +15,14 @@
 .goose-heatmap-wrap {
   background: var(--second-background-color);
   border: 1px solid var(--border-color);
+  /* 圆角 18px 与文章卡片一致：主题的 redefine-container() mixin 里是
+     $redefine-border-radius-large = 18px（common/variables.styl），
+     .home-article-item 走的就是这个 mixin，所以别改它。 */
   border-radius: 18px;
   padding: 16px 20px;
-  margin: 0 0 20px;
+  /* 间距对齐文章卡片：.home-article-item 的 redefine-container(最后一项 38px)
+     给的是 margin-bottom: 38px，这里原来是 20px，两张卡片中间的缝比卡片之间窄。 */
+  margin: 0 0 38px;
   overflow-x: auto;
   box-shadow: var(--redefine-box-shadow-flat);
 }
