@@ -13,7 +13,7 @@
 # BASIC INFORMATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 info:
   title: GooseBlog              # 【Goose】
-  subtitle: 网页开发 · 工具折腾 · 偶尔写点有用的东西   # 【Goose】
+  subtitle: 鹅滴博客嘎嘎                              # 【Goose】
   author: Goose                 # 【Goose】
   url: https://blog.goose.cc.cd # 【Goose】
 # BASIC INFORMATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
@@ -73,7 +73,7 @@ global:
   open_graph:
     enable: true           # 【Goose】原站服务端注入 OG，这里由主题生成
     image: /images/og-default.jpg
-    description: 紫色玻璃风博客 · 网页开发 · 工具折腾 · 偶尔写点有用的东西
+    description: 鹅滴博客嘎嘎
   google_analytics:
     enable: false
     id:
@@ -266,7 +266,7 @@ home:
     enable: true
     position: left
     first_item: menu
-    announcement: '中文：十一快乐，国庆节快乐！愿祖国繁荣昌盛、国泰民安，祝你假期愉快、出行顺利、阖家团圆、身体健康、万事如意！ | 日本語：国慶節おめでとうございます！十月一日、おめでとうございます！祖国のますますの発展と繁栄、国の平和と国民の幸せを願っています。楽しい休暇を過ごし、旅の安全を祈り、家族との再会と幸せな時間、そして万事順調でありますように！ | English: Happy National Day! Happy October 1st! May our motherland prosper and thrive, may the nation enjoy peace and the people live in happiness. Wishing you a joyful holiday, safe travels, happy family reunions, good health, and all the best!'
+    announcement: '中文：十一快乐，国庆节快乐！愿祖国繁荣昌盛、国泰民安，祝你假期愉快、出行顺利、阖家团圆、身体健康、万事如意！ | English: Happy National Day! Happy October 1st! May our motherland prosper and thrive, may the nation enjoy peace and the people live in happiness. Wishing you a joyful holiday, safe travels, happy family reunions, good health, and all the best!'
     show_on_mobile: true
     # 侧栏三个计数（标签数 / 分类数 / 文章数）下面的小字，统一用英文跟导航对齐
     statistics_labels:
