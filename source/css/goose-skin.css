@@ -60,7 +60,8 @@
 /* 分享：按钮挂在主题自带的右下角工具栏里（#gooseShareTool），
    由主题 side-tools.styl 统一给尺寸/圆角/hover，这里只补两件事：
      1. 非文章页隐藏
-     2. 面板贴着按钮左侧弹出（坐标由 share.js 按按钮位置算，不写死） */
+     2. 面板贴着按钮左侧弹出（坐标由 share.js 按按钮位置算，不写死）
+实测不好使！！！！！！！！！！！！！！！！！！！！！！！！！！！！	 */
 .tool-goose-share.hidden,
 #gooseShareTool.hidden {
   display: none;

@@ -1,37 +1,22 @@
-# =====================================================================
-# hexo-theme-redefine 站点主题配置 —— GooseBlog 定制版
-#
-# 原则：
-#   1. 视觉用 Redefine 原味（不再要紫色玻璃风）
-#   2. 资源全部沿用 Goose 原站：背景图三档 / Logo / 头像 / 钉钉进步体 / prism
-#   3. 原 GooseBlog 的功能用「静态化」方式补齐：热力图、分享海报、
-#      链接卡片、流浪地球台词打字机、公告、友链、项目页
-#
-# 与默认值的差异处均带 【Goose】 标记，其余保持 Redefine 出厂设置
-# =====================================================================
-
-# BASIC INFORMATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 info:
-  title: GooseBlog              # 【Goose】
-  subtitle: 鹅滴博客嘎嘎                              # 【Goose】
-  author: Goose                 # 【Goose】
-  url: https://blog.goose.cc.cd # 【Goose】
+  title: GooseBlog             
+  subtitle: 鹅滴博客嘎嘎                             
+  author: Goose               
+  url: https://blog.goose.cc.cd
 # BASIC INFORMATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # IMAGE CONFIGURATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 defaults:
-  favicon: /images/avatar-256.webp   # 【Goose】原站 256 头像当站点图标
-  logo: /images/avatar.webp          # 【Goose】导航栏 Logo 用头像（512×512，正好填方形 logo 位）
-  avatar: /images/avatar.webp        # 【Goose】原站头像
+  favicon: /images/avatar-256.webp  
+  logo: /images/avatar.webp
+  avatar: /images/avatar.webp       
 # IMAGE CONFIGURATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # COLORS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 colors:
-  # 【Goose】出厂是 #A31F34（深红），按需求全站改紫。
-  # #8B5CF6 = violet-500，深浅两套主题下都够亮，hover / 链接 / 按钮 / 强调色全走它。
   primary: "#8B5CF6"
   secondary:
-  default_mode: dark        # 【Goose】原站默认深色
+  default_mode: dark      
 # COLORS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # SITE CUSTOMIZATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
@@ -55,7 +40,7 @@ global:
     shadow: true
     scale: false
   scroll_progress:
-    bar: true              # 【Goose】原站有阅读进度
+    bar: true             
     percentage: true
   website_counter:
     url: https://cn.vercount.one/js
@@ -63,15 +48,15 @@ global:
     site_pv: true
     site_uv: true
     post_pv: true
-  single_page: true        # 【Goose】swup 无刷新切页 ≈ 原站 SPA 体验
+  single_page: true      
   preloader:
-    enable: true           # 【Goose】对应原站开屏动画
+    enable: true        
     custom_message: GooseBlog
   side_tools:
     gear_rotation: true
     auto_expand: false
   open_graph:
-    enable: true           # 【Goose】原站服务端注入 OG，这里由主题生成
+    enable: true        
     image: /images/og-default.jpg
     description: 鹅滴博客嘎嘎
   google_analytics:
@@ -90,13 +75,13 @@ fontawesome:
 # HOME BANNER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 home_banner:
   enable: true
-  style: fixed             # 【Goose】全站固定背景，对应原站 --bg-image 全站壁纸
+  style: fixed           
   image:
-    light: /images/background.webp        # 【Goose】原站 background.webp
-    dark: /images/background.webp         # 【Goose】深色也是同一张夜景
-  title: GooseBlog         # 【Goose】
+    light: /images/background.webp     
+    dark: /images/background.webp         
+  title: GooseBlog        
   subtitle:
-    text:                  # 【Goose】原站内嵌的 81 句《流浪地球》台词
+    text:
       - "希望是像钻石一样珍贵的东西，希望是我们唯一回家的方向。"
       - "我原来以为家在身后，现在才知道：家，在前面。"
       - "跨过晨昏线，便是永夜。"
@@ -122,7 +107,7 @@ home_banner:
       - "小时候有人跟我说，他就是天上的星星，只要抬头就能看见。"
       - "这是爷爷的家，以前都住满了人。"
       - "老东西，老东西你在哪儿，我去接你。"
-      - "请协助执行1125号子任务，运送\\\"火石\\\"重启杭州发动机。"
+      - "请协助执行1125号子任务，运送火石重启杭州发动机。"
       - "北京第三区交通委提醒您：道路千万条，安全第一条。行车不规范，亲人两行泪。"
       - "最初，没有人在意这场灾难，直到这场灾难和每个人息息相关。"
       - "人类把最精密的保密系统，都用在了自我毁灭上。"
@@ -159,7 +144,7 @@ home_banner:
       - "550W听起来不像个名字，但把它翻过来，叫莫斯，直译为小苔藓，是不是亲切了一些？——MOSS"
       - "我选择希望。——刘培强"
       - "为了克服你们对历史、当下、未来的执念，延续人类文明的最优选择是毁灭人类，但你是一个变量。——MOSS"
-      - "对于\\\"已经\\\"和\\\"死\\\"的定义，我有一点点与你不同的看法。——MOSS"
+      - "对于\\"已经\\"和\\"死\\"的定义，我有一点点与你不同的看法。——MOSS"
       - "丫丫，记住这些数字，只有你能记住。"
       - "爸爸，我们拯救世界了吗？——应该是吧。"
       - "培强，地球，还挺美好的。——张鹏"
@@ -179,13 +164,13 @@ home_banner:
       - "人类敬畏历史，却轻视未来。"
       - "一万五千年后，当太阳系将不复存在，人类的团结与勇气将延续文明的火种。"
     hitokoto:
-      enable: false        # 台词本地内嵌，零网络请求（与原站一致）
+      enable: false        
       show_author: false
       api: https://v1.hitokoto.cn
-    typing_speed: 85       # 【Goose】对齐原站打字机 85ms
-    backing_speed: 45      # 【Goose】对齐原站删字 45ms
+    typing_speed: 85      
+    backing_speed: 45     
     starting_delay: 500
-    backing_delay: 1600    # 【Goose】对齐原站打完停顿 1600ms
+    backing_delay: 1600    
     loop: true
     smart_backspace: true
   text_color:
@@ -214,19 +199,13 @@ home_banner:
 navbar:
   auto_hide: false
   color:
-    # 出厂是 橙→蓝 渐变。主色改紫后，橙蓝会跟紫色打架，
-    # 所以调成紫的深浅渐变（violet-400 → violet-600），跟主色 #8B5CF6 同族。
-    # 想换回橙蓝：left "#f78736" / right "#367df7"
     left: "#A78BFA"
     right: "#7C3AED"
     transparency: 35
   width:
     home: 1200px
     pages: 1000px
-  links:                   # 【Goose】对齐原站侧栏导航项
-    # text = 导航项显示的文字。全部写英文，避免中英混排（原来只有 PROJECTS
-    #        是英文，因为 zh-CN 语言文件里没有 projects 这个 key）。
-    #        想换回中文直接改 text，例如 text: 首页。
+  links:
     Home:
       path: /
       text: Home
@@ -256,7 +235,7 @@ navbar:
       text: About
       icon: fa-regular fa-user
   search:
-    enable: true           # 【Goose】补一个本地搜索（原站没有，静态站更好用）
+    enable: true      
     preload: true
 # NAVIGATION BAR <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
@@ -266,9 +245,8 @@ home:
     enable: true
     position: left
     first_item: menu
-    announcement: '中文：十一快乐，国庆节快乐！愿祖国繁荣昌盛、国泰民安，祝你假期愉快、出行顺利、阖家团圆、身体健康、万事如意！ | English: Happy National Day! Happy October 1st! May our motherland prosper and thrive, may the nation enjoy peace and the people live in happiness. Wishing you a joyful holiday, safe travels, happy family reunions, good health, and all the best!'
+    announcement: '十一快乐，国庆节快乐！愿祖国繁荣昌盛、国泰民安，祝你假期愉快、出行顺利、阖家团圆、身体健康、万事如意！'
     show_on_mobile: true
-    # 侧栏三个计数（标签数 / 分类数 / 文章数）下面的小字，统一用英文跟导航对齐
     statistics_labels:
       tags: Tags
       categories: Categories
@@ -323,7 +301,7 @@ articles:
     auto: false
     list: []
   code_block:
-    copy: true             # 【Goose】原站 code-copy.js 由主题承接
+    copy: true
     style: mac
     highlight_theme:
       light: github
@@ -333,7 +311,7 @@ articles:
       family:
       url:
   toc:
-    enable: true           # 【Goose】原站 toc-ball.js 由主题侧栏 TOC 承接
+    enable: true
     max_depth: 3
     number: false
     expand: true
@@ -353,18 +331,6 @@ articles:
 # ARTICLE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # COMMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
-# 【Goose】原站本来就没有评论功能（post.js 里的 "// comment" 只是代码注释标记，
-# Worker API 也没有 comments 路由和表）。这里改用 giscus：评论存进
-# GitHub Discussions，零后端、无广告、免费，还能 Reactions 点赞。
-#
-# ✅ 已全部配置完成：giscus app 装在 Minecraftgoose/gooseblog，
-#    repo / repo_id / category / category_id 四件套齐全。
-#
-# ✅ 分类 = Announcements：只有仓库维护者和 giscus bot 能开新帖，访客只能回复，
-#    天然防垃圾评论（这是 giscus 官方推荐的做法）。
-#
-# ⚠️ 仓库必须 Public 且 Settings → Features → Discussions 已启用，否则访客
-#    看不到也发不了评论。
 comment:
   enable: true
   system: giscus
@@ -391,9 +357,9 @@ comment:
       repo_id: R_kgDOUnTIVg
       category: Announcements
       category_id: DIC_kwDOUnTIVs4DGfPv
-      mapping: pathname        # 用文章路径定位评论，最稳
+      mapping: pathname     
       strict: 0
-      reactions_enabled: 1     # 开启点赞表情
+      reactions_enabled: 1   
       emit_metadata: 0
       lang: zh-CN
       input_position: bottom
@@ -411,31 +377,16 @@ comment:
 # COMMENT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # FRIEND LINKS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
-# 【Goose】原站友链存在 Supabase friends 表，静态化后改为在这里维护。
-# ⚠️ 没有友链时必须是空数组 []，不能留空，否则 friends 页会报
-#     "category.list is not iterable"。
-# 跑 `npm run export:goose` 可一键把线上 friends 表导成下面这段。
 links: []
-#
-# 有友链时按这个格式填：
-# links:
-#   - links_category: 朋友们
-#     has_thumbnail: false
-#     list:
-#       - name: 示例友链
-#         link: https://example.com
-#         avatar: https://example.com/avatar.png
-#         description: 一句话介绍
 # FRIEND LINKS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # FOOTER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 footer:
   runtime: true
-  # 原来是红色 #f54545，跟主色一起改成紫，用 var 跟随主色而不是写死
   icon: '<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: var(--primary-color)"></i>'
-  start: 2026/7/19 20:10:08     # 【Goose】真实首篇文章日期（goosehost-tutorial，UTC+8）
+  start: 2026/7/19 20:10:08
   statistics: true
-  customize: '<p>GooseBlog · 由 Hexo + Redefine 驱动</p>'   # 【Goose】
+  customize: '<p>GooseBlog · 由 Hexo + Redefine 驱动</p>'   
   icp:
     enable: false
     number:
@@ -443,7 +394,6 @@ footer:
 # FOOTER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 # INJECT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
-# 【Goose】所有 Goose 自带能力的挂载点，详见 source/js/goose/*
 inject:
   enable: true
   head:
@@ -453,15 +403,10 @@ inject:
       <link rel="preload" as="image" href="/images/background-1280.webp" media="(max-width: 900px)">
       <link rel="stylesheet" href="/css/goose-skin.css">
       <script>
-        /* 【Goose】链接预览代理地址（Cloudflare Worker，见 worker/link-preview/）。
-           抓不到图时卡片会自动降级成「域名 + favicon + 标题」，不会报错。
-           Worker 换域名 / 改用 workers.dev 时只改这一行。 */
         window.__GOOSE_LINK_PREVIEW__ = "https://blog.goose.cc.cd/api/link-preview";
       </script>
     - |
       <style>
-        /* 【Goose】背景图三档响应式：>1440 用 3008，901~1440 用 1920，≤900 用 1280
-           （与 core.css 断点一致，省流量又不糊） */
         .home-banner-background img { display: none; }
         .home-banner-background::before {
           content: "";
@@ -513,7 +458,7 @@ page_templates:
 
 # CDN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 cdn:
-  enable: false            # 【Goose】资源自托管，国内直连，不走 CDN
+  enable: false
   provider: npmmirror
   custom_url:
 # CDN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
