@@ -7,7 +7,6 @@ comment: false
 
 <div class="goose-projects">
 
-<h2><i class="fa-regular fa-star"></i> Goose 系列</h2>
 <div class="goose-project-grid">
 
 <div class="goose-project-card">
@@ -28,30 +27,9 @@ comment: false
   <div class="goose-project-link"><a href="/posts/gooseblog-update-20260727/">升级日志 <i class="fa-solid fa-arrow-right"></i></a></div>
 </div>
 
-<div class="goose-project-card">
-  <div class="goose-project-name"><i class="fa-solid fa-robot"></i> GooseAI</div>
-  <div class="goose-project-desc">已融合进 GooseHost，Copilot 形态继续提供原来的能力。</div>
-  <div class="goose-project-link"><a href="/posts/why-gooseai-disappear/">为什么消失了 <i class="fa-solid fa-arrow-right"></i></a></div>
 </div>
 
-</div>
 
-<h2><i class="fa-regular fa-th-large"></i> 其他项目</h2>
-<div class="goose-project-grid">
-
-<div class="goose-project-card">
-  <div class="goose-project-name"><i class="fa-solid fa-snowflake"></i> TimeFreeze</div>
-  <div class="goose-project-desc">Minecraft 服务器插件：最后一个玩家离开时冻结时间与天气，回来无缝继续。</div>
-  <div class="goose-project-link"><a href="/posts/TimeFreeze/">查看详情 <i class="fa-solid fa-arrow-right"></i></a></div>
-</div>
-
-<div class="goose-project-card">
-  <div class="goose-project-name"><i class="fa-solid fa-car"></i> 驾考模拟器</div>
-  <div class="goose-project-desc">纯 HTML 小游戏，在浏览器里练科目一。</div>
-  <div class="goose-project-link"><a href="/posts/drive/">直接在文章里玩 <i class="fa-solid fa-arrow-right"></i></a></div>
-</div>
-
-</div>
 
 </div>
 
