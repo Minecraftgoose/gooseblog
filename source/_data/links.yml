@@ -35,5 +35,6 @@
       description: '优质内容的博客（starblog）'
     - name: '水水的小屋🏡'
       link: 'https://www.happycola.top/'
+      thumbnail: 'https://www.happycola.top/img/Homepage_Screenshot.jpg'
       avatar: 'https://www.happycola.top/img/avatar.png'
-      description: '致知在格物 物格而后知至'
+      description: '写点有趣的东东 awa'

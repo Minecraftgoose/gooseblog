@@ -33,18 +33,3 @@ comment: false
 
 </div>
 
-<!--
-  项目卡片手写维护（原站存在 Supabase gc_projects 表，现已彻底脱钩）。
-  格式：
-
-  <div class="goose-project-card">
-    <div class="goose-project-name"><i class="fa-solid fa-cube"></i> 项目名</div>
-    <div class="goose-project-desc">一句话介绍</div>
-    <div class="goose-project-link"><a href="https://..." target="_blank" rel="noopener">查看详情 <i class="fa-solid fa-arrow-right"></i></a></div>
-  </div>
-
-  说明：
-   - 图标用 Font Awesome 6（主题内置），fa-solid / fa-regular 都行
-   - 没有外链的项目可以链到站内文章（像上面几张卡那样），不用硬凑 URL
-   - 加卡片直接复制上面的块，往 .goose-project-grid 里塞就行
--->
