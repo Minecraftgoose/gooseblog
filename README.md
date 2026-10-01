@@ -201,4 +201,8 @@ Goose 自己的组件样式（`source/css/goose-skin.css`）**一律用 CSS 变�
   - 全站 659 个上色 token，24 种类型全覆盖。`operator` 主题漏了，在 `goose-skin.css` 里补了一条
   - 注意 highlight.js 对 shell 的 token 类型偏少（只有注释、`cd` 这类内置命令、字符串上色），普通命令名如 `pip install` 不上色，这是 hljs 的固有行为，不是配置问题
 - **写文章**：原来的 `/admin` 后台（Supabase 写库）随后端一起删除，改为本地写 Markdown 后 `git push`。
-- **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉走 Redefine 原味；**字体也已弃用主题自带的 Chillax / Geist / Geist Mono**，全站改用系统字体栈（中文 PingFang SC / 微软雅黑，西文 -apple-system / Segoe UI / Roboto），图标字体 Font Awesome 保留。只有壁纸、头像、OG 图还是 Goose 的。
+- **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉走 Redefine 原味，只有壁纸、头像、OG 图还是 Goose 的。
+- **字体**：保留主题自带的 **Geist**（西文正文）/ **Chillax**（西文标题）/ **Geist Mono**（代码等宽），这是 Redefine 的招牌观感；
+  中文不走字体包，交给系统（苹方 / 微软雅黑 / 思源黑体），省掉几 MB 中文字体下载。图标字体 Font Awesome 保留。
+  ⚠️ 改字体栈时注意：**第一位不能是以连字符开头的裸标识符**（如 `-apple-system`），Stylus 会把 `-` 当减号运算、编译出坏值，
+  整条声明被浏览器丢弃 → 掉回浏览器默认字体。要么用 `system-ui`（标准关键字，Firefox 92+ 支持），要么加引号。

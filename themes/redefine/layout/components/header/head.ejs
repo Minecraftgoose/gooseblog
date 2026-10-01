@@ -164,6 +164,12 @@
             <% } }%>
     <% } }%>
 
+    <!--- Redefine 自带字体：Geist(西文正文) / Geist Mono(代码等宽) / Chillax(西文标题)
+         注意顺序：字体 CSS 要在 css/style 之前加载，否则主题里的 font-family 引用不到这个名字 --->
+    <%- renderCSS('fonts/Chillax/chillax.css') %>
+    <%- renderCSS('fonts/GeistMono/geist-mono.css') %>
+    <%- renderCSS('fonts/Geist/geist.css') %>
+
     <%- css('css/style') %>
 
     <% if (theme.developer && theme.developer.enable) {%>

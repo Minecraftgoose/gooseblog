@@ -126,17 +126,17 @@ if hexo-config('global.fonts.chinese.enable') {
   $temp-chinese-font-family = hexo-config('global.fonts.chinese.family')
   $chinese-font-family = $temp-chinese-font-family ? $temp-chinese-font-family : 'PingFang SC'
 } else {
-  $chinese-font-family = -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;
+  $chinese-font-family = 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', '微软雅黑', 'Heiti SC', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', sans-serif;
 }
 
 if hexo-config('global.fonts.english.enable') {
   $temp-english-font-family = hexo-config('global.fonts.english.family')
-  $english-font-family = $temp-english-font-family ? $temp-english-font-family : system-ui
+  $english-font-family = $temp-english-font-family ? $temp-english-font-family : 'Geist Variable'
 } else {
-  $english-font-family = system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "Noto Sans CJK SC", sans-serif
+  $english-font-family = 'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif
 }
 
-$default-font-family = system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "Noto Sans CJK SC", sans-serif
+$default-font-family = 'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif
 $default-font-size = 16px
 $temp-default-article-font-size = hexo-config('articles.style.font_size')
 $temp-default-line-height = hexo-config('articles.style.line_height')
