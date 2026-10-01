@@ -1,60 +1,15 @@
 /* ==========================================================================
    GooseBlog × Redefine —— Goose 遗留能力的皮肤
    做三件事：
-     1. 承载 Goose 组件所需样式（热力图 / 分享 / 海报 / Toast / 链接卡片）
+     1. 承载 Goose 组件所需样式（分享 / Toast / 链接卡片）
      2. 微调 giscus 评论区（宽度、加载留白、iframe 边框）
      3. 沿用 Redefine 的 CSS 变量，深浅色自动跟随
 
    颜色一律走主题 CSS 变量（--primary-color 等），不写死色值 ——
    这样改主色时全站跟着变，不用挨个找。
 
-   字体一律用主题自带的（Chillax / Geist），不再引入钉钉进步体。
+   字体一律走主题 CSS 变量与系统字体栈，不额外引入任何自定义字体。
    ========================================================================== */
-
-/* ---------- 1. 首页热力图（原 Goose heatmap.js） ---------- */
-.goose-heatmap-wrap {
-  background: var(--second-background-color);
-  border: 1px solid var(--border-color);
-  /* 圆角 18px 与文章卡片一致：主题的 redefine-container() mixin 里是
-     $redefine-border-radius-large = 18px（common/variables.styl），
-     .home-article-item 走的就是这个 mixin，所以别改它。 */
-  border-radius: 18px;
-  padding: 16px 20px;
-  /* 间距对齐文章卡片：.home-article-item 的 redefine-container(最后一项 38px)
-     给的是 margin-bottom: 38px，这里原来是 20px，两张卡片中间的缝比卡片之间窄。 */
-  margin: 0 0 38px;
-  overflow-x: auto;
-  box-shadow: var(--redefine-box-shadow-flat);
-}
-.goose-heatmap-title {
-  font-size: 0.85rem;
-  color: var(--third-text-color);
-  margin-bottom: 8px;
-}
-/* 宽度由 JS 按 viewBox 自然宽度给（53 周 ≈ 770px），这里只负责：
-     1. 窄屏缩到容器宽度以内（不溢出）
-     2. 不要让 SVG 被拉伸 —— 拉伸会把格子放大，还会顶到容器边缘 */
-.goose-heatmap {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-.goose-heatmap-month,
-.goose-heatmap-weekday {
-  fill: var(--third-text-color);
-  font-size: 9px;
-}
-.goose-heatmap-cell {
-  cursor: pointer;
-  transition: opacity 0.15s, transform 0.15s;
-  transform-origin: center;
-}
-.goose-heatmap-cell:hover {
-  opacity: 0.65;
-}
-.goose-heatmap-cell-future {
-  fill: transparent;
-}
 
 /* ---------- 2. 分享（工具栏内）+ 面板 ---------- */
 /* 分享：按钮挂在主题自带的右下角工具栏里（#gooseShareTool），
@@ -369,10 +324,25 @@
   overflow: hidden;
 }
 
+/* ⚠️ 下划线必须在这里用 !important + 更高优先级压掉。
+   主题 markdown.styl 里写的是 `.markdown-body a:not(.not-markdown) { text-decoration: underline }`，
+   hover/focus 还是 `text-decoration: underline !important`。
+   而 goose-skin.css 在 head 里排在主题 style.css 之前，同优先级会被主题反超，
+   !important 也会被主题的 !important 同分打平、按加载顺序输掉。
+   所以这里：多叠一个 .goose-link-card 类提高优先级 + 自己也写 !important。 */
+.markdown-body a.goose-link-card:not(.not-markdown),
+.markdown-body a.goose-link-card:not(.not-markdown):hover,
+.markdown-body a.goose-link-card:not(.not-markdown):focus {
+  text-decoration: none !important;
+  text-decoration-color: transparent !important;
+  padding-bottom: 0;
+}
+
 /* 缩略图：由 worker/link-preview 抓到的 og:image，加载成功才显示 */
 .goose-link-card-thumb {
   flex-shrink: 0;
   width: 120px;
+  align-self: stretch;
   overflow: hidden;
   background: var(--third-background-color);
 }

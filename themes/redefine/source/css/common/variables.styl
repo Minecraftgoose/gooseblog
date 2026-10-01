@@ -131,12 +131,12 @@ if hexo-config('global.fonts.chinese.enable') {
 
 if hexo-config('global.fonts.english.enable') {
   $temp-english-font-family = hexo-config('global.fonts.english.family')
-  $english-font-family = $temp-english-font-family ? $temp-english-font-family : 'Geist Variable'
+  $english-font-family = $temp-english-font-family ? $temp-english-font-family : -apple-system
 } else {
-  $english-font-family = 'Geist Variable'
+  $english-font-family = -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif
 }
 
-$default-font-family = Geist Variable, Noto Sans SC, -apple-system, system-ui, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial
+$default-font-family = -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif
 $default-font-size = 16px
 $temp-default-article-font-size = hexo-config('articles.style.font_size')
 $temp-default-line-height = hexo-config('articles.style.line_height')

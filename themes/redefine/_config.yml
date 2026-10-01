@@ -423,8 +423,6 @@ inject:
   footer:
     - |
       <script src="/js/goose/self-links.js" data-swup-reload-script></script>
-      <script src="/js/goose/heatmap-data.js" data-swup-reload-script></script>
-      <script src="/js/goose/heatmap.js" data-swup-reload-script></script>
       <script src="/js/goose/share.js" data-swup-reload-script></script>
       <script src="/js/goose/link-card.js" data-swup-reload-script></script>
       <script src="/js/goose/friends-thumb.js" data-swup-reload-script></script>
@@ -462,7 +460,4 @@ cdn:
   custom_url:
 # CDN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
-# DEVELOPER MODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
-developer:
-  enable: false
-# DEVELOPER MODE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+# DEVELOPER MODE >>>>>>>>>>>>>>>>>>

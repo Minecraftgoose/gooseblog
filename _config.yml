@@ -2,7 +2,7 @@
 # GooseBlog — Hexo 站点配置
 # 原 GooseBlog（Cloudflare Pages SPA + Supabase + Worker API）
 # 迁移后：纯静态 Hexo，剔除后端，主题 hexo-theme-redefine
-# 资源（背景图 / 头像 / Logo / 字体 / prism）全部沿用原站
+# 资源（背景图 / 头像 / Logo / prism）沿用原站；字体不引外部包，走系统字体栈
 # =============================================================
 
 # Site

@@ -32,7 +32,6 @@
 
 | 原功能 | 现在的落点 |
 | --- | --- |
-| 首页发文热力图 | `scripts/generate-heatmap.js` 构建期算好 → `source/js/goose/heatmap.js` 渲染，零请求 |
 | 复制链接 / 生成海报悬浮球 | `source/js/goose/share.js`（海报仍走 html2canvas + quickchart 二维码） |
 | 链接社交媒体卡片 | `source/js/goose/link-card.js`，去掉后端抓取，改为域名 + favicon + 链接标题 |
 | 侧栏《流浪地球》台词打字机 | 81 句台词写进主题配置 `home_banner.subtitle.text`，零网络请求 |
@@ -54,7 +53,6 @@
 ├── _config.yml                 站点配置（url / permalink / 分页 6 篇 / marked 对齐旧站）
 ├── package.json
 ├── scripts/                    ⚠️ Hexo 会把这里的文件当插件加载，只能放 .js
-│   ├── generate-heatmap.js     构建期生成热力图数据
 │   ├── generate-self-links.js  构建期生成站内文章索引（链接卡片用，零请求解析站内链接）
 │   └── extra-assets.js         把 source/_headers 带进 public/（hexo 默认忽略 _ 开头）
 ├── tools/
@@ -68,7 +66,7 @@
 │   ├── about/  friends/  projects/  tags/  categories/
 │   ├── images/                 ★ Goose 原站图片资源
 │   ├── vendor/prism/           ★ prism 与语言包
-│   ├── css/goose-skin.css      Goose 组件皮肤（热力图/分享/海报/链接卡片/友链截图）
+│   ├── css/goose-skin.css      Goose 组件皮肤（分享/Toast/链接卡片/友链截图）
 │   └── js/goose/               Goose 组件脚本
 └── themes/redefine/            hexo-theme-redefine（源码内置，含 Goose 定制 _config.yml）
 ```
@@ -190,10 +188,6 @@ colors:
 
 Goose 自己的组件样式（`source/css/goose-skin.css`）**一律用 CSS 变量不写死色值**，所以改主色不需要动它。
 
-热力图的宽度**按 viewBox 自然尺寸渲染**（53 周 ≈ 770px），不用 `width="100%"` 撑满容器 —— 撑满会被放大 1.5 倍、格子从 11px 变 17px 而且顶到容器边缘。窄屏由 CSS `max-width: 100%` 缩放。
-
-发文热力图的配色也在 JS 里**运行时读取 `--primary-color`**（`source/js/goose/heatmap.js` 的 `primaryRgb()`），支持 `#rgb` / `#rrggbb` / `rgb()` / `rgba()` 四种写法，读不到时兜底 `#8B5CF6`。以前是写死的 `rgba(163, 31, 52)`（旧的深红主色），换主色时会忘记改它。
-
 ## 已知取舍
 
 - **评论**：原站本来就没有评论功能。这次新增 giscus，评论存进 `Minecraftgoose/gooseblog` 的 GitHub Discussions，零后端、免费、支持 Reactions。**已启用**（`comment.enable: true`），分类 = Announcements（只有仓库维护者和 giscus bot 能开帖，防垃圾）。
@@ -207,4 +201,4 @@ Goose 自己的组件样式（`source/css/goose-skin.css`）**一律用 CSS 变�
   - 全站 659 个上色 token，24 种类型全覆盖。`operator` 主题漏了，在 `goose-skin.css` 里补了一条
   - 注意 highlight.js 对 shell 的 token 类型偏少（只有注释、`cd` 这类内置命令、字符串上色），普通命令名如 `pip install` 不上色，这是 hljs 的固有行为，不是配置问题
 - **写文章**：原来的 `/admin` 后台（Supabase 写库）随后端一起删除，改为本地写 Markdown 后 `git push`。
-- **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉与字体全走 Redefine 原味（Chillax / Geist），只有壁纸、头像、OG 图还是 Goose 的。
+- **紫色玻璃风 / 钉钉进步体**：按需求弃用。视觉走 Redefine 原味；**字体也已弃用主题自带的 Chillax / Geist / Geist Mono**，全站改用系统字体栈（中文 PingFang SC / 微软雅黑，西文 -apple-system / Segoe UI / Roboto），图标字体 Font Awesome 保留。只有壁纸、头像、OG 图还是 Goose 的。

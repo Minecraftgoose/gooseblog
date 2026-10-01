@@ -40,9 +40,14 @@
   /** 自己站的 /posts/<slug>/ → slug，命中索引就返回那篇文章 */
   function selfPost(url) {
     try {
-      var path = new URL(url).pathname.replace(/^\/+|\/+$/g, '');
+      var raw = new URL(url).pathname.replace(/^\/+|\/+$/g, '');
+      var path = decodeURIComponent(raw);
       var m = path.match(/^posts\/([^/]+)/);
-      if (m && SELF[m[1]]) return SELF[m[1]];
+      if (!m) return null;
+      // self-links.js 的索引 key 是文章 slug 原文（可能是中文、空格等），
+      // 而页面里 href 通常是 percent-encode 过的，两种形态都要查一遍
+      var mRaw = raw.match(/^posts\/([^/]+)/);
+      return SELF[m[1]] || (mRaw && SELF[mRaw[1]]) || null;
     } catch (e) {}
     return null;
   }
@@ -191,32 +196,46 @@
   }
 
   function scan(root) {
-    var scope = root || document.querySelector('.markdown-body');
-    if (!scope) return;
+    // 页面里可能有多个 .markdown-body（正文、过期提示框、首页摘要、独立页面），
+    // 只取第一个的话，正文里的链接会一个都不转换
+    var scopes = root
+      ? (root.classList && root.classList.contains('markdown-body') ? [root] : [].slice.call(root.querySelectorAll('.markdown-body')))
+      : [].slice.call(document.querySelectorAll('.markdown-body'));
+    if (!scopes.length) return;
 
     var cards = [];
-    var links = scope.querySelectorAll('a[href^="http"], a[href^="/"]');
 
-    links.forEach(function (a) {
-      if (processed.has(a) || !isStandaloneLink(a)) return;
-      processed.add(a);
+    scopes.forEach(function (scope) {
+      // 提示框 / 引用块里的链接保持原样，不做卡片
+      if (scope.closest('.callout, blockquote, .note, .tip')) return;
+      var links = scope.querySelectorAll('a[href^="http"], a[href^="/"]');
 
-      var card = build(a);
-      processed.add(card);
+      links.forEach(function (a) {
+        // 标题、图片、已有卡片里的链接不转换
+        if (a.closest('h1,h2,h3,h4,h5,h6,figure,figcaption,.goose-link-card')) return;
+        if (processed.has(a) || !isStandaloneLink(a)) return;
+        processed.add(a);
 
-      // 自己站的链接：直接查本地索引，不发任何请求
-      var own = isSelf(a.href) ? selfPost(a.href) : null;
-      if (own) {
-        applyData(card, {
-          title: own.title,
-          description: own.excerpt,
-          image: own.cover,
-          favicon: '/images/avatar-256.webp'   // 自己站的图标就用站点图标
-        });
-      }
+        var card = build(a);
+        processed.add(card);
 
-      a.replaceWith(card);
-      if (!own) cards.push({ card: card, url: card.href });
+        // 自己站的链接：直接查本地索引，不发任何请求
+        var own = isSelf(a.href) ? selfPost(a.href) : null;
+        if (own) {
+          applyData(card, {
+            title: own.title,
+            description: own.excerpt,
+            image: own.cover,
+            favicon: '/images/avatar-256.webp'   // 自己站的图标就用站点图标
+          });
+          // 站内就别新开标签了，走 swup 站内跳转
+          card.target = '_self';
+          card.removeAttribute('rel');
+        }
+
+        a.replaceWith(card);
+        if (!own) cards.push({ card: card, url: card.href });
+      });
     });
 
     if (!cards.length) return;
