@@ -245,7 +245,7 @@ home:
     enable: true
     position: left
     first_item: menu
-    announcement: '十一快乐，国庆节快乐！愿祖国繁荣昌盛、国泰民安，祝你假期愉快、出行顺利、阖家团圆、身体健康、万事如意！'
+    announcement: '十一快乐，国庆节快乐！愿祖国繁荣昌盛、国泰民安，祝你假期愉快、出行顺利、身体健康、万事如意！'
     show_on_mobile: true
     statistics_labels:
       tags: Tags
