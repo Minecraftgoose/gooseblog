@@ -14,6 +14,10 @@
 (function () {
   var AVATAR = '/images/avatar.webp';
   var SITE = 'blog.goose.cc.cd';
+  // 文章既没封面、og 图也没配时的最终兜底
+  var DEFAULT_COVER = '/images/og.webp';
+  // 主题 lazyload 过滤器给正文图片塞的占位图（after_post_render 里写死的）
+  var LAZY_PLACEHOLDER = /loading\.svg$/;
 
   var ICON_SHARE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
   var ICON_COPY = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6.15 4.02C7.11 4.02 7.88 4.02 8.50 4.08C9.12 4.13 9.66 4.25 10.14 4.53C10.72 4.87 11.20 5.35 11.53 5.92C11.81 6.41 11.93 6.94 11.99 7.57C12.05 8.19 12.05 8.95 12.05 9.92C12.05 10.88 12.05 11.65 11.99 12.26C11.93 12.89 11.81 13.43 11.53 13.91C11.20 14.49 10.72 14.97 10.14 15.30C9.66 15.58 9.12 15.70 8.50 15.76C7.88 15.81 7.11 15.81 6.15 15.81C5.19 15.81 4.42 15.81 3.80 15.76C3.18 15.70 2.64 15.58 2.16 15.30C1.58 14.97 1.10 14.49 0.76 13.91C0.48 13.43 0.37 12.89 0.31 12.26C0.25 11.65 0.25 10.88 0.25 9.92C0.25 8.95 0.25 8.19 0.31 7.57C0.37 6.94 0.48 6.41 0.76 5.92C1.10 5.35 1.58 4.87 2.16 4.53C2.64 4.25 3.18 4.13 3.80 4.08C4.42 4.02 5.19 4.02 6.15 4.02ZM6.15 5.38C5.16 5.38 4.47 5.38 3.93 5.43C3.39 5.47 3.08 5.57 2.84 5.71C2.46 5.92 2.15 6.23 1.94 6.60C1.80 6.85 1.71 7.16 1.66 7.69C1.61 8.23 1.61 8.93 1.61 9.92C1.61 10.90 1.61 11.60 1.66 12.14C1.71 12.67 1.80 12.99 1.94 13.23C2.15 13.60 2.46 13.91 2.84 14.13C3.08 14.27 3.39 14.36 3.93 14.41C4.47 14.46 5.16 14.46 6.15 14.46C7.14 14.46 7.83 14.46 8.37 14.41C8.90 14.36 9.22 14.27 9.46 14.13C9.84 13.91 10.14 13.60 10.36 13.23C10.50 12.99 10.59 12.67 10.64 12.14C10.69 11.60 10.69 10.90 10.69 9.92C10.69 8.93 10.69 8.23 10.64 7.69C10.59 7.16 10.50 6.85 10.36 6.60C10.15 6.23 9.84 5.92 9.46 5.71C9.22 5.57 8.90 5.47 8.37 5.43C7.83 5.38 7.14 5.38 6.15 5.38ZM9.80 0.37C10.76 0.37 11.53 0.37 12.15 0.42C12.77 0.48 13.31 0.60 13.79 0.88C14.37 1.21 14.85 1.69 15.19 2.27C15.47 2.76 15.59 3.29 15.64 3.92C15.70 4.53 15.70 5.30 15.70 6.26V7.83C15.70 8.29 15.70 8.59 15.66 8.85C15.47 10.35 14.40 11.57 12.98 12.00V10.55C13.70 10.19 14.21 9.50 14.32 8.67C14.34 8.52 14.34 8.34 14.34 7.83V6.26C14.34 5.28 14.34 4.58 14.29 4.04C14.24 3.51 14.15 3.19 14.01 2.95C13.80 2.58 13.49 2.27 13.12 2.05C12.87 1.91 12.56 1.82 12.03 1.77C11.48 1.73 10.79 1.73 9.80 1.73H7.71C6.76 1.73 5.93 2.28 5.52 3.08H4.07C4.54 1.51 5.99 0.37 7.71 0.37H9.80Z" fill="currentColor"/></svg>';
@@ -50,16 +54,55 @@
     }
   }
 
+  /**
+   * 取图片的**真实**地址。
+   *
+   * 主题开了 articles.lazyload，after_post_render 过滤器会把正文里的
+   * <img src="真实地址"> 改写成 <img lazyload src="/images/loading.svg" data-src="真实地址">。
+   * 也就是说：图还没滚进视口时，src 是那张灰白占位图，真图藏在 data-src 里。
+   * 直接读 src 会拿到 loading.svg。
+   */
+  function realImgSrc(img) {
+    if (!img) return '';
+    var src = img.getAttribute('src') || '';
+    if (src && !LAZY_PLACEHOLDER.test(src)) return src;
+    return img.getAttribute('data-src') || '';
+  }
+
+  /**
+   * 取海报用的标题 + 封面。
+   *
+   * ⚠️ 原来第一行写的是 `document.querySelector('.markdown-body img')` ——
+   *    那是**正文第一张图**，压根不是文章封面。叠加上面 lazyload 的问题，
+   *    实际拿到的多半是 /images/loading.svg（一张灰白占位图），
+   *    或者正文里某张毫不相干的配图。这就是"海报背景不对"的原因。
+   *
+   *    文章封面有两个可靠来源，按可靠性排序：
+   *      1. 文章页顶部那张大图 —— article-content.ejs 渲染，
+   *         它在 .article-title 里、不在 .markdown-body 里，没被 lazyload 改写
+   *      2. og:image —— head.ejs 取的是 page.og_image，
+   *         与 front-matter 的 cover 是同一张（全站 14 篇都一致），且是绝对地址
+   */
   function currentMeta() {
     var title = document.title.replace(/\s*\|\s*GooseBlog\s*$/, '') || document.title;
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle && ogTitle.getAttribute('content')) title = ogTitle.getAttribute('content');
+
     var cover = '';
-    var img = document.querySelector('.markdown-body img');
-    if (img && img.getAttribute('src')) cover = img.getAttribute('src');
+
+    // 1) 文章页顶部封面（用户眼睛看到的那一张）
+    cover = realImgSrc(document.querySelector('.article-title img'));
+
+    // 2) og:image（front-matter 的 og_image，等价于 cover）
     if (!cover) {
       var og = document.querySelector('meta[property="og:image"]');
-      if (og) cover = og.getAttribute('content') || '';
+      cover = (og && og.getAttribute('content')) || '';
     }
-    return { title: title, cover: cover };
+
+    // 3) 最后才退到正文第一张图，且必须剥掉 lazyload 占位图
+    if (!cover) cover = realImgSrc(document.querySelector('.markdown-body img'));
+
+    return { title: title, cover: cover || DEFAULT_COVER };
   }
 
   function loadHtml2Canvas(cb) {
@@ -71,18 +114,41 @@
     document.head.appendChild(s);
   }
 
+  /**
+   * 等海报里的图片都落地再截图。
+   *
+   * 封面在图床、二维码在 quickchart.io，都是外链；html2canvas 只画"已经解码完"
+   * 的图，抢跑的话海报就是一块纯色背景（看着也像"背景图不对"）。
+   * 加载失败不等死 —— 6 秒超时放行，让下面的 .catch 兜住。
+   */
+  function waitPosterImages(root) {
+    var imgs = [].slice.call(root.querySelectorAll('img'));
+    return Promise.all(imgs.map(function (img) {
+      if (img.complete && img.naturalWidth) return Promise.resolve();
+      return new Promise(function (resolve) {
+        var done = false;
+        var fin = function () { if (!done) { done = true; resolve(); } };
+        img.addEventListener('load', fin);
+        img.addEventListener('error', fin);
+        setTimeout(fin, 6000);
+      });
+    }));
+  }
+
   function genPoster() {
     var meta = currentMeta();
     var qrSrc = 'https://quickchart.io/qr?size=200&text=' + encodeURIComponent(location.href);
 
     var poster = document.createElement('div');
     poster.className = 'goose-poster-html';
+    // 封面 img 先不带 src，下面用 setAttribute 填：URL 走属性赋值不会被引号截断，
+    // 文章标题同理用 textContent，标题里带 < > 也不会把结构打断。
     poster.innerHTML =
       '<div class="goose-poster-html-bg">' +
-        (meta.cover ? '<img class="goose-poster-html-cover" src="' + meta.cover + '" alt="">' : '') +
+        '<img class="goose-poster-html-cover" alt="">' +
         '<div class="goose-poster-html-gradient"></div>' +
       '</div>' +
-      '<div class="goose-poster-html-title">' + meta.title + '</div>' +
+      '<div class="goose-poster-html-title"></div>' +
       '<div class="goose-poster-html-divider"></div>' +
       '<div class="goose-poster-html-footer">' +
         '<div class="goose-poster-html-user">' +
@@ -94,6 +160,21 @@
         '</div>' +
         '<img class="goose-poster-html-qr" src="' + qrSrc + '" alt="QR">' +
       '</div>';
+
+    var titleEl = poster.querySelector('.goose-poster-html-title');
+    if (titleEl) titleEl.textContent = meta.title;
+
+    var coverEl = poster.querySelector('.goose-poster-html-cover');
+    if (coverEl) {
+      if (meta.cover) {
+        coverEl.setAttribute('src', meta.cover);
+        // 图床外链失败（挂了 / 不给 CORS）时撤掉这张图，露出底色，
+        // 别在海报顶部留一个破图图标
+        coverEl.addEventListener('error', function () { coverEl.remove(); });
+      } else {
+        coverEl.remove();
+      }
+    }
 
     var overlay = document.createElement('div');
     overlay.className = 'goose-poster-overlay';
@@ -112,8 +193,9 @@
       loadHtml2Canvas(function (err) {
         if (err || !window.html2canvas) { toast('海报组件加载失败'); return; }
         dl.textContent = '生成中...';
-        window.html2canvas(poster, { backgroundColor: '#15131f', scale: 2, useCORS: true })
-          .then(function (c) {
+        waitPosterImages(poster).then(function () {
+          return window.html2canvas(poster, { backgroundColor: '#15131f', scale: 2, useCORS: true });
+        }).then(function (c) {
             var a = document.createElement('a');
             a.href = c.toDataURL('image/png');
             a.download = 'gooseblog-poster.png';
