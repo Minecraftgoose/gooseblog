@@ -17,8 +17,10 @@
 /images/avatar.png        /images/avatar.webp            301
 
 # OG 默认图（社交分享用）
-/og.jpg                   /images/og-default.jpg         301
-/og-default.jpg           /images/og-default.jpg         301
+# 源文件 og-default.jpg 已删除，统一用 og.webp，跳转目标跟着改。
+/og.jpg                   /images/og.webp                301
+/og-default.jpg           /images/og.webp                301
+/images/og-default.jpg    /images/og.webp                301
 
 # 项目页已经整页下架（source/projects/ 已删除，导航栏入口也移除了）。
 # 外面可能还有旧链接/收录指向 /projects，统一送回首页，别让人撞 404。

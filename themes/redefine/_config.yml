@@ -56,8 +56,10 @@ global:
     gear_rotation: true
     auto_expand: false
   open_graph:
-    enable: true        
-    image: /images/og-default.jpg
+    enable: true
+    # 默认分享图。源文件 source/images/og.webp（1383×679）。
+    # 之前是 og-default.jpg（1200×630），已删除、统一用 og.webp，别再改回 .jpg。
+    image: /images/og.webp
     description: 鹅滴博客嘎嘎
   google_analytics:
     enable: false
@@ -316,12 +318,17 @@ articles:
     default: cc_by_nc_sa
   lazyload: true
   pangu_js: false
+  # 文章推荐（TF-IDF + 余弦相似度），移植自 hexo-theme-volantis。
+  # 官方实现硬依赖 nodejieba，装不上就直接构建失败；这里已经改成可选降级
+  # （见 scripts/helpers/recommendation-helpers.js），没装也能跑、也能出推荐。
+  # 想让分词更准就自己装：npm i nodejieba（需 C++ 编译环境，装不上不影响构建）。
   recommendation:
-    enable: false
+    enable: true
     title: 推荐阅读
     limit: 3
     mobile_limit: 2
-    placeholder: /images/background-1920.webp
+    # 文章没有 cover 时的兜底图（现在所有文章都写了 cover，基本轮不到它）
+    placeholder: /images/og.webp
     skip_dirs: []
 # ARTICLE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 

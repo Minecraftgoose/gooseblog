@@ -181,11 +181,72 @@ function cleanData(data) {
   return data;
 }
 
+/**
+ * 分词。
+ *
+ * ⚠️ 原版是 `const jieba = require("nodejieba")` 写死在顶上：nodejieba 是原生模块，
+ *    要 C++ 编译环境（python + make + g++），Windows / 新版 Node 上经常装不上，
+ *    一旦 require 抛错，整个 hexo generate 直接崩，站点都发不出去 ——
+ *    一个"锦上添花"的推荐功能不该有这种权限。
+ *
+ *    所以改成：能 require 到就用 jieba（分词更准），require 不到就退回内置的无词典
+ *    分词（中文按字 + 相邻二字 bigram，英文按词），效果差一档但零依赖、永不失败。
+ *    装了 nodejieba 想验证是否生效，构建日志里会打印用的是哪套。
+ */
+let jiebaModule; // undefined = 还没试过；false = 试过但没装
+function getJieba() {
+  if (jiebaModule !== undefined) return jiebaModule;
+  try {
+    jiebaModule = require("nodejieba");
+  } catch (e) {
+    jiebaModule = false;
+    if (hexo && hexo.log) {
+      hexo.log.warn(
+        "[redefine] 未安装 nodejieba，推荐阅读改用内置分词（效果略差，不影响构建）。" +
+          "想要更准的中文分词：npm i nodejieba（需 C++ 编译环境）。",
+      );
+    }
+  }
+  return jiebaModule;
+}
+
+/** jieba 缺席时的兜底分词：中文单字 + 相邻二字 bigram，英文/数字按词 */
+function tokenizeFallback(data) {
+  const CJK = /[\u4e00-\u9fff\u3400-\u4dbf]/;
+  const out = [];
+  for (const seg of String(data).split(/\s+/)) {
+    if (!seg) continue;
+    // 纯 ASCII 直接当整词
+    if (!CJK.test(seg)) {
+      if (seg.length > 1) out.push(seg.toLowerCase());
+      continue;
+    }
+    const chars = Array.from(seg);
+    for (let i = 0; i < chars.length; i++) {
+      if (!CJK.test(chars[i])) continue;
+      out.push(chars[i]);
+      // bigram：相邻两个都是汉字才成词，跨过标点/英文不硬拼
+      if (i + 1 < chars.length && CJK.test(chars[i + 1])) {
+        out.push(chars[i] + chars[i + 1]);
+      }
+    }
+    const latin = seg.match(/[A-Za-z]{2,}/g);
+    if (latin) out.push(...latin.map((w) => w.toLowerCase()));
+  }
+  return out;
+}
+
 function tokenize(data) {
-  const jieba = require("nodejieba");
-  return jieba
-    .cut(cleanData(data), true)
-    .filter((word) => word !== " " && !/^[0-9]*$/.test(word));
+  const cleaned = cleanData(data);
+  const jieba = getJieba();
+  let words = jieba
+    ? jieba.cut(cleaned, true)
+    : tokenizeFallback(cleaned);
+  words = words.filter((word) => word && word !== " " && !/^[0-9]*$/.test(word));
+  // 空词表会让后面的词频计算变成 0/0 = NaN，整张相似度矩阵全废，
+  // 塞个占位词保证分母不为零（这篇文章的推荐质量差，但不会连累别人）
+  if (!words.length) words = ["\u2014"];
+  return words;
 }
 
 function cosineSimilarity(vector1, vector2) {
@@ -326,8 +387,15 @@ hexo.extend.helper.register("articleRecommendationGenerator", function (post) {
       return "";
     }
   }
-  const recommendationSet = hexo.locals.get("recommendationSet");
-  const recommendedArticles = recommendationSet[post.path];
+  let recommendationSet = hexo.locals.get("recommendationSet");
+  // 主题存进来的是一个惰性求值的函数（return recommendationSet），
+  // 新版 hexo 的 Locals.get 会自动执行它，但老版本 / 其它调用路径未必。
+  // 这里统一展开一次，免得拿到函数后 [post.path] 取不到东西、推荐整块空白。
+  if (typeof recommendationSet === "function") recommendationSet = recommendationSet();
+  // 没跑出结果（该页没进语料库 / 只有一篇文章 / 分词全空）时静默降级为"不显示推荐"，
+  // 原版这里直接 for...of undefined 抛 TypeError，构建期整站崩掉。
+  const recommendedArticles = (recommendationSet && recommendationSet[post.path]) || [];
+  if (!recommendedArticles.length) return "";
   return userInterface(recommendedArticles, cfg);
 });
 
