@@ -16,40 +16,79 @@
  *    站点会返回一个默认的蓝色圆点，卡片上就顶着一个莫名的小蓝点。
  *    现在 favicon 由 Worker 从目标站自己的 <link rel="icon"> 解析；
  *    拿不到就画域名首字母标，纯 CSS，零网络，永远不会出现怪东西。
+ *
+ * ⚠️ 自己站但索引里查不到的链接（/about/、/friends/、/archives/……）不要丢给代理。
+ *    代理是给外站用的，让它回头抓自己站等于绕公网跑一圈回环，又慢又容易失败，
+ *    拿回来的还是自己站的 og 图，纯属白跑。这类链接直接渲染成站内卡片，零请求。
  */
 (function () {
   var API = (window.__GOOSE_LINK_PREVIEW__ || '/api/link-preview').replace(/\/$/, '');
   var SELF = window.__GOOSE_SELF_LINKS__ || {};
+  var SELF_FAVICON = '/images/avatar-256.webp';
   var MAX_CONCURRENCY = 4;   // 别一口气把整页链接全发出去
   var TIMEOUT_MS = 8000;
   var processed = new WeakSet();
   var cache = Object.create(null);   // 同一链接在一页里出现多次只请求一次
 
+  /** pathname → 站内文章，按路径查，permalink 改成什么样都能命中 */
+  var BY_PATH = Object.create(null);
+
+  function normPath(s) {
+    return String(s || '').replace(/^\/+|\/+$/g, '');
+  }
+
+  /**
+   * ⚠️ new URL() 必须带第二个参数当 base。
+   * 文章里写站内链接几乎都写成相对路径 /posts/ghg2-log/，
+   * 不带 base 的话 new URL('/posts/x') 直接抛 SyntaxError，
+   * 于是 pathname 取不到、hostname 也取不到 ——
+   * 自己站的链接被当成外站，跑去问 /api/link-preview?url=/posts/xxx，
+   * 代理拿个相对地址必然失败，卡片永远停在"域名+裸路径"的骨架上。
+   * 这就是"自己站的链接卡片解析不出来"的根源。
+   */
+  function absUrl(url) {
+    try { return new URL(url, location.href); } catch (e) { return null; }
+  }
+
+  function pathnameOf(url) {
+    var u = absUrl(url);
+    return u ? normPath(u.pathname) : '';
+  }
+
+  (function buildIndex() {
+    Object.keys(SELF).forEach(function (slug) {
+      var e = SELF[slug];
+      if (!e) return;
+      var keys = [];
+      if (e.path) keys.push(normPath(e.path), decodeURIComponent(normPath(e.path)));
+      if (e.url) keys.push(pathnameOf(e.url), decodeURIComponent(pathnameOf(e.url)));
+      keys.push(slug);
+      keys.forEach(function (k) {
+        if (k && !BY_PATH[k]) BY_PATH[k] = e;
+      });
+    });
+  })();
+
   function hostOf(url) {
-    try { return new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return ''; }
+    var u = absUrl(url);
+    return u ? u.hostname.replace(/^www\./, '') : '';
   }
 
   function isSelf(url) {
-    try {
-      return new URL(url).hostname === location.hostname;
-    } catch (e) {
-      return false;
-    }
+    var u = absUrl(url);
+    return !!u && u.hostname === location.hostname;
   }
 
-  /** 自己站的 /posts/<slug>/ → slug，命中索引就返回那篇文章 */
+  /** 自己站的链接 → 索引里的那篇文章；查不到返回 null */
   function selfPost(url) {
-    try {
-      var raw = new URL(url).pathname.replace(/^\/+|\/+$/g, '');
-      var path = decodeURIComponent(raw);
-      var m = path.match(/^posts\/([^/]+)/);
-      if (!m) return null;
-      // self-links.js 的索引 key 是文章 slug 原文（可能是中文、空格等），
-      // 而页面里 href 通常是 percent-encode 过的，两种形态都要查一遍
-      var mRaw = raw.match(/^posts\/([^/]+)/);
-      return SELF[m[1]] || (mRaw && SELF[mRaw[1]]) || null;
-    } catch (e) {}
-    return null;
+    var raw = pathnameOf(url);
+    if (!raw) return null;
+    return (
+      BY_PATH[raw] ||
+      BY_PATH[decodeURIComponent(raw)] ||
+      BY_PATH[normPath(raw).split('/').pop()] ||
+      null
+    );
   }
 
   function isStandaloneLink(a) {
@@ -65,12 +104,23 @@
   function fallbackTitle(a, host) {
     var title = (a.textContent || '').trim();
     if (!title || title === a.href) {
-      try {
-        var seg = new URL(a.href).pathname.split('/').filter(Boolean).pop();
-        title = seg ? decodeURIComponent(seg) : host;
-      } catch (e) { title = host; }
+      var seg = normPath(pathnameOf(a.href)).split('/').filter(Boolean).pop();
+      title = seg ? decodeURIComponent(seg) : host;
     }
     return title;
+  }
+
+  /**
+   * 索引万一还是带了标签/星号（比如以后换主题、excerpt 行为变了），这里兜一层底。
+   * 只做最保守的剥离，正常情况下 generate-self-links.js 已经洗干净了。
+   */
+  function plain(s) {
+    return String(s == null ? '' : s)
+      .replace(/<[^>]+>/g, '')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/`{1,3}([^`]*)`{1,3}/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   /** 域名首字母标：favicon 拿不到时用，纯 CSS 无网络 */
@@ -94,7 +144,11 @@
       '<div class="goose-link-card-body">' +
         '<div class="goose-link-card-domain">' +
           '<span class="goose-link-card-mark"></span>' +
-          '<span></span>' +
+          // ⚠️ 这个域名位必须有自己的 class。
+          // 之前用 '.goose-link-card-domain span:last-child' 选它，结果选中了
+          // mark 里那个首字母标（它也是 span、也是它爹的 last-child，而且文档顺序在前）——
+          // 域名被写进了 14px 的小圆圈里，真正的域名位反倒是空的。
+          '<span class="goose-link-card-host"></span>' +
         '</div>' +
         '<div class="goose-link-card-title"></div>' +
         '<div class="goose-link-card-desc" hidden></div>' +
@@ -103,7 +157,7 @@
 
     var mark = card.querySelector('.goose-link-card-mark');
     mark.appendChild(initialMark(host));
-    card.querySelector('.goose-link-card-domain span:last-child').textContent = host;
+    card.querySelector('.goose-link-card-host').textContent = host;
     card.querySelector('.goose-link-card-title').textContent = fallbackTitle(a, host);
     return card;
   }
@@ -135,9 +189,12 @@
     var descEl = card.querySelector('.goose-link-card-desc');
     var thumbEl = card.querySelector('.goose-link-card-thumb');
 
-    if (data.title) titleEl.textContent = data.title;
-    if (data.description) {
-      descEl.textContent = data.description;
+    var title = plain(data.title);
+    if (title) titleEl.textContent = title;
+
+    var desc = plain(data.description);
+    if (desc) {
+      descEl.textContent = desc;
       descEl.hidden = false;
     }
     if (data.favicon) setFavicon(card, data.favicon);
@@ -219,22 +276,33 @@
         var card = build(a);
         processed.add(card);
 
-        // 自己站的链接：直接查本地索引，不发任何请求
-        var own = isSelf(a.href) ? selfPost(a.href) : null;
+        var self = isSelf(a.href);
+        var own = self ? selfPost(a.href) : null;
+
         if (own) {
+          // 自己站的文章：直接查本地索引，不发任何请求
           applyData(card, {
             title: own.title,
             description: own.excerpt,
             image: own.cover,
-            favicon: '/images/avatar-256.webp'   // 自己站的图标就用站点图标
+            favicon: SELF_FAVICON
           });
+          card.classList.add('is-self');
           // 站内就别新开标签了，走 swup 站内跳转
+          card.target = '_self';
+          card.removeAttribute('rel');
+        } else if (self) {
+          // 自己站但索引里没有（/about/、/friends/、/archives/……）：
+          // 标题已经是链接文字或路径末段，换个自己站的图标就够了，
+          // 不去问外链代理 —— 那等于让代理绕公网回来抓自己站。
+          setFavicon(card, SELF_FAVICON);
+          card.classList.add('is-self');
           card.target = '_self';
           card.removeAttribute('rel');
         }
 
         a.replaceWith(card);
-        if (!own) cards.push({ card: card, url: card.href });
+        if (!self) cards.push({ card: card, url: card.href });
       });
     });
 
@@ -252,8 +320,15 @@
   function boot() {
     scan();
     var root = document.getElementById('swup') || document.body;
+    // swup 换页 / 图片懒加载会在一瞬间塞进几十个节点，不节流的话
+    // 每次变动都全量扫一遍整页 DOM，长文页能明显感到卡
+    var pending = null;
+    var schedule = function () {
+      if (pending) return;
+      pending = setTimeout(function () { pending = null; scan(); }, 120);
+    };
     if (window.MutationObserver) {
-      var mo = new MutationObserver(function () { scan(); });
+      var mo = new MutationObserver(schedule);
       mo.observe(root, { childList: true, subtree: true });
     }
     if (window.swup && window.swup.hooks) {

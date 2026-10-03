@@ -221,10 +221,6 @@ navbar:
       path: /categories
       text: Categories
       icon: fa-regular fa-folder
-    Projects:
-      path: /projects
-      text: Projects
-      icon: fa-regular fa-layer-group
     Friends:
       path: /friends
       text: Friends

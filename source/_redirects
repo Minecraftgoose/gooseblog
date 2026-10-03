@@ -19,3 +19,10 @@
 # OG 默认图（社交分享用）
 /og.jpg                   /images/og-default.jpg         301
 /og-default.jpg           /images/og-default.jpg         301
+
+# 项目页已经整页下架（source/projects/ 已删除，导航栏入口也移除了）。
+# 外面可能还有旧链接/收录指向 /projects，统一送回首页，别让人撞 404。
+# 如果希望它直接 404，把下面这三行删掉即可。
+/projects                 /                               301
+/projects/                /                               301
+/projects/index.html      /                               301
