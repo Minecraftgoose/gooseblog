@@ -39,7 +39,12 @@
       avatar: 'https://www.happycola.top/img/avatar.png'
       description: '写点有趣的东东 awa'
     - name: 晨叶梦春的小屋
-      link: https://www.yumeharu.top/        
+      link: 'https://www.yumeharu.top/'  
       description: Not for the best, just for the better. 
       avatar: https://www.yumeharu.top/images/face.png_compressed.webp       
       thumbnail: https://www.yumeharu.top/images/screenshot_compressed.webp 
+    - name: GooseHyperGlass
+      link: 'https://glass.goose.cc.cd/'
+      thumbnail: 'https://img.goose.cc.cd/i/b1109ea5b1302dd7d143300da5236dfc.webp'
+      avatar: 'https://blog.goose.cc.cd/images/avatar.webp'
+      description: '用CDN让你的网页也拥有液态玻璃！--glas组件库'
