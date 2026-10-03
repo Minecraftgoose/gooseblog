@@ -12,7 +12,7 @@ comment: false
 ```yml
     name: 'GooseBlog'
       link: 'https://blog.goose.cc.cd/'
-      thumbnail: 'https://img.goose.cc.cd/i/72cb24692746402d116a4be14511065f.webp'
+      thumbnail: 'https://blog.goose.cc.cd/images/og.webp'
       avatar: 'https://blog.goose.cc.cd/avatar.webp'
       description: '鹅滴博客嘎嘎'
 ```
