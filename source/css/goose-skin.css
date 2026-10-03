@@ -22,8 +22,13 @@
   display: none;
 }
 
+/* 位置由 share.js 按按钮 rect 算出来写在行内 style 上；
+   这里给一份右下角兜底，按钮 rect 为 0（工具栏收起 / 刚被 swup 换掉）时用，
+   免得面板没拿到坐标、以 static 姿态掉到页面最底部看不见。 */
 .goose-share-panel {
   position: fixed;
+  right: 78px;
+  bottom: 16px;
   z-index: 897;
   background: var(--background-color-transparent-80);
   border: 1px solid var(--border-color);

@@ -142,23 +142,63 @@
     });
   }
 
-  /** 面板贴着工具栏按钮的左侧弹出，跟着按钮走，不写死坐标 */
+  /**
+   * 面板贴着工具栏按钮的左侧弹出，跟着按钮走，不写死坐标。
+   * 按钮不可见（工具栏收起 / 刚被 swup 换掉）时 rect 全 0，
+   * 这时给个右下角兜底位置 —— 原版直接 return，面板会停在 body 末尾的
+   * 静态位置（页面底部），看着像"面板没弹出来"。
+   */
   function placePanel(ball, panel) {
-    var r = ball.getBoundingClientRect();
-    // 按钮不可见（父容器被主题 hide 掉）时 rect 全 0，跳过避免面板飞到屏幕外
-    if (!r.width && !r.height) return;
+    var r = ball && ball.isConnected ? ball.getBoundingClientRect() : null;
+    if (!r || (!r.width && !r.height)) {
+      panel.style.right = '78px';
+      panel.style.bottom = '16px';
+      return;
+    }
     panel.style.right = (window.innerWidth - r.left + 10) + 'px';
     panel.style.bottom = (window.innerHeight - r.bottom) + 'px';
   }
 
+  /**
+   * 判断当前是不是文章页。
+   *
+   * ⚠️ 原来靠 `.article-title` 判断，但 Redefine 文章页的标题实际是
+   *    `.article-title-cover`（有封面）/ `.article-title-regular`（无封面），
+   *    CSS 类选择器是整串匹配，`.article-title` 永远选不中；
+   *    兜底又去看 og:type，而主题调 open_graph() 时没传 type，
+   *    hexo 默认输出的是 website 而不是 article —— 两条路都走不通，
+   *    于是文章页也被判成"非文章页"。
+   *
+   *    改用 `.post-page-container`：它是 article-content.ejs 的根元素，
+   *    而那个 partial 只在 is_post() 为真时渲染，是这篇文章页独有的特征。
+   */
+  function isPostPage() {
+    if (document.querySelector('.post-page-container')) return true;
+    var meta = document.querySelector('meta[property="og:type"]');
+    return !!meta && meta.getAttribute('content') === 'article';
+  }
+
+  function ballEl() {
+    return document.getElementById('gooseShareTool');
+  }
+
   function build() {
-    if (document.getElementById('gooseSharePanel')) return;
+    // ⚠️ 这个脚本带 data-swup-reload-script，swup 每次站内换页都会重新执行它。
+    //    旧版用「panel 是否已存在」判断是否已初始化：panel 挂在 body 上、
+    //    不在 swup 的替换范围内，换页后它还在 → 脚本直接 return，
+    //    可工具栏在 #swup 里、已经被整块换成了新的按钮，新按钮从没绑过事件。
+    //    表现就是：从首页点进文章，分享按钮看得见、点了没反应（直接刷新文章页却正常）。
+    //
+    //    现在改成：初始化只做一次（幂等标记），点击走 document 事件委托，
+    //    每次点击动态取当前的按钮 —— 工具栏换多少次都不会失效。
+    if (window.__gooseShareReady) return;
 
     // 分享按钮挂在主题自带的右下角工具栏里（layout/utils/side-tools.ejs）。
-    // 找不到就说明主题结构变了，静默退出 —— 不回退去造独立悬浮球，
-    // 那玩意儿位置写死，跟齿轮那一列挤在一起很难看。
-    var ball = document.getElementById('gooseShareTool');
-    if (!ball) return;
+    // 找不到就说明工具栏还没渲染出来（或主题结构变了）：先不置位幂等标记，
+    // 下次换页再试。不回退去造独立悬浮球 —— 那玩意儿位置写死，
+    // 跟齿轮那一列挤在一起很难看。
+    if (!ballEl()) return;
+    window.__gooseShareReady = true;
 
     var panel = document.createElement('div');
     panel.id = 'gooseSharePanel';
@@ -172,46 +212,58 @@
     var active = false;
     function setActive(v) {
       active = v;
-      if (v) placePanel(ball, panel);
+      if (v) placePanel(ballEl(), panel);
       panel.classList.toggle('active', v);
     }
 
-    ball.addEventListener('click', function () { setActive(!active); });
+    // 事件委托：不管工具栏被 swup 换成多少个新按钮，点击都能命中当前那一个
     document.addEventListener('click', function (e) {
-      if (active && !ball.contains(e.target) && !panel.contains(e.target)) setActive(false);
+      var ball = ballEl();
+      if (!ball) return;
+      if (ball.contains(e.target)) { setActive(!active); return; }
+      if (active && !panel.contains(e.target)) setActive(false);
     });
+
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && active) setActive(false); });
-    window.addEventListener('resize', function () { if (active) placePanel(ball, panel); });
+    window.addEventListener('resize', function () { if (active) placePanel(ballEl(), panel); });
 
     panel.querySelector('#gooseCopyLink').addEventListener('click', function () { copyLink(); setActive(false); });
     panel.querySelector('#gooseGenPoster').addEventListener('click', function () { genPoster(); setActive(false); });
 
     function check() {
-      // 与 Goose 原逻辑一致：有正文（文章页）才显示
-      var isPost = !!document.querySelector('.markdown-body') && !!document.querySelector('.article-title, .post-title, h1.article-title');
-      if (!isPost) {
-        var meta = document.querySelector('meta[property="og:type"]');
-        isPost = !!meta && meta.getAttribute('content') === 'article';
-      }
-      ball.classList.toggle('hidden', !isPost);
-      if (!isPost) setActive(false);
+      var ball = ballEl();
+      if (!ball) return;
+      var show = isPostPage();
+      ball.classList.toggle('hidden', !show);
+      if (!show) setActive(false);
     }
 
-    var root = document.getElementById('swup') || document.body;
+    // ⚠️ 观察 body 而不是 #swup：swup 换页用的是 element.replaceWith()，
+    //    换掉的是 #swup 这个元素本身，旧引用立刻失效，挂在它上面的
+    //    MutationObserver 从此再也不触发。body 才是换页全程都在的稳定锚点。
+    //    加个节流：懒加载图片、swup 动画会短时间塞进几十个节点，
+    //    不节流的话一次换页能把 check() 刷几十遍。
+    var pending = null;
+    function scheduleCheck() {
+      if (pending) return;
+      pending = setTimeout(function () { pending = null; check(); }, 120);
+    }
     if (window.MutationObserver) {
-      var mo = new MutationObserver(check);
-      mo.observe(root, { childList: true, subtree: true });
+      var mo = new MutationObserver(scheduleCheck);
+      mo.observe(document.body, { childList: true, subtree: true });
     }
-    check();
 
+    function onPageView() { setTimeout(check, 80); }
     if (window.swup && window.swup.hooks) {
-      window.swup.hooks.on('page:view', function () { setTimeout(check, 80); });
+      window.swup.hooks.on('page:view', onPageView);
     } else {
       window.addEventListener('redefine:swup:ready', function (e) {
         var swup = e.detail && e.detail.swup;
-        if (swup && swup.hooks) swup.hooks.on('page:view', function () { setTimeout(check, 80); });
+        if (swup && swup.hooks) swup.hooks.on('page:view', onPageView);
       });
     }
+
+    check();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
