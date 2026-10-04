@@ -19,7 +19,7 @@ comment: false
 
 ### 评论区留言
 
-或者发邮件至 `goose_bai@126.com`
+或者发邮件至 `goose_bai@126.com` ，若这里显示\[email protected]\请刷新页面！
 
 ```txt
 网站名称：
