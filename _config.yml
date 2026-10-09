@@ -31,7 +31,10 @@ archive_dir: archives
 category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
+# _headers / _redirects 是给托管平台读的纯文本，不能被 Hexo 当模板渲染，原样复制即可
 skip_render:
+  - "_headers"
+  - "_redirects"
 
 # Writing
 new_post_name: :title.md
@@ -103,7 +106,12 @@ per_page: 6              # 对齐原站首页每页 6 篇
 pagination_dir: page
 
 # Include / Exclude
+# ⚠️ _headers / _redirects 必须显式写进 include：
+#    Hexo 默认忽略 source/ 下所有下划线开头的文件（_posts / _data 除外），
+#    不加这两行它们根本不会进 public/，托管平台的自定义头和重定向全部失效。
 include:
+  - "_headers"
+  - "_redirects"
 exclude:
 ignore:
 

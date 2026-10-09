@@ -1,0 +1,181 @@
+name: Deploy GooseBlog (Netlify 备胎)
+
+
+on:
+  push:
+    # 和主 workflow 保持一致：main / production → 备胎生产环境
+    branches: [main, production, master]
+  workflow_dispatch:
+
+# 排队执行，别自己打断自己
+concurrency:
+  group: deploy-gooseblog-netlify-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # 和主 workflow 用同一个 Node 版本，避免两份 lockfile 行为不一致
+  NODE_VERSION: '22'
+
+  # ⚠️ netlify-cli 别用 latest。19.x 里 --no-build 被移除、deploy 行为也变过，
+  #    锁大版本号，出问题好定位
+  NETLIFY_CLI_VERSION: '19'
+
+  PRODUCTION_BRANCH: production
+  DEPLOY_PROD_ON: main
+
+jobs:
+  netlify:
+    name: Build & Deploy Netlify Mirror
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # 备胎部署失败不算流水线失败，主站照常上线
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Check required secrets
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          missing=0
+          [ -z "$NETLIFY_AUTH_TOKEN" ] && { echo "::error::缺少 Secret: NETLIFY_AUTH_TOKEN"; missing=1; }
+          [ -z "$NETLIFY_SITE_ID" ]    && { echo "::error::缺少 Secret: NETLIFY_SITE_ID";    missing=1; }
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Netlify 备胎尚未配置，本次跳过（不影响 Cloudflare 主站）"
+            echo "::error::位置：仓库 Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            echo "::warning::未找到 package-lock.json，回退到 npm install"
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Build Hexo site with mirror url
+        env:
+          NETLIFY_SITE_URL: ${{ vars.NETLIFY_SITE_URL }}
+        run: |
+          npx hexo clean
+          if [ -n "$NETLIFY_SITE_URL" ]; then
+            # 只覆盖 url 一项，其余（主题、插件、permalink）全部沿用主配置
+            printf 'url: %s\n' "$NETLIFY_SITE_URL" > _config.netlify.yml
+            echo "备胎 url 覆盖为: $NETLIFY_SITE_URL"
+            npx hexo generate --config _config.yml,_config.netlify.yml
+          else
+            echo "::warning::未设置变量 NETLIFY_SITE_URL，备胎沿用主站 url"
+            npx hexo generate
+          fi
+
+      - name: Ensure platform config files
+        run: |
+          # _headers / _redirects 必须落在产物根目录。
+          # 正常情况 Hexo 已经按 include 复制过来了，这里是兜底，
+          # 防止 _config.yml 的 include 被人改掉后两个文件悄悄消失。
+          [ -f public/_headers ]   || cp source/_headers   public/_headers
+          [ -f public/_redirects ] || cp source/_redirects public/_redirects
+
+      # 链接预览：主站由 Cloudflare Worker 接管 /api/link-preview*，
+      # 备胎没 Worker，这里把同一个路径 rewrite 到等价的 Netlify Function。
+      # 只在备胎产物里追加，主站的 _redirects 保持原样 —— 那条规则在 CF 上
+      # 会 rewrite 到一个不存在的路径，绝不能进主站产物。
+      - name: Add link-preview rewrite (Netlify only)
+        run: |
+          if [ ! -f netlify/functions/link-preview.mjs ]; then
+            echo "::error::缺少 netlify/functions/link-preview.mjs"
+            exit 1
+          fi
+          # 用 echo 而不是 heredoc：heredoc 正文在 YAML 块里会被吃掉缩进，
+          # 而带前导空格的 _redirects 规则行托管平台未必认。
+          {
+            echo ""
+            echo "# ── Netlify 备胎专属 ──────────────────────────────────────────"
+            echo "# 主站的 /api/link-preview 由 Cloudflare Worker 提供；备胎没有 Worker，"
+            echo "# 转给等价的 Netlify Function。用 200（rewrite）而不是 30x："
+            echo "# 前端拿的是相对路径，透明代理，不把 .netlify 内部路径暴露出去。"
+            echo "/api/link-preview  /.netlify/functions/link-preview  200"
+          } >> public/_redirects
+          echo "已追加 link-preview rewrite"
+          tail -2 public/_redirects
+
+      - name: "Optional: noindex the mirror"
+        env:
+          NETLIFY_NOINDEX: ${{ vars.NETLIFY_NOINDEX }}
+        run: |
+          if [ "$NETLIFY_NOINDEX" = "true" ]; then
+            # 在 /* 兜底块里插一行，不覆盖同块已有的安全头
+            sed -i 's|^/\*$|/*\n  X-Robots-Tag: noindex, nofollow|' public/_headers
+            echo "已给备胎全站加上 X-Robots-Tag: noindex"
+          fi
+
+      - name: Verify build output
+        run: |
+          if [ ! -f public/index.html ]; then
+            echo "::error::hexo generate 没有产出 public/index.html"
+            exit 1
+          fi
+          echo "产物大小: $(du -sh public | cut -f1)"
+          echo "HTML 页数: $(find public -name '*.html' | wc -l)"
+
+      - name: Determine deploy target
+        id: target
+        run: |
+          ref="${GITHUB_REF_NAME}"
+          if [ "$ref" = "${DEPLOY_PROD_ON}" ] || [ "$ref" = "$PRODUCTION_BRANCH" ]; then
+            echo "prod=true" >> "$GITHUB_OUTPUT"
+            echo "部署目标：备胎生产环境"
+          else
+            echo "prod=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::分支 $ref 非生产分支，本次只生成 draft 预览 URL"
+          fi
+
+      - name: Deploy to Netlify
+        id: netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          args=(--dir=public --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN")
+          args+=(--message="GooseBlog ${GITHUB_REF_NAME}@${GITHUB_SHA::7}")
+          if [ "${{ steps.target.outputs.prod }}" = "true" ]; then
+            args+=(--prod)
+          fi
+
+          out=$(npx --yes netlify-cli@$NETLIFY_CLI_VERSION deploy "${args[@]}" 2>&1)
+          echo "$out"
+          url=$(echo "$out" | grep -o 'https://[^ ]*netlify.app' | head -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        run: |
+          {
+            echo "### GooseBlog Netlify 备胎部署完成 ✅"
+            echo ""
+            echo "- 分支: \`${GITHUB_REF_NAME}\`"
+            echo "- Commit: \`${GITHUB_SHA::7}\`"
+            echo "- 备胎地址: ${{ steps.netlify.outputs.url }}"
+            if [ "${{ steps.target.outputs.prod }}" = "true" ]; then
+              echo "- 环境: **生产**（--prod）"
+            else
+              echo "- 环境: ⚠️ **Draft 预览**（未加 --prod）"
+            fi
+            echo "- 主站: \`blog.goose.cc.cd\`（Cloudflare Pages，未受影响）"
+            echo "- Worker: 不在本 workflow 部署，走 deploy.yml"
+          } >> "$GITHUB_STEP_SUMMARY"
