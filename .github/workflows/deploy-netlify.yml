@@ -3,7 +3,6 @@ name: Deploy GooseBlog (Netlify 备胎)
 
 on:
   push:
-    # 和主 workflow 保持一致：main / production → 备胎生产环境
     branches: [main, production, master]
   workflow_dispatch:
 
