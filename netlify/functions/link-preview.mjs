@@ -22,9 +22,13 @@
 const OK_TTL = 86400; // og 数据缓存 24h（外站 og 基本不变）
 const ERR_TTL = 60; // 失败只留 60s：挡刷新风暴，又能很快自愈
 
-// ⚠️ 5s 而不是 Worker 那边的 6s。同步函数有执行上限，冷启动本身要吃掉
-//    1–2s，抓取超时得留出余量，否则偶发超时。
-const FETCH_TIMEOUT_MS = 5000;
+// ⚠️ 12s，不再是从前的 5s。
+//    5s 那版是按"同步函数执行上限很短"的旧认知定的，实测不对：
+//    Netlify 同步函数的执行上限是 **60s**，5s 纯属自我设限。
+//    真实链路是：Lambda 冷启动 1–3s + 跨洋 TLS 握手 1–2s + 目标页自身响应
+//    1–3s（GitHub 仓库页是服务端渲染，慢），5s 一压就爆 —— 表现为卡片
+//    永远停在"域名 + 路径末段"的骨架上，而单发 curl 却总是成功。
+const FETCH_TIMEOUT_MS = 12000;
 
 // 只取前 300KB：meta 一定在 head 里，够用了，省内存省时间
 const READ_LIMIT = 300 * 1024;
@@ -53,7 +57,12 @@ const BROWSER_UA =
  */
 export const config = {
   path: '/api/link-preview',
-  method: ['GET', 'OPTIONS']
+  method: ['GET', 'OPTIONS'],
+  // ⚠️ region 写死在代码里，优先级高于后台的站点级设置，改完 redeploy 即生效。
+  //    默认是 cmh（俄亥俄）：从美国中部跨太平洋来抓国内站/亚洲站，光握手就
+  //    1–2s，这是备胎"抓图不好使"的最大单一成因。sin（新加坡）离目标站最近。
+  //    备选：nrt（东京）/ syd（悉尼）/ fra（法兰克福）。
+  region: 'sin'
 };
 
 /** Netlify Function（现代语法：Web Request / Response） */
@@ -148,8 +157,15 @@ async function scrape(target) {
       redirect: 'follow',
       headers: {
         'User-Agent': BROWSER_UA,
-        Accept: 'text/html,application/xhtml+xml',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
+        // 只写 text/html 会被部分站点的 Accept 嗅探判成爬虫，补全成浏览器全套
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        // 防盗链站按 Referer 放行，不带就是 403
+        Referer: new URL(target).origin + '/'
       }
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -246,6 +262,10 @@ async function scrape(target) {
   };
 
   image = abs(image);
+  // og:image 写成 http:// 的话，卡片在 https 页面上会被浏览器按混合内容静默拦掉：
+  // 函数明明返回了图，img.onerror 照样把缩略图藏了，页面上只看到骨架。
+  if (/^http:\/\//i.test(image)) image = 'https://' + image.slice(7);
+
   favicon = favicon ? favicon.replace(/&amp;/g, '&') : '';
   favicon = abs(favicon);
 

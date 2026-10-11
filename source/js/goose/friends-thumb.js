@@ -1,6 +1,6 @@
 (function () {
   var API = (window.__GOOSE_LINK_PREVIEW__ || '/api/link-preview').replace(/\/$/, '');
-  var TIMEOUT_MS = 8000;
+  var TIMEOUT_MS = 10000;   // 与 link-card.js 对齐
   var MAX_CONCURRENCY = 3;
 
   function fill() {
@@ -38,7 +38,7 @@
     runQueue(jobs);
   }
 
-  function fetchWithTimeout(url) {
+  function once(url) {
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, TIMEOUT_MS);
     return fetch(API + '?url=' + encodeURIComponent(url), {
@@ -54,6 +54,11 @@
         clearTimeout(timer);
         return null;
       });
+  }
+
+  // 与 link-card.js 同策略：备胎冷启动那一发最容易超时，实例热了第二发基本必成
+  function fetchWithTimeout(url) {
+    return once(url).then(function (d) { return d || once(url); });
   }
 
   function runQueue(jobs) {

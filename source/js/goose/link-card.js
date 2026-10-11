@@ -25,8 +25,13 @@
   var API = (window.__GOOSE_LINK_PREVIEW__ || '/api/link-preview').replace(/\/$/, '');
   var SELF = window.__GOOSE_SELF_LINKS__ || {};
   var SELF_FAVICON = '/images/avatar-256.webp';
-  var MAX_CONCURRENCY = 4;   // 别一口气把整页链接全发出去
-  var TIMEOUT_MS = 8000;
+  // ⚠️ 10s，原来 8s 不够：备胎函数冷启动 + 跨洋抓取的 worst case 会顶到 8s 线上，
+  //    表现为"curl 单发总能通、页面上看就是没图"。函数是渐进渲染的，等久一点
+  //    不影响阅读（卡片骨架一开始就画好了）。
+  var TIMEOUT_MS = 10000;
+  // 并发提到 6：瓶颈是等待 Lambda 冷启动，不是带宽。并行度低了，后面的链接
+  // 只能排队等前面的跑完，白白叠加上去。
+  var MAX_CONCURRENCY = 6;
   var processed = new WeakSet();
   var cache = Object.create(null);   // 同一链接在一页里出现多次只请求一次
 
@@ -216,12 +221,12 @@
     }
   }
 
-  function fetchPreview(url) {
-    if (cache[url]) return cache[url];
+  /** 单次请求；失败返回 null，不抛 */
+  function once(url) {
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, TIMEOUT_MS);
 
-    var p = fetch(API + '?url=' + encodeURIComponent(url), {
+    return fetch(API + '?url=' + encodeURIComponent(url), {
       signal: ctrl ? ctrl.signal : undefined,
       headers: { Accept: 'application/json' }
     })
@@ -235,7 +240,23 @@
         clearTimeout(timer);
         return null;
       });
+  }
 
+  /**
+   * 失败自动重试一次。
+   *
+   * 备胎函数访问量低 = 几乎每次都是冷启动，冷启动那一发最容易超时；
+   * 而它一跑完，实例就是热的了，第二发基本必成。所以"重试一次"对备胎
+   * 是投入产出最高的一招 —— 单次 curl 测不出来（单发要么是冷的碰运气、
+   * 要么是热的走缓存），页面上一堆链接并发才暴露。
+   *
+   * 只重试一次：再失败就认了，保持降级外观，不把对方站点当压力测试。
+   */
+  function fetchPreview(url) {
+    if (cache[url]) return cache[url];
+    var p = once(url).then(function (data) {
+      return data || once(url);
+    });
     cache[url] = p;
     return p;
   }

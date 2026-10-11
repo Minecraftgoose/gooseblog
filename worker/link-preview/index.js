@@ -106,7 +106,7 @@ export default {
 /** 抓目标页的 og / meta 信息 */
 async function scrape(target) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 6000); // 6s 超时，别拖慢页面
+  const timer = setTimeout(() => controller.abort(), 10000); // 10s，与 Netlify 备胎对齐
 
   let html;
   try {
@@ -117,8 +117,14 @@ async function scrape(target) {
         // 不少站点对默认 UA 直接返回 403 / 给爬虫页，伪装成正常浏览器
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-        Accept: 'text/html,application/xhtml+xml',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        // 防盗链站按 Referer 放行，不带就是 403
+        Referer: new URL(target).origin + '/'
       }
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -209,6 +215,10 @@ async function scrape(target) {
   };
 
   image = abs(image);
+  // og:image 是 http:// 时，卡片在 https 页面会被浏览器按混合内容静默拦掉：
+  // 接口明明返回了图，img.onerror 照样把缩略图藏了，页面上只看到骨架。
+  if (/^http:\/\//i.test(image)) image = 'https://' + image.slice(7);
+
   favicon = favicon ? favicon.replace(/&amp;/g, '&') : '';
   favicon = abs(favicon);
 
