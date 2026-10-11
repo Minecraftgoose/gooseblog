@@ -263,7 +263,7 @@ const decode = (s) =>
 
 function originOf(request) {
   const o = request.headers.get('Origin');
-  const allow = ['https://blog.goose.cc.cd', 'http://localhost:4000'];
+  const allow = ['https://blog.goose.cc.cd', 'https://blog.cyann.top'];
   if (o && allow.includes(o)) return o;
   return allow[0];
 }
