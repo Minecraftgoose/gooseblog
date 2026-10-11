@@ -4,9 +4,10 @@
   "private": true,
   "description": "GooseBlog — 从 Cloudflare Pages SPA + Supabase 迁移到 Hexo 静态站（主题：hexo-theme-redefine）",
   "scripts": {
-    "build": "hexo clean && hexo generate",
+    "build": "hexo clean && hexo generate && npm run cache-bust",
     "clean": "hexo clean",
-    "generate": "hexo generate",
+    "generate": "hexo generate && npm run cache-bust",
+    "cache-bust": "node scripts/cache-bust.js",
     "server": "hexo server",
     "import:csv": "node tools/import-from-csv.mjs"
   },

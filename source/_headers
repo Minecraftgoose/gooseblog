@@ -1,36 +1,127 @@
-# Cloudflare Pages 静态头信息
-# 对应原站 blog/_headers，路径按 Hexo 产物目录重排
+# =============================================================
+# GooseBlog —— 缓存策略（Cloudflare Pages 主站 / Netlify 备胎通用）
+# =============================================================
+#
+# 前提：产物先经过 scripts/cache-bust.js。
+#   它把 HTML / CSS 里的站内资源引用改写成 /js/app.js?v=<内容hash>，
+#   于是「内容变了 URL 就变」，这才敢给 JS / CSS 一年的 immutable。
+#   ⚠️ 一旦把 cache-bust 从 `npm run build` 里摘掉，必须同步把下面的
+#      /js/* 与 /css/* 改回 max-age=0, must-revalidate —— 否则站点更新
+#      永远推不到老访客浏览器里（URL 不变就不会重新下载）。
+#
+# ⚠️⚠️ 最重要的一条：Cache-Control 绝对不能写进 /* 那条规则里。
+#   Cloudflare Pages 的规则是「命中多条就继承全部」，同名 header 不是覆盖，
+#   而是用逗号拼在一起：
+#     public, max-age=0, must-revalidate, …, public, max-age=31536000, immutable
+#   两个 max-age 打架，浏览器取哪个没有保证，长缓存直接失效。
+#   所以 /* 只放安全头，Cache-Control 一律由下面**互不重叠**的路径规则给。
+#   新增规则前先确认：这条路径会不会和已有规则同时命中同一个请求。
+#
+# ⚠️ 每个目录都写成 `/x` + `/x/*` 两条：
+#   Cloudflare 的 splat（*）贪婪匹配、能跨 /；Netlify 的 wildcard 只保证在
+#   单个 path segment 内匹配。分两条写，两家平台行为一致，不用记差别。
+#
+# stale-while-revalidate（SWR）：过期后先渲染旧的、后台再校验。
+#   浏览器和两家 CDN 都支持，本站提速最明显的一招 —— 页面照旧秒开，
+#   同时保证下一次拿到的一定是新内容，不存在"锁死旧版"。
+#
+# 页面 URL 不带 .html（pretty_urls），所以 HTML 只能按目录穷举。
+#   漏掉某条也没安全问题：没匹配到规则的资源会拿平台默认的 no-cache，
+#   只是少一层 SWR，不会把内容锁死。
 
-# 站点自身的 JS / CSS：改动频繁，每次都要校验
-/js/*
-  Cache-Control: public, max-age=0, must-revalidate
-/css/*
-  Cache-Control: public, max-age=0, must-revalidate
-
-# 第三方库（prism 等）：带 hash 且几乎不变，长缓存
-/vendor/*
-  Cache-Control: public, max-age=604800
-
-# Goose 原站资源：壁纸 / 头像 / OG 图不常变，缓存一天
-/images/*
-  Cache-Control: public, max-age=86400
-
-# 根目录头像副本：别处的友链还在引用 https://blog.goose.cc.cd/avatar.webp，
-# 这个文件要一直保留（实体文件，不走重定向，避免对端不跟随 301）
-/avatar.webp
-  Cache-Control: public, max-age=86400
-
-# 搜索索引 / RSS / sitemap：要能被及时抓到最新
-/search.xml
-  Cache-Control: public, max-age=0, must-revalidate
-/atom.xml
-  Cache-Control: public, max-age=3600
-/sitemap.xml
-  Cache-Control: public, max-age=3600
-/sitemap.txt
-  Cache-Control: public, max-age=3600
-
-# 全站兜底安全头
+# ── 全站安全头（唯一一处，其余规则不再重复）────────────────────
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+
+# ── HTML 页面 ───────────────────────────────────────────────────
+# 文章 / 首页 / 归档页路径都是固定的（/posts/xxx/），内容却会更新，
+# 绝不能给长 max-age。max-age=0 保证每次校验（ETag → 304，几十毫秒），
+# 配 SWR 让浏览器先把旧页面画出来再后台刷新，感知上等同秒开。
+# swup 站内跳转也是 fetch HTML，一样吃到这层收益。
+/
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/404.html
+  Cache-Control: public, max-age=0, must-revalidate
+/page
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/page/*
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/posts
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/posts/*
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/archives
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/archives/*
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/categories
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/categories/*
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/tags
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/tags/*
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/about
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/about/*
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/friends
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+/friends/*
+  Cache-Control: public, max-age=0, must-revalidate, stale-while-revalidate=86400
+
+# ── 本地搜索索引 ────────────────────────────────────────────────
+# 发完新文章要能立刻搜到，保持每次校验。
+/search.xml
+  Cache-Control: public, max-age=0, must-revalidate
+
+# ── RSS / Sitemap ───────────────────────────────────────────────
+# 阅读器和爬虫抓得勤，给 1 小时强缓存挡掉重复抓取，靠 SWR 兜底新鲜度。
+/atom.xml
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/sitemap.xml
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/sitemap.txt
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+# ── 站点自身 JS / CSS ───────────────────────────────────────────
+# 已带 ?v= 指纹 → 一年 immutable，重复访问零请求。
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+# 主题自带的独立样式（hbe.style.css / odometer 主题等）
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+# Font Awesome 的 CSS（1.1M，全站每个页面都要）
+/fontawesome/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── 第三方库（prism 及其语言包）──────────────────────────────────
+# 版本锁死、几乎不动，一年。
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── 图片 ────────────────────────────────────────────────────────
+# 只给 30 天而不是一年：og.webp 会被微信 / TG / 微博这类抓取器按原 URL
+# 抓走（不带 ?v=），一年 immutable 等于把旧封面钉死一整年。
+# 站内 HTML 引用带指纹，换图立刻生效；抓取器那侧 30 天刷新一次，够用。
+/images/*
+  Cache-Control: public, max-age=2592000, immutable
+# 根目录头像副本：别处的友链还在引用 https://blog.goose.cc.cd/avatar.webp，
+# 这个文件要一直保留（实体文件，不走重定向，避免对端不跟随 301）。
+/avatar.webp
+  Cache-Control: public, max-age=2592000, immutable
+
+# ── 字体 ────────────────────────────────────────────────────────
+# ⚠️ 字体是在 CSS 内部用相对路径（../fonts/x.woff2）引用的，cache-bust
+#    够不到，URL 不会变。所以这里只给 30 天而不是一年：
+#    换字体时要么改文件名，要么接受最长 30 天的过渡期。
+/fonts/*
+  Cache-Control: public, max-age=2592000, immutable
+/webfonts/*
+  Cache-Control: public, max-age=2592000, immutable

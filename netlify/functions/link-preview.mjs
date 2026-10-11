@@ -3,17 +3,16 @@
  *
  * 主站 blog.goose.cc.cd 的 /api/link-preview 由 Cloudflare Worker 提供
  * （worker/link-preview/index.js）。Netlify 备胎上跑不了 Worker，所以用
- * Netlify Function 实现等价能力，再靠 _redirects 把它 rewrite 到
- * /api/link-preview —— 前端 link-card.js 的 API 地址是相对路径，因此
- * 前端代码一行都不用改，主站备胎共用同一份产物。
+ * Netlify Function 实现等价能力。前端 link-card.js 的 API 地址是相对路径，
+ * 因此前端代码一行都不用改，主站备胎共用同一份产物。
  *
  * ⚠️ 这份代码是 worker/link-preview/index.js 的**刻意副本**，不是公共模块。
  *    灾备组件和主站必须物理解耦才有意义：抽公共模块的话，一个 bug 会让两边
  *    同时挂掉，备胎就白备了。代价是逻辑重复，所以——
  *    改了这边，请手动同步 worker/link-preview/index.js，反之亦然。
  *
- * 路由：/.netlify/functions/link-preview?url=https://example.com
- *      （对外由 _redirects 暴露成 /api/link-preview?url=...）
+ * 路由：GET /api/link-preview?url=https://example.com
+ *      （由下面的 config.path 声明，不需要 _redirects 参与）
  * 返回：{ title, description, image, favicon, domain }
  *       字段与 Worker 版完全一致，前端无需区分站点
  *
@@ -23,8 +22,8 @@
 const OK_TTL = 86400; // og 数据缓存 24h（外站 og 基本不变）
 const ERR_TTL = 60; // 失败只留 60s：挡刷新风暴，又能很快自愈
 
-// ⚠️ 5s 而不是 Worker 那边的 6s：Netlify Function 同步调用有 10s 硬上限，
-//    冷启动本身要吃掉 1–2s，抓取超时得留出余量，否则偶发 502。
+// ⚠️ 5s 而不是 Worker 那边的 6s。同步函数有执行上限，冷启动本身要吃掉
+//    1–2s，抓取超时得留出余量，否则偶发超时。
 const FETCH_TIMEOUT_MS = 5000;
 
 // 只取前 300KB：meta 一定在 head 里，够用了，省内存省时间
@@ -35,30 +34,56 @@ const BROWSER_UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
   '(KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 
-/** Netlify handler（v1 签名，兼容性最好，不依赖 Web Streams 运行时） */
-export const handler = async (event) => {
-  const cors = corsHeaders(originOf(event));
+/**
+ * ⚠️⚠️ 路由用 config.path 声明式挂载，不再走 _redirects rewrite。
+ *
+ *    旧方案是往备胎产物的 _redirects 里追加一条
+ *      /api/link-preview  /.netlify/functions/link-preview  200
+ *    多一个环节就多一个故障点：rewrite 规则和 function 部署只要有一个没生效，
+ *    对外路径就是 404。而前端是静默降级的（fetch 失败就保持骨架），页面上只
+ *    表现为"没图"，从前端完全看不出是 404 还是超时，查都没处查。
+ *
+ *    config.path 是 Netlify 官方的声明式路由：函数部署成功 == 路径可用，
+ *    少一环依赖。代价是函数不再出现在 /.netlify/functions/link-preview 上，
+ *    所以 CI 里追加 rewrite 的那一步必须一并删掉 —— 让它指向一个不存在的
+ *    路径反而会变回 404。
+ *
+ *    method 必须显式带上 OPTIONS：同源简单 GET 不会预检，但 netlify dev 或
+ *    将来从别的域调用时会发预检，漏了 OPTIONS 就是预检 405、整个请求失败。
+ */
+export const config = {
+  path: '/api/link-preview',
+  method: ['GET', 'OPTIONS']
+};
+
+/** Netlify Function（现代语法：Web Request / Response） */
+export default async (req) => {
+  const cors = corsHeaders(req);
 
   // CORS 预检
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: cors, body: '' };
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: cors });
   }
 
-  if (event.httpMethod !== 'GET') {
-    return json({ error: 'Method not allowed' }, 405, cors);
+  // config.method 已经限了，这里再显式挡一次：
+  // 本地 netlify dev / 直接单元测试时不一定走平台的方法路由，
+  // 没有这行的话 POST 会一路走到抓取逻辑，白白打一次外网请求。
+  if (req.method !== 'GET') {
+    return json({ error: 'Method not allowed' }, 405, req);
   }
 
-  const target = (event.queryStringParameters || {}).url;
-  if (!target) return json({ error: 'missing url' }, 400, cors);
+  const url = new URL(req.url);
+  const target = url.searchParams.get('url');
+  if (!target) return json({ error: 'missing url' }, 400, req);
 
   let parsed;
   try {
     parsed = new URL(target);
   } catch {
-    return json({ error: 'bad url' }, 400, cors);
+    return json({ error: 'bad url' }, 400, req);
   }
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-    return json({ error: 'unsupported protocol' }, 400, cors);
+    return json({ error: 'unsupported protocol' }, 400, req);
   }
 
   // ── SSRF 防护 ──────────────────────────────────────────────────
@@ -86,7 +111,7 @@ export const handler = async (event) => {
     /^\[?(?:fc|fd)[0-9a-f]{2}:/i.test(host) || // IPv6 唯一本地 fc00::/7
     /^\[?fe[89ab][0-9a-f]:/i.test(host) // IPv6 链路本地 fe80::/10
   ) {
-    return json({ error: 'forbidden host' }, 403, cors);
+    return json({ error: 'forbidden host' }, 403, req);
   }
 
   let result;
@@ -103,13 +128,12 @@ export const handler = async (event) => {
   const failed = Boolean(result.error);
   const ttl = failed ? ERR_TTL : OK_TTL;
 
-  return json(result, 200, cors, {
-    'Cache-Control': 'public, max-age=' + ttl,
-    // Netlify CDN 对 function 响应的缓存走这个头；能命中就少跑一次 Lambda，
-    // 没命中也无所谓，只是多花一次冷启动。
-    'CDN-Cache-Control': 'public, max-age=' + ttl,
-    'X-Goose-Cache': failed ? 'MISS-ERR' : 'MISS'
-  });
+  const res = json(result, 200, req);
+  res.headers.set('Cache-Control', 'public, max-age=' + ttl);
+  // Netlify CDN 对 function 响应的缓存走这个头；能命中就少跑一次 Lambda。
+  res.headers.set('CDN-Cache-Control', 'public, max-age=' + ttl);
+  res.headers.set('X-Goose-Cache', failed ? 'MISS-ERR' : 'MISS');
+  return res;
 };
 
 /** 抓目标页的 og / meta 信息 */
@@ -264,67 +288,66 @@ const decode = (s) =>
     .replace(/&nbsp;/g, ' ')
     .trim();
 
-/** 取请求头，Netlify 给的键名大小写不完全一致，统一小写再找 */
-function headerOf(event, name) {
-  const h = event.headers || {};
-  const lower = name.toLowerCase();
-  for (const k of Object.keys(h)) {
-    if (k.toLowerCase() === lower) return h[k];
-  }
-  return '';
-}
-
 /**
  * 允许的来源。
- * 默认用 Netlify 自带的环境变量拼，这样换域名、跑 deploy preview 都不用改代码：
- *   DEPLOY_PRIME_URL = 当前这次部署的 URL（preview 部署时是 preview 域名）
- *   URL             = 站点主 URL
+ *
+ * 第一位放「函数自己被访问时的那个 origin」：备胎换成什么域名（netlify.app、
+ * deploy preview、自定义域名）它都跟着变，不用改代码也不用配环境变量。
+ * 再拼上 Netlify 给的 DEPLOY_PRIME_URL / URL，最后补两个本地开发端口。
+ *
  * 想锁死白名单就在 Netlify 后台设 GOOSE_ALLOWED_ORIGINS（逗号分隔）。
+ *
+ * 顺带说明：卡片是从备胎自己的页面 fetch 相对路径，属于同源请求，
+ * 浏览器根本不检查 CORS —— 这里的白名单主要是给 netlify dev 和
+ * 将来可能的跨域调用兜底，不是"没配置就没图"的那种开关。
  */
-function allowedOrigins() {
+function allowedOrigins(req) {
   const envList = (process.env.GOOSE_ALLOWED_ORIGINS || '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
   if (envList.length) return envList;
 
-  const site = (
-    process.env.DEPLOY_PRIME_URL ||
-    process.env.URL ||
-    ''
-  ).replace(/\/$/, '');
-
   const list = [];
-  if (site) list.push(site);
+  try {
+    list.push(new URL(req.url).origin);
+  } catch {
+    /* req.url 理论上恒为合法绝对地址，兜个底而已 */
+  }
+  for (const v of [
+    process.env.DEPLOY_PRIME_URL,
+    process.env.URL,
+    process.env.DEPLOY_URL
+  ]) {
+    if (v) list.push(String(v).replace(/\/$/, ''));
+  }
   // hexo server 默认 4000，netlify dev 默认 8888
   list.push('http://localhost:4000', 'http://localhost:8888');
-  return list;
+  return Array.from(new Set(list));
 }
 
-function originOf(event) {
-  const allow = allowedOrigins();
-  const o = headerOf(event, 'origin');
+function originOf(req) {
+  const allow = allowedOrigins(req);
+  const o = req.headers.get('origin') || '';
   if (o && allow.includes(o)) return o;
   return allow[0];
 }
 
-function corsHeaders(origin) {
+function corsHeaders(req) {
   return {
-    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Origin': originOf(req),
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin'
   };
 }
 
-function json(data, status, cors, extra) {
-  return {
-    statusCode: status,
+function json(data, status, req) {
+  return new Response(JSON.stringify(data), {
+    status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      ...cors,
-      ...(extra || {})
-    },
-    body: JSON.stringify(data)
-  };
+      ...corsHeaders(req)
+    }
+  });
 }

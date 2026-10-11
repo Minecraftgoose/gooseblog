@@ -3,9 +3,11 @@ name: Deploy GooseBlog (Netlify 备胎)
 
 on:
   push:
+    # 和主 workflow 保持一致：main / production → 备胎生产环境
     branches: [main, production, master]
   workflow_dispatch:
 
+# 排队执行，别自己打断自己
 concurrency:
   group: deploy-gooseblog-netlify-${{ github.ref }}
   cancel-in-progress: false
@@ -14,8 +16,11 @@ permissions:
   contents: read
 
 env:
+  # 和主 workflow 用同一个 Node 版本，避免两份 lockfile 行为不一致
   NODE_VERSION: '22'
 
+  # ⚠️ netlify-cli 别用 latest。19.x 里 --no-build 被移除、deploy 行为也变过，
+  #    锁大版本号，出问题好定位
   NETLIFY_CLI_VERSION: '19'
 
   PRODUCTION_BRANCH: production
@@ -26,6 +31,7 @@ jobs:
     name: Build & Deploy Netlify Mirror
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # 备胎部署失败不算流水线失败，主站照常上线
     continue-on-error: true
 
     steps:
@@ -49,7 +55,7 @@ jobs:
           [ -z "$NETLIFY_AUTH_TOKEN" ] && { echo "::error::缺少 Secret: NETLIFY_AUTH_TOKEN"; missing=1; }
           [ -z "$NETLIFY_SITE_ID" ]    && { echo "::error::缺少 Secret: NETLIFY_SITE_ID";    missing=1; }
           if [ "$missing" -ne 0 ]; then
-            echo "::error::Netlify 未配置，本次跳过"
+            echo "::error::Netlify 备胎尚未配置，本次跳过（不影响 Cloudflare 主站）"
             echo "::error::位置：仓库 Settings → Secrets and variables → Actions"
             exit 1
           fi
@@ -77,6 +83,10 @@ jobs:
             echo "::warning::未设置变量 NETLIFY_SITE_URL，备胎沿用主站 url"
             npx hexo generate
           fi
+          # 缓存指纹必须在 generate 之后跑：它改的是 public/ 里的产物。
+          # 少了这一步，_headers 里 /js/* /css/* 的一年 immutable 会把
+          # 后续更新永远挡在老访客的浏览器外面。
+          npm run cache-bust
 
       - name: Ensure platform config files
         run: |
@@ -86,24 +96,36 @@ jobs:
           [ -f public/_headers ]   || cp source/_headers   public/_headers
           [ -f public/_redirects ] || cp source/_redirects public/_redirects
 
-      - name: Add link-preview rewrite (Netlify only)
+      # 链接预览：主站由 Cloudflare Worker 接管 /api/link-preview*，
+      # 备胎没 Worker，由 netlify/functions/link-preview.mjs 顶上。
+      #
+      # ⚠️ 这里**不再**往 _redirects 里追加 rewrite 规则了。
+      #    旧方案是追加一条
+      #      /api/link-preview  /.netlify/functions/link-preview  200
+      #    多一环就多一个故障点：rewrite 和 function 部署只要有一个没生效，
+      #    对外路径就是 404，而前端静默降级，页面上只表现为"没图"。
+      #    现在函数用自己的 config.path 声明式挂在 /api/link-preview 上，
+      #    函数部署成功 == 路径可用，_redirects 保持与主站完全一致。
+      #    （反过来说：一旦把 config.path 去掉，就必须把 rewrite 加回来。）
+      - name: Verify link-preview function source
         run: |
-          if [ ! -f netlify/functions/link-preview.mjs ]; then
-            echo "::error::缺少 netlify/functions/link-preview.mjs"
+          f=netlify/functions/link-preview.mjs
+          if [ ! -f "$f" ]; then
+            echo "::error::缺少 $f"
             exit 1
           fi
-          # 用 echo 而不是 heredoc：heredoc 正文在 YAML 块里会被吃掉缩进，
-          # 而带前导空格的 _redirects 规则行托管平台未必认。
-          {
-            echo ""
-            echo "# ── Netlify 备胎专属 ──────────────────────────────────────────"
-            echo "# 主站的 /api/link-preview 由 Cloudflare Worker 提供；备胎没有 Worker，"
-            echo "# 转给等价的 Netlify Function。用 200（rewrite）而不是 30x："
-            echo "# 前端拿的是相对路径，透明代理，不把 .netlify 内部路径暴露出去。"
-            echo "/api/link-preview  /.netlify/functions/link-preview  200"
-          } >> public/_redirects
-          echo "已追加 link-preview rewrite"
-          tail -2 public/_redirects
+          # config.path 是这条链路的命门：没有它，函数只会挂在
+          # /.netlify/functions/link-preview 上，而前端请求的是 /api/link-preview。
+          if ! grep -q "path: '/api/link-preview'" "$f"; then
+            echo "::error::$f 里找不到 config.path = /api/link-preview，抓图会 404"
+            exit 1
+          fi
+          # 主站产物绝不能出现这条 rewrite：Cloudflare 上 /.netlify/ 是不存在的路径。
+          if grep -q "netlify/functions" public/_redirects; then
+            echo "::error::public/_redirects 里残留 .netlify/functions rewrite，请检查"
+            exit 1
+          fi
+          echo "link-preview 函数源码校验通过（config.path 已声明）"
 
       - name: "Optional: noindex the mirror"
         env:
@@ -144,13 +166,17 @@ jobs:
         run: |
           args=(--dir=public --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN")
           # ⚠️ 必须显式带 --functions：
-          #    netlify deploy 只是把 --dir 里的静态产物传上去，不会自己跑构建、
-          #    也就不会去打包 netlify/functions。少了这个参数，函数文件根本不会
-          #    上传，/.netlify/functions/link-preview 直接 404 ——
-          #    而 _redirects 已经把 /api/link-preview rewrite 到了这个地址，
-          #    于是站内站外所有走代理的卡片全部抓不到图（前端只看到 404，静默降级）。
-          #    这个失败是静默的：deploy 照样成功、站点照样能开，只有抓图全挂。
+          #    netlify deploy 只是把 --dir 里的静态产物传上去，不会去打包
+          #    netlify/functions。少了这个参数，函数文件根本不会上传，
+          #    /api/link-preview 直接 404 —— 前端静默降级，页面上只表现为
+          #    "卡片没图"。这个失败是静默的：deploy 照样成功、站点照样能开。
+          #
+          #    ⚠️ 路径写 netlify/functions（相对仓库根），不是 public/... ：
+          #    functions 目录也必须在发布目录之外，否则源码会被当静态资源传上去。
           args+=(--functions=netlify/functions)
+          # ⚠️ 别让 CLI 复用上一次的打包缓存：缓存里存的是旧函数，
+          #    改完函数代码却命中缓存就会deploy 出旧版本，症状是"改了没效果"。
+          args+=(--skip-functions-cache)
           args+=(--message="GooseBlog ${GITHUB_REF_NAME}@${GITHUB_SHA::7}")
           if [ "${{ steps.target.outputs.prod }}" = "true" ]; then
             args+=(--prod)
@@ -161,6 +187,15 @@ jobs:
           url=$(echo "$out" | grep -o 'https://[^ ]*netlify.app' | head -1)
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
+      # 抓图是静默降级的能力：挂了不影响页面打开，只有卡片没图，不主动探
+      # 一下根本发现不了。
+      #
+      # ⚠️ 光看 HTTP 状态码不够。函数返回 200 也可能是 { error: "HTTP 403" }
+      #    —— 前端同样判定失败、同样不显示图。所以这里必须把 body 打出来，
+      #    并区分三种结果：
+      #      404        → 函数压根没部署上去（八成是 --functions 没生效）
+      #      200 + error→ 函数活着但抓取失败（超时 / 被目标站拒绝）
+      #      200 + 数据 → 正常
       - name: Smoke test link-preview endpoint
         env:
           DEPLOY_URL: ${{ steps.netlify.outputs.url }}
@@ -169,16 +204,38 @@ jobs:
             echo "::warning::没解析出部署 URL，跳过冒烟测试"
             exit 0
           fi
-          # 打对外路径 /api/link-preview：通了就说明
-          # _redirects 的 rewrite 和 Netlify Function 两边都活着。
-          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 \
-            "$DEPLOY_URL/api/link-preview?url=https%3A%2F%2Fexample.com" || echo "000")
-          echo "link-preview 冒烟测试 HTTP: $code"
-          if [ "$code" = "404" ]; then
-            echo "::warning::/api/link-preview 返回 404 —— Function 没上传或 _redirects 没生效，站内站外抓图会全挂"
-          elif [ "$code" = "000" ]; then
-            echo "::warning::/api/link-preview 请求失败或超时"
+
+          probe="$DEPLOY_URL/api/link-preview?url=https%3A%2F%2Fexample.com"
+
+          # -D 把响应头单独存文件，body 直接读；分两次 curl 会打到两次冷启动
+          code=$(curl -s -D /tmp/hdr.txt -o /tmp/body.txt -w "%{http_code}" \
+            --max-time 30 "$probe" || echo "000")
+
+          echo "──── link-preview 冒烟测试 ────"
+          echo "URL: $probe"
+          echo "HTTP: $code"
+          echo "响应头 X-Goose-Cache: $(grep -i '^x-goose-cache' /tmp/hdr.txt | tr -d '\r')"
+          echo "响应体: $(cat /tmp/body.txt)"
+          echo "───────────────────────────────"
+
+          if [ "$code" = "000" ]; then
+            echo "::warning::请求失败或超时，函数可能没起来"
+            exit 0
           fi
+          if [ "$code" = "404" ]; then
+            echo "::error::/api/link-preview 返回 404 —— 函数没部署上去。检查 deploy 有没有带 --functions=netlify/functions，以及函数里的 config.path 是否还在"
+            exit 0
+          fi
+          if [ "$code" != "200" ]; then
+            echo "::warning::/api/link-preview 返回非 200（$code）"
+            exit 0
+          fi
+          # 200 了还要看内容：error 字段存在 = 抓取失败，卡片照样没图
+          if grep -q '"error"' /tmp/body.txt; then
+            echo "::warning::函数返回 200 但带 error 字段 —— 抓取目标站失败了（超时/403），卡片仍会是空的"
+            exit 0
+          fi
+          echo "✅ link-preview 正常返回了预览数据"
 
       - name: Summary
         run: |

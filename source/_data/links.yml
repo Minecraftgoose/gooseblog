@@ -41,3 +41,8 @@
       thumbnail: 'https://workspace-zb-cdn.qianwen.com/2e55ed9a41bd43f98c9baba252a9cf2d%2Fo%2F1791646315834-c.png?auth_key=1823186220-0-0-61fe4772ad0d5fa50b65b9d7f53cab13'
       avatar: 'https://avatar.moonshot.cn/avatar/d305r74nvj4ml242n0dg/1781531691373077.png'
       description: 长月作品集'
+    - name: HN Space
+      link: 'https://blog.hn-space.cn'
+      thumbnail: 'https://workspace-zb-cdn.qianwen.com/b24418002144424b98804a5a663b9401%2Fo%2F1791681870403-c.png?auth_key=1823219100-0-0-82f486a277c8c29dcb92e3f746e62252'
+      avatar: 'https://blog.hn-space.cn/avatar.svg'
+      description: '技术向个人网站：开发环境配置、Windows 系统重装教程与编程实践。'
