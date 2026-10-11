@@ -1,8 +1,5 @@
 # GooseBlog —— 链接预览代理
 #
-# 这是全站唯一保留的 Worker。它不连数据库、不读任何 Secret，
-# 只是替浏览器去抓外链的 og:image / og:title / og:description（因为浏览器
-# 直接 fetch 外站会被 CORS 拦死），让文章里的链接能渲染成带缩略图的卡片。
 #
 # 部署：
 #   npx wrangler deploy --config worker/link-preview/wrangler.toml     # 本地

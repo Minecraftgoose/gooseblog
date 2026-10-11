@@ -1,13 +1,13 @@
 ---
 title: 'GooseBlog为什么换成Hexo了'
 date: '2026-10-07 11:42:00'
-updated: '2026-10-07 11:42:00'
+updated: '2026-10-11 22:19:00'
 tags:
   - 'GooseBlog'
 categories:
   - '随笔'
-cover: 'https://img.goose.cc.cd/i/72cb24692746402d116a4be14511065f.webp'
-og_image: 'https://img.goose.cc.cd/i/72cb24692746402d116a4be14511065f.webp'
+cover: 'https://blog.cyann.top/images/og.webp'
+og_image: 'https://blog.cyann.top/images/og.webp'
 excerpt: '有后端的博客和纯前端的差别'
 description: '有后端的博客和纯前端的差别'
 slug: sb-to-hexo
@@ -58,7 +58,7 @@ http://sojizh.gt.tc/post.php?file=2026100401.md
 
 我维护个GooseHost都要吐血Σ_(꒪ཀ꒪」∠)，哪有心情维护博客
 
-知道我看见Hexo，研究了两下，行了，GitHubactions走起
+直到我看见Hexo，研究了两下，行了，GitHubactions走起
 
 ## 旧博客很卡？
 
