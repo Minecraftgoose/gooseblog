@@ -263,7 +263,15 @@ const decode = (s) =>
 
 function originOf(request) {
   const o = request.headers.get('Origin');
-  const allow = ['https://blog.goose.cc.cd','https://blog.cyann.top'];
+  // ⚠️ 备胎域名必须在这里。少了它，备胎页面跨域调用时 allow.includes 落空，
+  //    兜底返回 allow[0]（主站域名），于是 ACAO = 主站 ≠ 备胎源，
+  //    浏览器把响应全拦掉 —— 页面上"所有链接卡片都是空的"，
+  //    而备胎自己的 Netlify Function 从头到尾一次都没被调用过。
+  const allow = [
+    'https://blog.goose.cc.cd',
+    'https://blog.cyann.top', // 备胎（Netlify 自定义域名）
+    'http://localhost:4000'
+  ];
   if (o && allow.includes(o)) return o;
   return allow[0];
 }
@@ -272,7 +280,10 @@ function corsHeaders(request) {
   return {
     'Access-Control-Allow-Origin': originOf(request),
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Max-Age': '86400'
+    'Access-Control-Max-Age': '86400',
+    // ⚠️ 少了 Vary: Origin，Cloudflare 会把"给某个 origin 生成的响应"
+    //    缓存起来原样发给别的 origin，表现为间歇性 CORS 不匹配。
+    Vary: 'Origin'
   };
 }
 

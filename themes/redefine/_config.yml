@@ -404,9 +404,15 @@ inject:
       <link rel="preload" as="image" href="/images/background-1920.webp" media="(min-width: 901px) and (max-width: 1440px)">
       <link rel="preload" as="image" href="/images/background-1280.webp" media="(max-width: 900px)">
       <link rel="stylesheet" href="/css/goose-skin.css">
-      <script>
-        window.__GOOSE_LINK_PREVIEW__ = "https://blog.goose.cc.cd/api/link-preview";
-      </script>
+      <!-- ⚠️ 这里绝对不要写死 window.__GOOSE_LINK_PREVIEW__ 的绝对地址。
+           写死成主站域名后，备胎页面会跨域去打主站 Worker：
+           Worker 的 CORS 白名单里没有备胎域名，兜底返回 allow[0]，
+           于是 ACAO = 主站域名 ≠ 备胎源，浏览器把全部请求拦掉 ——
+           表现为"整站链接卡片全空"，而 curl 备胎自己的接口却是通的
+           （因为前端压根没在调备胎那个函数，它一直是好的）。
+           两端都用相对路径 /api/link-preview：主站由 Cloudflare Worker 接管，
+           备胎由 netlify/functions/link-preview.mjs 接管，各自同源，
+           CORS 根本不参与，也就不存在白名单问题。 -->
     - |
       <style>
         .home-banner-background img { display: none; }
