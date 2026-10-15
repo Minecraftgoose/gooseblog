@@ -6,8 +6,8 @@ tags:
   - '教程'
 categories:
   - '网页入门至高阶'
-cover: 'https://img.goose.l.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
-og_image: 'https://img.goose.l.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
+cover: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
+og_image: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 excerpt: '本文主要讲解了网页的调优和去除AI sloop'
 description: '网页入门至高阶——第二章'
 sticky: false
@@ -35,24 +35,56 @@ slug: html-new-2
 ```
 （AI 会增加一些 CSS 样式适配窗口）
 
-## 2. emoji
+## emoji
 
 在现在的安卓与 Win 8.1+ 系统当中，emoji 都是彩色的而且非常好看，但是作为网站开发者，你必须要考虑你的奇葩用户的设备，比如 Win 7，这个全球仍然有 10% 的人在用系统对 emoji 的支持那是烂成史了。
 
-解决办法：
-1. Font Awesome，这是一个图标库，图标各式各样，只有你想不到，没有它画不到的。
+### 解决办法：
+1. Font Awesome：这是一个图标库，图标各式各样，只有你想不到，没有它画不到的。
 
 2. SVG
-
-图标转换完成后是不是页面变得花包了？
 
 SVG 作为矢量图非常适合当作图标，而且它一个 SVG 文件极小，加载速度快。
 
 不过 AI 在画 SVG 方面可以说是不尽如人意，目前也只有 Kimi 可以画出比较好看的 SVG。当然图片是可以矢量化的，这里推荐一个矢量化工具：https://svglo.com/zh-cn/
 
-好了，SVG 准备好就快到要放进页面的时间了。这里注意一个坑点：
+好了，SVG 准备好就到要放进页面的时间了。这里注意一个坑点：
 
-**不要直接把 SVG 扔给对话让 AI 生成到其他地方去**，AI 生成内容不完全可靠，AI 生成时一旦 SVG 少写一个字符，整个都会崩溃。
+**不要直接把 SVG 扔给对话型 AI **，AI 生成内容不完全可靠，AI 生成时一旦 SVG 少写一个字符，整个都会崩溃。
 
-*写…不玩了，我写累了，休息中…*
+**正确做法：**
+1. 告诉AI`把xxx位置的图标替换为./image/xxx.svg`
+2. 那么你的文件夹结构长这样：
 
+```web
+├─ image
+│  └─ xxx.svg
+└─ index.html
+```
+
+
+注 ：index中文名为索引，我会单独开一小节来解释。
+
+### 怎么记住
+根据我这么长时间的观察，页面中很多里的AI slop，大都是以下几种：
+- 蓝紫渐变色。
+- 图标上下弹跳
+- 啥子都会用的页面有一堆提示性文字
+
+你只需要给出反向提示词就ok了。
+我推荐v0，有时间把自己对页面的要求整理一下
+
+```markdown
+<!-- AGENTS.md -->
+AI行为规范文档
+1. 要求一
+2. 要求二
+```
+
+每次开新对话时把这个文件发给它，它会遵循的。
+
+## 最后想说的话
+
+为什么我最开始不一开始就使用Agent、Openclaw等AI工具，不是难，而是我希望读我文章的朋友从自己手动做，自己踩坑，明白页面背后的原理，而不是向Agent发一句话，其他全交给AI，若是如此你很快会失去对代码的掌控权，一个小错误都要问AI，而非自己判断哪里出问题了，不仅浪费token ~~费钱~~ ，整个项目曾经出现过什么问题你是一知半解，看AI在那瞎逼逼.有些人以为自己会敲`git add .`、`git commit`、`git push`就认为自己非常牛逼、非常专业，你的`.gitnore`呢？逗呢？都不看AI在仓库中生成了什么，AGENTS.MD也不写，满仓库的`preview.png`给谁看呢？[Object2](https://x0.fan/) 曾有言：别几把污染GitHub。。
+
+本文就到这里，下篇[传送门](https://blog.goose.cc.cd/posts/html-new-3/)

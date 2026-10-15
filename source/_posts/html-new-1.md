@@ -6,8 +6,8 @@ tags:
   - '教程'
 categories:
   - '网页入门至高阶'
-cover: 'https://img.goose.l.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
-og_image: 'https://img.goose.l.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
+cover: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
+og_image: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 excerpt: '这是本系列的第一篇文章，希望读者朋友有耐心地陪我走下去'
 description: '网页入门至高阶——第一章'
 sticky: false
@@ -75,5 +75,5 @@ Deepseek 会生成一个代码块，网页版可以直接预览，手机版点�
 
 *hope you creat your beautiful website*
 
-**下章传送门 [I]**
+**下章 [传送门](https://blog.goose.cc.cd/posts/html-new-2/)**
 
