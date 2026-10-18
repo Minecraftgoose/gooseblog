@@ -3,7 +3,7 @@ title: '松间照你咋那么开心。。。'
 date: '2026-10-16 22:55:55'
 updated: '2026-10-16 22:55:55'
 tags:
-  - '瞎写'
+  - '吐槽'
 categories:
   - '随笔'
 cover: 'https://img.goose.cc.cd/i/bad5bf53288a8b1b2dd96df214a515ab.webp'
