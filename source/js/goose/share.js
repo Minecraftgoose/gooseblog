@@ -288,13 +288,72 @@
       });
   }
 
+  /**
+   * 加载截图库。
+   *
+   * ⚠️ 必须用 html2canvas-pro，不能用原版 html2canvas 1.4.1。
+   *
+   *    主题 Redefine 用的是 Tailwind v4，它的颜色值全是 oklch() ——
+   *    `--color-gray-200: oklch(92.8% .006 264.531)` 这种。原版
+   *    html2canvas 1.4.1 的色彩解析器只认 rgb()/hsl()/十六进制，
+   *    撞上 oklch 当场抛：
+   *        Error: Attempting to parse an unsupported color function "oklch"
+   *    注意它是在**解析整页样式**时就炸的，不是画到海报才炸 —— 所以哪怕
+   *    海报本身一个 oklch 都没用，只要页面上别处有，一样失败。
+   *
+   *    html2canvas-pro 是原版的活跃分支，补上了 oklch/oklab/lab/lch/color()
+   *    这些现代色彩空间，API 完全兼容，换 CDN 地址即可，调用代码一行不用改。
+   *
+   * ⚠️ 两个坑：
+   *    1. CDN 用 @latest 会在作者发新版时悄悄换实现，哪天出个回归
+   *       你这边毫无征兆。锁死大版本号更稳。
+   *    2. 国内访问 jsdelivr 偶发抽风，所以配了 bootcdn 兜底。
+   *       两个都挂了才提示失败 —— 功能降级，不影响页面其它部分。
+   */
+  var H2C_CDN = [
+    'https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js',
+    'https://cdn.bootcdn.net/ajax/libs/html2canvas-pro/1.5.8/html2canvas-pro.min.js'
+  ];
+
+  // 解析出来的真正可用的截图函数（见 resolveH2C）
+  var h2cFn = null;
+
+  /**
+   * 取出可用的截图函数。
+   *
+   * ⚠️ 不能直接 `window.html2canvas(...)` 就完事 —— 这个 fork 的 UMD 包
+   *    在不同版本里挂的形状不一样：
+   *      有的版本：window.html2canvas 就是函数本身（跟原版一样）
+   *      有的版本：window.html2canvas 是模块命名空间对象，真函数在 .default 上
+   *    裸调用撞上后者会报 "window.html2canvas is not a function"，
+   *    一眼看上去像是"库没加载成功"，很容易误判方向。
+   *    两种形状都认，取不到就返回 null 让上层明确报错。
+   */
+  function resolveH2C() {
+    var g = window.html2canvas;
+    if (typeof g === 'function') return g;
+    if (g && typeof g.default === 'function') return g.default;
+    return null;
+  }
+
   function loadHtml2Canvas(cb) {
-    if (window.html2canvas) return cb();
-    var s = document.createElement('script');
-    s.src = 'https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.onload = function () { cb(); };
-    s.onerror = function () { cb(new Error('load fail')); };
-    document.head.appendChild(s);
+    var f = resolveH2C();
+    if (f) { h2cFn = f; return cb(); }
+
+    var i = 0;
+    function next() {
+      if (i >= H2C_CDN.length) { cb(new Error('load fail')); return; }
+      var s = document.createElement('script');
+      s.src = H2C_CDN[i++];
+      s.onload = function () {
+        var fn = resolveH2C();
+        if (fn) { h2cFn = fn; cb(); }
+        else next();               // 加载成功但没挂上全局，换下一个源
+      };
+      s.onerror = next;
+      document.head.appendChild(s);
+    }
+    next();
   }
 
   function genPoster() {
@@ -399,10 +458,11 @@
       e.preventDefault();
       if (!ready) return;
       loadHtml2Canvas(function (err) {
-        if (err || !window.html2canvas) { toast('海报组件加载失败'); return; }
+        // 用 resolveH2C 解析出来的函数，不要直接摸 window.html2canvas
+        if (err || !h2cFn) { toast('海报组件加载失败'); return; }
         dl.textContent = '生成中...';
         waitPosterImages(poster).then(function () {
-          return window.html2canvas(poster, {
+          return h2cFn(poster, {
             backgroundColor: '#15131f',
             scale: 2,
             useCORS: true,          // 兜底：万一有漏网的外链
