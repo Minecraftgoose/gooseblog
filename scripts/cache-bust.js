@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * GooseBlog —— 静态资源内容指纹（cache-bust）
  *
@@ -154,4 +153,22 @@ function main() {
   }
 }
 
-main();
+/**
+ * ⚠️ 这个守卫不能省，删了会把 hexo generate 直接搞挂。
+ *
+ *    hexo 启动时会把 scripts/ 下的 .js 全部**当作脚本加载一遍**，
+ *    文件末尾裸写 main() 的话，加载那一刻就执行了 —— 此时 public/
+ *    还没生成，脚本打印一句"找不到 public/"然后 process.exit(1)，
+ *    整个 generate 连一篇 HTML 都出不来。
+ *
+ *    以前没炸是因为文件头有 #!/usr/bin/env node：hexo 不是走 Node
+ *    模块系统加载的，shebang 会被当成非法 token，脚本直接加载失败
+ *    （控制台一条 ERROR），反倒阴差阳错地"保护"了构建。
+ *    代价是每次 generate 都多一条红字，看着像构建有问题。
+ *
+ *    现在 shebang 去掉了，就必须靠 require.main 判断只在本文件被
+ *    `node scripts/cache-bust.js` 直接运行时才跑。
+ */
+if (require.main === module) {
+  main();
+}

@@ -161,6 +161,25 @@
   overflow: hidden;
   background: #15131f;
   color: #f4f0fb;
+  /* ── 字体：整块海报一律走系统字体栈，不碰站点的 Geist / Chillax ──
+     三个理由，都跟 html2canvas 的脾气有关：
+       1. Geist / Chillax 是 webfont，靠 @font-face 懒加载。海报 DOM 是
+          点按钮才建的，建完立刻截图，字体常常还没下完 —— 截图里就
+          变成系统默认字体，且不报错，只觉得"看着不对劲"。
+       2. html2canvas 对 @font-face 的支持本来就弱，就算下载完了也
+          可能渲染不出来。
+       3. 这俩字体**没有中文字形**。海报标题是中文，实际渲染时本来就
+          要回退到 PingFang / 微软雅黑 —— 也就是说，写不写它们，
+          中文那部分长得一模一样，纯粹多担一份风险。
+     系统字体是访客机器本地就有的，零下载、零等待、零失败可能。 */
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑',
+               'Noto Sans CJK SC', 'Source Han Sans SC', sans-serif;
+}
+/* 只有真配了 ttf（share.js 的 POSTER_FONT_URL 非空）时，
+   .goose-poster-has-font 才会加到这个节点上，此时切自定义字体。 */
+.goose-poster-has-font {
+  font-family: 'GoosePoster', 'PingFang SC', 'Hiragino Sans GB',
+               'Microsoft YaHei', '微软雅黑', sans-serif;
 }
 .goose-poster-html-bg {
   width: 100%;
@@ -194,6 +213,12 @@
   font-weight: 700;
   line-height: 1.4;
   color: #f4f0fb;
+  /* font-family 由 .goose-poster-html / .goose-poster-has-font 在容器层
+     统一给，这里不再重复声明 —— 否则将来换字体要改两处，容易漏。 */
+}
+/* 自定义字体通常比系统字体瘦一圈，稍微放开点行距，两行标题不打架 */
+.goose-poster-has-font .goose-poster-html-title {
+  line-height: 1.45;
 }
 .goose-poster-html-divider {
   margin: 12px 20px;
