@@ -13,14 +13,21 @@ share: 分享
 powered_by: "由 %s 驱动"
 theme: 主题
 rss_feed: RSS Feed
-# ⚠️ 单数的 category / tag 保持中文：head.ejs 拿它们拼浏览器标签页标题
-#    （title = __('category') + ': ' + page.category），中文站应当保留中文。
-#    复数的 categories / tags 在本文件后面的「菜单翻译」段被覆盖成英文，
-#    供导航栏下拉使用。单复数不是同一个 key，所以两处互不干扰。
+# ⚠️ 这里只保留**单数**的 category / tag。
+#    head.ejs 拿它们拼浏览器标签页标题：
+#      title = __('category') + ': ' + page.category   → 「分类: 某某」
+#    中文站应当保留中文，所以这两个是中文。
+#
+#    ⚠️⚠️ 复数的 categories / tags **绝不能在这里再写一遍**！
+#    本文件后面的「菜单翻译」段已经给了它们英文值（Categories / Tags），
+#    那份是给导航栏 Index 下拉用的。
+#    同一个 key 在 YAML 里出现两次，js-yaml 4.x 会直接抛
+#      YAMLException: duplicated mapping key
+#    → 整个语言包加载失败 → 所有 __() 回退成英文 key
+#    → 全站变英文（页脚 "21 posts in total"、"Blog up for 97 days" 等等）。
+#    YAML 不像 CSS 那样"后者覆盖前者"，重复 key 是**错误**，不是覆盖。
 category: 分类
-categories: 分类
 tag: 标签
-tags: 标签
 post: 文章
 posts: 文章
 tagcloud: 标签云
@@ -81,7 +88,10 @@ exif:
 #      2. 首页侧边栏：__(i) 兜底，但 sidebar.links 每项都有 text，也走不到
 # ----------------------------------------
 home: Home
-archive: Archive
+# 单数 archive 保持中文：head.ejs 用它当归档页的浏览器标签页标题
+#   （title = __('archive')，还会拼成「归档: 2026/10」）
+# 只有复数的 archives 是英文（给 Index 下拉用），单复数各管一摊。
+archive: 归档
 archives: Archives
 about: About
 links: Links
