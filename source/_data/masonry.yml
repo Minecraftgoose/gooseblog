@@ -18,33 +18,21 @@
 #    不填的话，要等每张图真正加载完才知道尺寸，边加载边重排，
 #    图多的时候会看到明显的抖动。
 #
-# ⚠️ 关于 exif（这是最容易踩空的一条）
+# ⚠️ 关于 exif
 #    EXIF 是拿 fetch 把图片二进制整个拉下来再解析的，
 #    所以**只能读站内图片**（/images/... 这种同源地址）。
 #    换成图床外链，对方不返回 CORS 头就取不到字节，
 #    面板会显示「EXIF 不可用（可能被 CORS 阻止或缺少元数据）」。
 #    另外 WebP/图片压缩工具经常顺手把 EXIF 抹掉，
 #    真要展示相机参数，建议单独放一份未经压缩的原图。
-#
-# 下面 3 条是站内现有背景图，仅作占位示例，换成自己的照片即可。
-
 - image: /images/background.webp
-  title: 夜色
-  description: 3008×1376
+  title: 背景图
+  description: 博客背景高清大图
   width: 3008
   height: 1376
-  exif: true
 
-- image: /images/background-1920.webp
-  title: 夜色·1920
-  description: 1920×878
-  width: 1920
-  height: 878
-  exif: true
-
-- image: /images/background-1280.webp
-  title: 夜色·1280
-  description: 1280×586
-  width: 1280
-  height: 586
-  exif: true
+- image: 'https://picui.ogmua.cn/s1/2026/10/25/6adde68ecf848.webp'
+  title: '小白'
+  description: '楼下的流浪喵~'
+  width: 2304
+  height: 4096
