@@ -242,7 +242,7 @@ home:
     enable: true
     position: left
     first_item: menu
-    announcement: '开学就月考呜呜呜'
+    announcement: '又要期中了呜呜呜'
     show_on_mobile: true
     statistics_labels:
       tags: Tags
