@@ -1,15 +1,15 @@
 ---
-title: '网页入门至高阶——第一章'
+title: '网页入门——第一章'
 date: '2026-10-14 23:54:02'
 updated: '2026-10-14 23:54:02'
 tags:
   - '教程'
 categories:
-  - '网页入门至高阶'
+  - '网页入门'
 cover: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 og_image: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 excerpt: '这是本系列的第一篇文章，希望读者朋友有耐心地陪我走下去'
-description: '网页入门至高阶——第一章'
+description: '网页入门——第一章'
 sticky: false
 slug: html-new-1
 ---
@@ -19,7 +19,7 @@ slug: html-new-1
 
 在这个 AI 大模型（LLM）横行的年代，想成为一个开发者，门槛 = 0，不是几乎，是直等于 0。网页（超文本标记语言）是众多编程语言中，难度最低、门槛最低、受众群体最多的一种语言。谁手机里没装个浏览器呢？
 
-我将在我的博客里，开启这个名为「网页入门至高阶」的合集，这也是我第一次写这么长文字，支持一下嘛～
+我将在我的博客里，开启这个名为「网页入门」的合集，这也是我第一次写这么长文字，支持一下嘛～
 
 ## 第一章 入门
 
@@ -37,7 +37,7 @@ Deepseek 我推荐用网页版，因为他写代码之后有预览。
 ### 第二步 — 安装编辑器
 
 - iPhone、iPad：Koder
-- 电脑：Vscode、notpad++（推荐，启动快）、~~远古真神记事本~~
+- 电脑：Vscode、notpad++（推荐，启动快）、~~远古真神记事本？？~~
 - 安卓请自行探索
 
 ### 第三步 — 开始了解 Hyper Text Markup Language
@@ -72,6 +72,14 @@ Deepseek 会生成一个代码块，网页版可以直接预览，手机版点�
 #### 2. 页面不美观
 
 现在的 Deepseek 已经有识图功能了（把我当年强的 awa，我当年仅靠文字描述啊），截图发给他，他就能明白了。
+
+**记住**：如果一个bug怎么修都修不好，那么告诉他：
+
+```markdown
+我操你妈，给我联网搜索！
+```
+
+嘿嘿(¬◡¬)✧
 
 *hope you creat your beautiful website*
 

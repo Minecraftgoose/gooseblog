@@ -1,5 +1,5 @@
 ---
-title: '网页入门至高阶——第三章（番外）'
+title: '网页入门——第三章（番外）'
 date: '2026-10-18 16:41:23'
 updated: '2026-10-18 16:41:23'
 tags:
@@ -9,7 +9,7 @@ categories:
 cover: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 og_image: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 excerpt: '啥也没写，图片奉上'
-description: '网页入门至高阶——第三章（番外）'
+description: '网页入门——第三章（番外）'
 sticky: false
 slug: html-new-3
 ---

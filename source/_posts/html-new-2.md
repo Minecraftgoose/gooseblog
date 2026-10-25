@@ -1,5 +1,5 @@
 ---
-title: '网页入门至高阶——第二章'
+title: '网页入门——第二章'
 date: '2026-10-14 23:54:12'
 updated: '2026-10-16 00:10:15'
 tags:
@@ -9,7 +9,7 @@ categories:
 cover: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 og_image: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 excerpt: '本文主要讲解了网页的调优和去除AI sloop'
-description: '网页入门至高阶——第二章'
+description: '网页入门——第二章'
 sticky: false
 slug: html-new-2
 ---
