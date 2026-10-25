@@ -223,6 +223,18 @@ navbar:
       path: /categories
       text: Categories
       icon: fa-regular fa-folder
+    Gallery:
+      path: /masonry
+      text: Gallery
+      icon: fa-regular fa-image
+    Moments:
+      path: /shuoshuo
+      text: Moments
+      icon: fa-regular fa-comment
+    Bookmarks:
+      path: /bookmarks
+      text: Bookmarks
+      icon: fa-regular fa-bookmark
     Friends:
       path: /friends
       text: Friends
@@ -242,7 +254,7 @@ home:
     enable: true
     position: left
     first_item: menu
-    announcement: '又要期中了呜呜呜'
+    announcement: '开学就月考呜呜呜'
     show_on_mobile: true
     statistics_labels:
       tags: Tags

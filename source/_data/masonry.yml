@@ -1,0 +1,50 @@
+# =============================================================
+# 相册数据源（对应 /masonry 页面）
+# 文件名三选一：masonry.yml / gallery.yml / photos.yml，都能被识别
+# 每加一条就多一张图，顺序即展示顺序
+# =============================================================
+#
+# 字段（见 themes/redefine/scripts/events/masonry-data.js）：
+#   image       必填。也可以写成 url 或 src，三个名字等价
+#   title       可选。鼠标悬停时浮在图片上方
+#   description 可选。悬停时显示在标题下方
+#   width       可选。也能写 w。强烈建议填，见下方说明
+#   height      可选。也能写 h
+#   exif        填 true 才显示 EXIF 面板；不写或 false 就不显示
+#
+# ⚠️ 关于 width / height
+#    填了这两个值，主题会在图片还没下载时就按宽高比占好位置，
+#    瀑布流布局一次到位、不会跳动。
+#    不填的话，要等每张图真正加载完才知道尺寸，边加载边重排，
+#    图多的时候会看到明显的抖动。
+#
+# ⚠️ 关于 exif（这是最容易踩空的一条）
+#    EXIF 是拿 fetch 把图片二进制整个拉下来再解析的，
+#    所以**只能读站内图片**（/images/... 这种同源地址）。
+#    换成图床外链，对方不返回 CORS 头就取不到字节，
+#    面板会显示「EXIF 不可用（可能被 CORS 阻止或缺少元数据）」。
+#    另外 WebP/图片压缩工具经常顺手把 EXIF 抹掉，
+#    真要展示相机参数，建议单独放一份未经压缩的原图。
+#
+# 下面 3 条是站内现有背景图，仅作占位示例，换成自己的照片即可。
+
+- image: /images/background.webp
+  title: 夜色
+  description: 3008×1376
+  width: 3008
+  height: 1376
+  exif: true
+
+- image: /images/background-1920.webp
+  title: 夜色·1920
+  description: 1920×878
+  width: 1920
+  height: 878
+  exif: true
+
+- image: /images/background-1280.webp
+  title: 夜色·1280
+  description: 1280×586
+  width: 1280
+  height: 586
+  exif: true

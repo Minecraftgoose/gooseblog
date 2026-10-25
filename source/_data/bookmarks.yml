@@ -1,0 +1,51 @@
+# =============================================================
+# 书签数据源（对应 /bookmarks 页面）
+# 文件名三选一：bookmarks.yml / bookmark.yml / tools.yml
+# 左侧是分类导航，右侧是分类下的卡片，两栏响应式
+# =============================================================
+#
+# 结构：数组 → 每个元素是一个分类
+#   category  分类名。中文也能用，导航栏锚点会自动转拼音式小写连字符
+#   icon      图标名。⚠️ 模板里已经写死了 fa-regular 前缀，
+#             这里**只填图标名本身**，不要再写 fa-regular 或 fa-solid，
+#             否则类名变成 "fa-regular fa-solid fa-wrench"，两种字重打架
+#   items     该分类下的书签数组
+#     name        站点名
+#     link        跳转地址
+#     image       站点图标。加载失败会自动换成 /images/bookmark-placeholder.svg
+#     description 一句话介绍，超过两行自动截断
+#
+# 图标可以在 https://fontawesome.com/search?o=r&m=free 找，
+# 挑 Regular 分类下的名字（去掉 fa- 前缀那一截其实要保留，见下方示例）。
+
+- category: 本站
+  icon: fa-link
+  items:
+    - name: GooseBlog
+      link: https://blog.goose.cc.cd/
+      image: /images/avatar.webp
+      description: 鹅滴博客嘎嘎
+    - name: GooseHost
+      link: https://host.goose.cc.cd/
+      image: https://host.goose.cc.cd/icons/icon-192x192.png
+      description: 静态网站托管
+
+- category: 开发
+  icon: fa-code
+  items:
+    - name: GitHub
+      link: https://github.com/
+      image: https://github.githubassets.com/favicons/favicon.png
+      description: 代码托管与协作平台
+    - name: Cloudflare
+      link: https://dash.cloudflare.com/
+      image: https://dash.cloudflare.com/favicon.ico
+      description: CDN、DNS 与 Workers 控制台
+
+- category: 工具
+  icon: fa-wrench
+  items:
+    - name: BootCDN
+      link: https://cdn.bootcdn.net/
+      image: https://cdn.bootcdn.net/favicon.ico
+      description: 国内前端库 CDN 加速服务
