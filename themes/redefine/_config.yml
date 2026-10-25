@@ -318,16 +318,11 @@ articles:
     default: cc_by_nc_sa
   lazyload: true
   pangu_js: false
-  # 文章推荐（TF-IDF + 余弦相似度），移植自 hexo-theme-volantis。
-  # 官方实现硬依赖 nodejieba，装不上就直接构建失败；这里已经改成可选降级
-  # （见 scripts/helpers/recommendation-helpers.js），没装也能跑、也能出推荐。
-  # 想让分词更准就自己装：npm i nodejieba（需 C++ 编译环境，装不上不影响构建）。
   recommendation:
     enable: true
     title: 推荐阅读
     limit: 3
     mobile_limit: 2
-    # 文章没有 cover 时的兜底图（现在所有文章都写了 cover，基本轮不到它）
     placeholder: /images/og.webp
     skip_dirs: []
 # ARTICLE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
@@ -388,7 +383,7 @@ footer:
   icon: '<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: var(--primary-color)"></i>'
   start: 2026/7/19 20:10:08
   statistics: true
-  customize: '<p>GooseBlog · 由 Hexo + Redefine 驱动</p>'   
+  customize: '<p>GooseBlog 鹅滴博客嘎嘎</p>'   
   icp:
     enable: false
     number:
@@ -404,15 +399,8 @@ inject:
       <link rel="preload" as="image" href="/images/background-1920.webp" media="(min-width: 901px) and (max-width: 1440px)">
       <link rel="preload" as="image" href="/images/background-1280.webp" media="(max-width: 900px)">
       <link rel="stylesheet" href="/css/goose-skin.css">
-      <!-- ⚠️ 这里绝对不要写死 window.__GOOSE_LINK_PREVIEW__ 的绝对地址。
-           写死成主站域名后，备胎页面会跨域去打主站 Worker：
-           Worker 的 CORS 白名单里没有备胎域名，兜底返回 allow[0]，
-           于是 ACAO = 主站域名 ≠ 备胎源，浏览器把全部请求拦掉 ——
-           表现为"整站链接卡片全空"，而 curl 备胎自己的接口却是通的
-           （因为前端压根没在调备胎那个函数，它一直是好的）。
-           两端都用相对路径 /api/link-preview：主站由 Cloudflare Worker 接管，
-           备胎由 netlify/functions/link-preview.mjs 接管，各自同源，
-           CORS 根本不参与，也就不存在白名单问题。 -->
+      <!-- 这里绝对不要写死 window.__GOOSE_LINK_PREVIEW__ 的绝对地址。
+           写死成主站域名后，netlify页面会跨域CloudflareWorker。 -->
     - |
       <style>
         .home-banner-background img { display: none; }
@@ -440,7 +428,7 @@ inject:
 # PLUGINS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
 plugins:
   feed:
-    enable: true           # 【Goose】补 RSS（atom.xml）
+    enable: true
   aplayer:
     enable: false
     type: fixed

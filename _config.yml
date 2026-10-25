@@ -1,10 +1,3 @@
-# =============================================================
-# GooseBlog — Hexo 站点配置
-# 原 GooseBlog（Cloudflare Pages SPA + Supabase + Worker API）
-# 迁移后：纯静态 Hexo，剔除后端，主题 hexo-theme-redefine
-# 资源（背景图 / 头像 / Logo / 字体 / prism）沿用原站；字体只在没有中文字形时回退系统字体
-# =============================================================
-
 # Site
 title: GooseBlog
 subtitle: 鹅滴博客嘎嘎
@@ -14,7 +7,7 @@ author: Goose
 language: zh-CN
 timezone: Asia/Shanghai
 
-# URL —— 部署在 Cloudflare Pages，沿用原域名
+# URL
 url: https://blog.goose.cc.cd
 root: /
 permalink: posts/:slug/
@@ -31,7 +24,6 @@ archive_dir: archives
 category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
-# _headers / _redirects 是给托管平台读的纯文本，不能被 Hexo 当模板渲染，原样复制即可
 skip_render:
   - "_headers"
   - "_redirects"
@@ -49,21 +41,10 @@ render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
-# 代码高亮：Hexo 内置 highlight 在构建期生成 span，Redefine 的 CSS 给它们上色。
-#
-# ⚠️ enable 必须 true —— 关掉的话代码块一个 span 都不生成，纯白一片。
-#
-# ⚠️ hljs 必须 false —— 这个开关控制类名前缀：
-#      hljs: true  → <span class="hljs-keyword">   （新版 highlight.js 命名）
-#      hljs: false → <span class="keyword">        （旧版命名）
-#    Redefine 的 highlight.styl 里写的是 `pre .keyword { color: var(--highlight-keyword) }`
-#    这类**旧式类名**，全主题找不到一条 .hljs-* 规则。
-#    所以设 true 虽然 span 生成了，但没有 CSS 匹配 → 整块代码都不上色。
-#    这个坑踩过一次，别再改回去。
 highlight:
   enable: true
   line_number: false
-  auto_detect: true      # 78 个没标语言的 ``` 裸块也尽量给高亮
+  auto_detect: true
   tab_replace: '  '
   wrap: true
   hljs: false
@@ -73,11 +54,10 @@ prismjs:
   line_number: true
   tab_replace: ''
 
-# 原后端用 marked 渲染 Markdown，这里换成 hexo-renderer-marked，行为对齐
 marked:
   gfm: true
   pedantic: false
-  breaks: true           # 原站 marked 默认行为：单换行即 <br>
+  breaks: true
   smartLists: true
   smartypants: false
   modifyAnchors: ''
@@ -102,13 +82,10 @@ time_format: HH:mm:ss
 use_date_for_updated: false
 
 # Pagination
-per_page: 6              # 对齐原站首页每页 6 篇
+per_page: 6
 pagination_dir: page
 
 # Include / Exclude
-# ⚠️ _headers / _redirects 必须显式写进 include：
-#    Hexo 默认忽略 source/ 下所有下划线开头的文件（_posts / _data 除外），
-#    不加这两行它们根本不会进 public/，托管平台的自定义头和重定向全部失效。
 include:
   - "_headers"
   - "_redirects"
@@ -118,11 +95,11 @@ ignore:
 # Extensions
 theme: redefine
 
-# Deployment：本地无需配置，CI 直接 wrangler pages deploy public
+# Deployment
 deploy:
   type: ''
 
-# Feed（原站无 RSS，这里顺手补上）
+# Feed
 feed:
   enable: true
   type: atom
@@ -138,7 +115,7 @@ sitemap:
     - sitemap.xml
     - sitemap.txt
 
-# 本地搜索（hexo-generator-searchdb）
+# 本地搜索
 search:
   path: search.xml
   field: post
