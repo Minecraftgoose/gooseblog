@@ -10,7 +10,7 @@ npm-debug.log*
 yarn-error.log
 .npmrc
 
-# 主题 dev 产物（Redefine 自带的构建缓存，不需要入库）
+# 主题 dev 产物
 themes/redefine/node_modules/
 
 # 编辑器 / 系统
@@ -20,8 +20,9 @@ Thumbs.db
 .vscode/
 *.swp
 
-# 本地环境变量（导出旧文章时会用到）
+# 本地环境变量
 .env
 .env.local
 
 newpost.py
+shuoshuo.pyw
