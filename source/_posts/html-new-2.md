@@ -5,7 +5,7 @@ updated: '2026-10-16 00:10:15'
 tags:
   - '教程'
 categories:
-  - '网页入门至高阶'
+  - '网页入门'
 cover: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 og_image: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 excerpt: '本文主要讲解了网页的调优和去除AI sloop'

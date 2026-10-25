@@ -5,7 +5,7 @@ updated: '2026-10-18 16:41:23'
 tags:
   - '教程'
 categories:
-  - '网页入门至高阶'
+  - '网页入门'
 cover: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 og_image: 'https://img.goose.cc.cd/i/89779fe28ebc5aea58ee8ba32d01d7b9.webp'
 excerpt: '啥也没写，图片奉上'
