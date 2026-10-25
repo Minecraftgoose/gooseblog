@@ -13,6 +13,10 @@ share: 分享
 powered_by: "由 %s 驱动"
 theme: 主题
 rss_feed: RSS Feed
+# ⚠️ 单数的 category / tag 保持中文：head.ejs 拿它们拼浏览器标签页标题
+#    （title = __('category') + ': ' + page.category），中文站应当保留中文。
+#    复数的 categories / tags 在本文件后面的「菜单翻译」段被覆盖成英文，
+#    供导航栏下拉使用。单复数不是同一个 key，所以两处互不干扰。
 category: 分类
 categories: 分类
 tag: 标签
@@ -88,6 +92,11 @@ timeline: Timeline
 shuoshuo: Moments
 bookmarks: Bookmarks
 gallery: Gallery
+# 下面两条在文件开头「网站翻译」段已有中文值（分类 / 标签）。
+# 这里同名重复声明，YAML 以后出现的为准 —— 于是导航栏下拉取到英文，
+# 而标签页标题用的是**单数** category / tag，仍是中文。别删这两行。
+categories: Categories
+tags: Tags
 
 # ----------------------------------------
 # 网站统计
