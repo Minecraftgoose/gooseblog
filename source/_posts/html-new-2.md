@@ -85,6 +85,6 @@ AI行为规范文档
 
 ## 最后想说的话
 
-为什么我最开始不一开始就使用Agent、Openclaw等AI工具，不是难，而是我希望读我文章的朋友从自己手动做，自己踩坑，明白页面背后的原理，而不是向Agent发一句话，其他全交给AI，若是如此你很快会失去对代码的掌控权，一个小错误都要问AI，而非自己判断哪里出问题了，不仅浪费token ~~费钱~~ ，整个项目曾经出现过什么问题你是一知半解，看AI在那瞎逼逼.有些人以为自己会敲`git add .`、`git commit`、`git push`就认为自己非常牛逼、非常专业，你的`.gitnore`呢？逗呢？都不看AI在仓库中生成了什么，AGENTS.MD也不写，满仓库的`preview.png`给谁看呢？[Object2](https://x0.fan/) 曾有言：别几把污染GitHub。。
+为什么我最开始不一开始就使用Agent、Openclaw等AI工具，不是难，而是我希望读我文章的朋友从自己手动做，自己踩坑，明白页面背后的原理，而不是向Agent发一句话，其他全交给AI，若是如此你很快会失去对代码的掌控权，一个小错误都要问AI，而非自己判断哪里出问题了，不仅浪费token ~~费钱~~ ，整个项目曾经出现过什么问题你是一知半解，看AI在那瞎逼逼.有些人以为自己会敲`git add .`、`git commit`、`git push`就认为自己非常牛逼、非常专业，你的`.gitignore`呢？逗呢？都不看AI在仓库中生成了什么，AGENTS.MD也不写，满仓库的`preview.png`给谁看呢？[Object2](https://x0.fan/) 曾有言：别几把污染GitHub。。
 
 本文就到这里，下篇[传送门](https://blog.goose.cc.cd/posts/html-new-3/)
