@@ -223,18 +223,27 @@ navbar:
       path: /categories
       text: Categories
       icon: fa-regular fa-folder
-    Gallery:
-      path: /masonry
-      text: Gallery
-      icon: fa-regular fa-image
-    Moments:
-      path: /shuoshuo
-      text: Moments
-      icon: fa-regular fa-comment
-    Bookmarks:
-      path: /bookmarks
-      text: Bookmarks
-      icon: fa-regular fa-bookmark
+    # 相册 / 说说 / 书签 三个折叠进这一个下拉里，避免导航过长。
+    #
+    # ⚠️ submenus 的**显示文字不是这里写的 key**，而是拿 key 去语言包
+    #    查翻译（navbar.ejs 里 __(submenu.toLowerCase()).toUpperCase()）。
+    #    查不到就原样返回 key 再转大写 —— 两种情况下都是英文，
+    #    所以 languages/zh-CN.yml 的「菜单翻译」段已整段改成英文，
+    #    保证下拉和其余导航项（走 text 字段）风格一致。
+    #    要换成中文下拉，改回语言包里的中文值即可。
+    #
+    # ⚠️ path 写 '#' 而不是 'none'：navbar.ejs 开头有
+    #      `if (link.path === 'none')` 直接跳过整项，写了页面就没了。
+    #      有 submenus 时 href 会被强制成 '#' 且 onClick 阻止跳转，
+    #      所以这里填什么都不会真的跳走，用 '#' 还顺带避免误判成首页高亮。
+    More:
+      path: '#'
+      text: More
+      icon: fa-regular fa-ellipsis
+      submenus:
+        Gallery: /masonry
+        Moments: /shuoshuo
+        Bookmarks: /bookmarks
     Friends:
       path: /friends
       text: Friends

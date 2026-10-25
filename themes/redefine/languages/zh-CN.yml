@@ -64,18 +64,30 @@ exif:
 
 # ----------------------------------------
 # 菜单翻译
+#
+# ⚠️ 这一段的值**刻意写成英文**，不是忘了翻译。
+#    导航栏的显示文字有两套来源，容易打架：
+#      · 普通导航项走 _config.yml 里的 text 字段，本站全填英文（Home / Archives / …）
+#      · 下拉子菜单走这里的翻译（navbar.ejs 里 __(submenu.toLowerCase())）
+#    原来这段是中文，于是下拉里出现「GALLERY / 说说 / 书签」这种中英混排。
+#    整段改成英文后，两套来源统一，以后再加任何子菜单也不会混排。
+#
+#    影响面很小：这些 key 只在两处兜底用到 ——
+#      1. getPageTitle：page.title || __(type)，本站每个页面都写了 title，走不到
+#      2. 首页侧边栏：__(i) 兜底，但 sidebar.links 每项都有 text，也走不到
 # ----------------------------------------
-home: 首页
-archive: 归档
-archives: 归档
-about: 关于
-links: 链接
-link: 链接
-friends: 友情链接
-friend: 友情链接
-timeline: 时间轴
-shuoshuo: 说说
-bookmarks: 书签
+home: Home
+archive: Archive
+archives: Archives
+about: About
+links: Links
+link: Link
+friends: Friends
+friend: Friend
+timeline: Timeline
+shuoshuo: Moments
+bookmarks: Bookmarks
+gallery: Gallery
 
 # ----------------------------------------
 # 网站统计
