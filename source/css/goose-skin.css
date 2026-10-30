@@ -8,7 +8,9 @@
    颜色一律走主题 CSS 变量（--primary-color 等），不写死色值 ——
    这样改主色时全站跟着变，不用挨个找。
 
-   字体一律走主题 CSS 变量与系统字体栈，不额外引入任何自定义字体。
+   字体默认走主题 CSS 变量与系统字体栈；第 8 节是唯一例外 —— 为了让
+   主题 _config.yml 里 global.fonts.chinese 配的 LXGW WenKai Screen 真正生效，
+   在那里做了全局字体兜底（原因写在那一节的注释里）。
    ========================================================================== */
 
 /* ---------- 2. 分享（工具栏内）+ 面板 ---------- */
@@ -447,4 +449,41 @@
 }
 .friends-link-container .thumbnail[hidden] {
   display: none;
+}
+
+/* ---------- 8. 全局字体兜底：让 LXGW WenKai Screen 真正生效 ----------
+   症状：_config.yml 里 global.fonts.chinese 配了 LXGW WenKai Screen，
+        但整站看不出任何变化。
+   原因有两层，都出在主题身上：
+     1) 那个配置只把字体名写进 $chinese-font-family 变量，而全站基础样式
+        html, body 用的是**硬编码**的 $default-font-family
+        （Geist Variable → PingFang SC → 微软雅黑 → …），压根没引用它；
+     2) .navbar-container / .home-banner-container / .site-name 等组件各自又
+        写死了一串 font-family，串里同样带着 PingFang SC / 微软雅黑。
+   而 CSS 的字体回退是**逐字符**的：中文字符在前面的 PingFang SC / 微软雅黑
+   里就已经有字形，于是永远轮不到排在后面的 LXGW WenKai Screen。
+
+   所以这里做两件事：把 LXGW 提到所有中文字体之前，再让自带 font-family 的
+   组件改回继承。
+
+   为什么写得这么绕：goose-skin.css 是在 css/style.css **之前**加载的，同等
+   特异性会被后面的规则盖掉。所以用 html body / html body [class] 把特异性抬
+   上去，而不是 !important —— 以后想局部换回别的字体还能正常覆盖。      */
+:root {
+  --goose-font: 'Geist Variable', 'LXGW WenKai Screen', system-ui, -apple-system,
+                'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+/* html:root 特异性比 tailwind base 的 :root 高，能改掉它给 <html> 的字体 */
+html:root {
+  --default-font-family: var(--goose-font);
+}
+
+html body {
+  font-family: var(--goose-font);
+}
+
+/* 让所有自带 font-family 的组件回到继承；图标字体和代码块除外 */
+html body [class]:not(.fa):not([class*="fa-"]):not(code):not(pre):not(kbd):not(.hljs):not(.odometer) {
+  font-family: inherit;
 }

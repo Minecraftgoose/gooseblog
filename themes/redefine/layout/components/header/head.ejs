@@ -164,21 +164,12 @@
             <% } }%>
     <% } }%>
 
-    <!--- Redefine 自带字体：Geist(西文正文) / Geist Mono(代码等宽) / Chillax(西文标题)
-         注意顺序：字体 CSS 要在 css/style 之前加载，否则主题里的 font-family 引用不到这个名字 --->
-    <%- renderCSS('fonts/Chillax/chillax.css') %>
-    <%- renderCSS('fonts/GeistMono/geist-mono.css') %>
-    <%- renderCSS('fonts/Geist/geist.css') %>
-
-    <%- css('css/style') %>
-
-    <% if (theme.developer && theme.developer.enable) {%>
-        <%- css('css/build/tailwind.css') %>
-    <% } else {%>
-        <%- renderCSS('css/build/tailwind.css') %>
-    <% } %>
-
-    <!--- Font Part-->
+    <!--- Font Part
+         注意顺序：所有 @font-face 都要在 css/style 之前加载。
+         放到后面虽然最终也能用上字体，但浏览器要先把整页按 fallback 字体画一遍，
+         等 CSS 下载完再重排一次 —— 表现就是"先系统字体、再突然跳成 LXGW"的闪动，
+         慢网下看着跟没生效一样。 -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <% if (theme.home_banner.custom_font.enable) { %>
         <link href="<%- theme.home_banner.custom_font.url %>" rel="stylesheet">
     <% } %>
@@ -194,6 +185,20 @@
     <% if (theme.global.fonts.title.enable) { %>
         <link href="<%- theme.global.fonts.title.url %>" rel="stylesheet">
     <% } %>
+
+    <!--- Redefine 自带字体：Geist(西文正文) / Geist Mono(代码等宽) / Chillax(西文标题) --->
+    <%- renderCSS('fonts/Chillax/chillax.css') %>
+    <%- renderCSS('fonts/GeistMono/geist-mono.css') %>
+    <%- renderCSS('fonts/Geist/geist.css') %>
+
+    <%- css('css/style') %>
+
+    <% if (theme.developer && theme.developer.enable) {%>
+        <%- css('css/build/tailwind.css') %>
+    <% } else {%>
+        <%- renderCSS('css/build/tailwind.css') %>
+    <% } %>
+
     <% if (theme.global.preloader === true || theme.global.preloader.enable === true) { %>
         <%- renderJS('libs/anime.min.js')%>
     <% } %>
