@@ -1,3 +1,5 @@
+@require '../../common/variables'
+
 $archive-year-font-size = 1.8rem
 $archive-year-count-font-size = 1.2rem
 $article-title-font-size = 1.2rem
@@ -36,7 +38,9 @@ $article-date-font-size = 1rem
     span.article-title
       position relative
       display block
-      
+      // 与文章页大标题、首页卡片标题统一：英文也走文楷
+      font-family $article-font-family, sans-serif
+
       &::after
         content ""
         width 7px

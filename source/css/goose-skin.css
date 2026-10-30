@@ -508,3 +508,14 @@ html:root {
 
    真想要原生粗体只能自托管：下载 LXGW WenKai Bold 的 ttf，
    用 cn-font-split 分包后挂 @font-face，把上面的 font-weight 改成 700。 */
+
+/* ---- 8.2 文章标题：英文同样走文楷 ----
+   「文章标题」在站上有三个出处，全都改成了 $article-font-family（LXGW 打头）：
+     · 文章页大标题   .article-title-cover / .article-title-regular
+                     （ejs 里带 tailwind class 的 h1，在 .markdown-body 之外，
+                       原本没声明 font-family，靠继承 → 英文是 Geist）
+     · 首页卡片标题   .home-article-title
+     · 归档/列表标题  span.article-title
+   UI 上的标题（导航栏 logo、侧边栏站名、首页 banner）仍走 Chillax，不受影响。
+   文章正文内的 h2~h6 由 markdown.styl 统一走 $article-font-family，
+   加上这里的 h1，一篇文章里所有标题和正文的英文观感就是一致的。 */

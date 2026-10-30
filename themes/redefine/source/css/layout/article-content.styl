@@ -3,6 +3,15 @@
 $arrow-icon-width = 16px
 $post-nav-max-width = 220px
 $article-title-font-size = 3.2rem
+
+// 文章页大标题（h1）：英文也走文楷。
+// 这两个 h1 是 ejs 里带 tailwind class 硬写的，不在 .markdown-body 内，
+// 原本没有 font-family 声明 → 继承 body 的 $default-font-family（Geist 打头）。
+// 文章内 h2~h6 走 markdown.styl 的 $article-font-family，这里补上 h1，
+// 保证「正文 + 各级标题」观感一致。
+.article-title-cover,
+.article-title-regular
+  font-family $article-font-family, sans-serif
 $temp-toc-width = hexo-config('global.sidebar_width')
 $toc-container-width = $temp-toc-width ? convert($temp-toc-width) : 210px
 $without-toc-container-width = calc(100% - $temp-toc-width)
