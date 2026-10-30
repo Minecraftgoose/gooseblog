@@ -23,9 +23,9 @@ colors:
 global:
   fonts:
     chinese:
-      enable: false
-      family:
-      url:
+      enable: true
+      family: "LXGW WenKai Screen"
+      url: https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/lxgwwenkaiscreen/result.css
     english:
       enable: false
       family:
@@ -57,8 +57,6 @@ global:
     auto_expand: false
   open_graph:
     enable: true
-    # 默认分享图。源文件 source/images/og.webp（1383×679）。
-    # 之前是 og-default.jpg（1200×630），已删除、统一用 og.webp，别再改回 .jpg。
     image: /images/og.webp
     description: 鹅滴博客嘎嘎
   google_analytics:
@@ -186,13 +184,13 @@ home_banner:
     family:
     url:
   social_links:
-    enable: false
+    enable: true
     style: default
     links:
       - icon: github
-        url:
+        url: https://github.com/Minecraftgoose/
       - icon: email
-        url:
+        url: support@mail.goose.cc.cd
     qrs: []
 # HOME BANNER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
@@ -262,7 +260,7 @@ home:
     enable: true
     position: left
     first_item: menu
-    announcement: '开学就月考呜呜呜'
+    announcement: '哎玛又要期中了。。。'
     show_on_mobile: true
     statistics_labels:
       tags: Tags
@@ -298,9 +296,9 @@ articles:
     line_height: 1.5
     image_border_radius: 14px
     image_alignment: center
-    image_caption: false
+    image_caption: true
     link_icon: true
-    delete_mask: false
+    delete_mask: true
     title_alignment: left
     headings_top_spacing:
       h1: 3.2rem
@@ -337,7 +335,7 @@ articles:
     enable: true
     default: cc_by_nc_sa
   lazyload: true
-  pangu_js: false
+  pangu_js: true
   recommendation:
     enable: true
     title: 推荐阅读
@@ -450,11 +448,11 @@ plugins:
   feed:
     enable: true
   aplayer:
-    enable: false
+    enable: true
     type: fixed
     audios: []
   mermaid:
-    enable: false
+    enable: true
     version: "11.4.1"
     theme:
       light: "default"
