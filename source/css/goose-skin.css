@@ -8,9 +8,9 @@
    颜色一律走主题 CSS 变量（--primary-color 等），不写死色值 ——
    这样改主色时全站跟着变，不用挨个找。
 
-   字体默认走主题 CSS 变量与系统字体栈；第 8 节是唯一例外 —— 为了让
-   主题 _config.yml 里 global.fonts.chinese 配的 LXGW WenKai Screen 真正生效，
-   在那里做了全局字体兜底（原因写在那一节的注释里）。
+   字体默认走主题 CSS 变量与系统字体栈。第 8 节只补 tailwind 的一处变量，
+   不覆盖任何组件的 font-family —— 中文字体（LXGW WenKai Screen）的接管
+   是在主题 styl 里做的，这样 Chillax / Geist 这些西文字体能原样保留。
    ========================================================================== */
 
 /* ---------- 2. 分享（工具栏内）+ 面板 ---------- */
@@ -451,39 +451,60 @@
   display: none;
 }
 
-/* ---------- 8. 全局字体兜底：让 LXGW WenKai Screen 真正生效 ----------
-   症状：_config.yml 里 global.fonts.chinese 配了 LXGW WenKai Screen，
-        但整站看不出任何变化。
-   原因有两层，都出在主题身上：
-     1) 那个配置只把字体名写进 $chinese-font-family 变量，而全站基础样式
-        html, body 用的是**硬编码**的 $default-font-family
-        （Geist Variable → PingFang SC → 微软雅黑 → …），压根没引用它；
-     2) .navbar-container / .home-banner-container / .site-name 等组件各自又
-        写死了一串 font-family，串里同样带着 PingFang SC / 微软雅黑。
-   而 CSS 的字体回退是**逐字符**的：中文字符在前面的 PingFang SC / 微软雅黑
-   里就已经有字形，于是永远轮不到排在后面的 LXGW WenKai Screen。
+/* ---------- 8. 字体：这里只补 tailwind 一处，真正的修正在主题 styl 里 ----------
+   ⚠️ 这里曾经写过 `html body [class] { font-family: inherit }`，是错的，已删。
+      它把所有带 class 的元素一律改成继承，于是 .navbar-container /
+      .home-banner-container / .site-name / .ml13 这几个**本来以
+      Chillax-Variable 打头**的组件也被抹平，英文标题的 Chillax 直接丢失、
+      退化成系统默认字体。教训：不要用通配去"统一"字体，西文和中文要分层。
 
-   所以这里做两件事：把 LXGW 提到所有中文字体之前，再让自带 font-family 的
-   组件改回继承。
+   现在的解法是改主题源文件（variables.styl 2 处 + 硬编码 Chillax 的 4 处）：
+     把 $chinese-font-family 插到 'Geist Variable' / 'Chillax-Variable' 之后、
+     system-ui 之前。
+   位置很讲究：
+     · Chillax / Geist 只有西文字形，放最前面不会挡住中文；
+     · system-ui（mac 上就是 SF Pro）、-apple-system、PingFang SC、微软雅黑
+       全都自带中文字形，LXGW必须排在它们前面，否则中文永远轮不到它。
+   CSS 是逐字符回退的，于是英文走 Chillax/Geist、中文走 LXGW，各走各的。
 
-   为什么写得这么绕：goose-skin.css 是在 css/style.css **之前**加载的，同等
-   特异性会被后面的规则盖掉。所以用 html body / html body [class] 把特异性抬
-   上去，而不是 !important —— 以后想局部换回别的字体还能正常覆盖。      */
+   改变量而不是在组件上逐个打补丁：markdown.styl / toc.styl / home-content.styl /
+   article-copyright-info.styl 都是引用 $english-font-family 的，源头一改全跟着
+   生效，不用去猜 stylus 嵌套后生成的选择器特异性。
+
+   下面这条只针对 tailwind：tailwind.css 在 style.css **之后**加载，它 base 里的
+   `html,:host { font-family: var(--default-font-family) }` 会把 <html> 盖回
+   ui-sans-serif。body 及其子元素不受影响（basic.styl 有明确声明），
+   这里改变量只是让 <html> 本身也一致。 */
 :root {
-  --goose-font: 'Geist Variable', 'LXGW WenKai Screen', system-ui, -apple-system,
-                'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --goose-font-sans: 'Geist Variable', 'LXGW WenKai Screen', system-ui, -apple-system,
+                     'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
-/* html:root 特异性比 tailwind base 的 :root 高，能改掉它给 <html> 的字体 */
+/* html:root 特异性高于 tailwind base 的 :root */
 html:root {
-  --default-font-family: var(--goose-font);
+  --default-font-family: var(--goose-font-sans);
 }
 
-html body {
-  font-family: var(--goose-font);
+/* ---- 8.1 正文：英文也走文楷 ----
+   文楷**自带完整拉丁字形**（实测 lxgw-wenkai-screen-web 的分片 0.woff2，
+   unicode-range 含 U+20-7E；用 fontTools 查 cmap，A-Z / a-z / 0-9 全部有字形），
+   所以想让正文的英文、数字也统一成文楷，只要把中文字体提到西文之前即可。
+   这一层在主题 variables.styl 里新增的 $article-font-family 完成（LXGW → Geist → …），
+   .markdown-body 及其标题引用它；UI（导航栏 / TOC / 卡片标题）仍用
+   $default-font-family（Geist → LXGW → …），英文保持 Geist、Chillax 不变。
+   这里不再写任何覆盖规则 —— 层级交给主题变量，比在 CSS 里抢特异性稳。
+
+   ⚠️ 已知代价：文楷 web 分包**只有 400 一个字重**（result.css 里
+   font-weight: 400，且 npm 包只有 screen / gbscreen / monoscreen 四个变体，
+   没有 bold）。所以正文里的 **加粗** 是浏览器合成粗体（faux bold），
+   文楷笔画细，合成后容易糊成一团。若嫌难看，取消下面这段注释，
+   改用描边加粗（比合成粗体干净，代价是笔画略圆润）：
+
+.markdown-body strong,
+.markdown-body b {
+  font-weight: 400;
+  -webkit-text-stroke: 0.3px currentColor;
 }
 
-/* 让所有自带 font-family 的组件回到继承；图标字体和代码块除外 */
-html body [class]:not(.fa):not([class*="fa-"]):not(code):not(pre):not(kbd):not(.hljs):not(.odometer) {
-  font-family: inherit;
-}
+   真想要原生粗体只能自托管：下载 LXGW WenKai Bold 的 ttf，
+   用 cn-font-split 分包后挂 @font-face，把上面的 font-weight 改成 700。 */
