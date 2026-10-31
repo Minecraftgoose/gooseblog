@@ -28,6 +28,14 @@
       lrcType: 3,
       audio: audioList,
     });
-    document.querySelector(".aplayer-icon-lrc").click();
+    // 原版这里无条件 click() 强制展开歌词面板。当前歌单没人配 lrc，
+    // 展开后只会撑出一块 90px 高的空白歌词条（.aplayer-withlrc 会加高容器）。
+    // 改成"只有列表里真有歌词才展开"：以后给某首歌补上 lrc 会自动恢复，
+    // 不用再回来改代码。querySelector 可能为 null，也一并判掉。
+    const hasLrc = audioList.some(function (a) { return !!a.lrc; });
+    if (hasLrc) {
+      const lrcBtn = document.querySelector(".aplayer-icon-lrc");
+      if (lrcBtn) lrcBtn.click();
+    }
   }
 })();

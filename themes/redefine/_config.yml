@@ -450,7 +450,23 @@ plugins:
   aplayer:
     enable: true
     type: fixed
-    audios: []
+    # 歌单直接写在这里，不用另建 yml。
+    # aplayer.js 只认这 6 个字段：name / artist / url / cover / lrc / theme。
+    # 没封面就别写 cover（空字符串会让图片加载失败），没歌词就别写 lrc。
+    # url 里的空格保持 %20 编码，别改成真实空格，也别加引号以外的装饰。
+    audios:
+      - name: "Amazon"
+        artist: "Alon.L"
+        url: "https://nwryazfllltstovpfihh.supabase.co/storage/v1/object/public/1/Amazon%20%20-%20Alon.L.aac"
+      - name: "Fever Pitch"
+        artist: "Richz"
+        url: "https://nwryazfllltstovpfihh.supabase.co/storage/v1/object/public/1/Fever%20Pitch%20-%20Richz.aac"
+      - name: "lo0k"
+        artist: "stupid"
+        url: "https://nwryazfllltstovpfihh.supabase.co/storage/v1/object/public/1/lo0k%20-%20stupid.aac"
+      - name: "Time to Pretend"
+        artist: "Lazer Boomerang"
+        url: "https://nwryazfllltstovpfihh.supabase.co/storage/v1/object/public/1/Time%20to%20Pretend%20-%20Lazer%20Boomerang.aac"
   mermaid:
     enable: true
     version: "11.4.1"

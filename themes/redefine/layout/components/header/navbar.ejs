@@ -138,16 +138,43 @@
 
             <%# Add sidebar links %>
             <% if (theme.home.sidebar.links !== null && theme.home.sidebar.show_on_mobile !== false) {%>
+                <%
+                    // 去重：原来只按 key 判重（theme.navbar.links.hasOwnProperty(i)），
+                    // 而本站把归档/标签/分类折叠进了 navbar 的 Index 下拉里 ——
+                    // navbar.links 里只有 "Index" 这个 key，没有 "Archives"/"Tags"/"Categories"，
+                    // 于是 sidebar.links 的三项全都被追加一遍，手机抽屉里就重了。
+                    // 改成按**跳转路径**判重：navbar 各项 + 每个下拉子菜单的 path 都收进集合，
+                    // 只要 sidebar 那项的 path 已经出现过就跳过。以后在 Index 里增删子菜单、
+                    // 或把某项提上来做一级导航，都不用再手动同步这边的判重名单。
+                    const drawerExistingPaths = new Set();
+                    if (theme.navbar.links) {
+                        for (const k in theme.navbar.links) {
+                            const item = theme.navbar.links[k];
+                            if (!item) continue;
+                            if (item.path && item.path !== 'none') {
+                                drawerExistingPaths.add(url_for(item.path));
+                            }
+                            const subs = item.submenus;
+                            if (subs) {
+                                for (const s in subs) {
+                                    drawerExistingPaths.add(url_for(subs[s]));
+                                }
+                            }
+                        }
+                    }
+                %>
                 <% for (let i in theme.home.sidebar.links) { %>
-                    <% if (theme.navbar.links && theme.navbar.links.hasOwnProperty(i)) {
-                        continue;
-                    } %>
+                    <% if (theme.home.sidebar.links[i].path === 'none') { continue; } %>
+                    <% if (drawerExistingPaths.has(url_for(theme.home.sidebar.links[i].path))) { continue; } %>
                     <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full"
                            href="<%= url_for(theme.home.sidebar.links[i].path) %>"
                         >
-                            <span><%= __(i) %></span>
-                            <i class="<%= theme.home.sidebar.links[i].icon %> fa-sm fa-fw"></i>
+                            <%# 与首页侧边栏保持一致：优先用 text 字段，没有再回落语言包 %>
+                            <span><%= (theme.home.sidebar.links[i].text || __(i)).toUpperCase() %></span>
+                            <% if (theme.home.sidebar.links[i].icon) { %>
+                                <i class="<%= theme.home.sidebar.links[i].icon %> fa-sm fa-fw"></i>
+                            <% } %>
                         </a>
                     </li>
                 <% } %>
