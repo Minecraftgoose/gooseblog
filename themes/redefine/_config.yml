@@ -186,11 +186,27 @@ home_banner:
   social_links:
     enable: true
     style: default
+    # icon 三种写法：
+    #   1) 品牌名          → 自动拼 fa-brands fa-<名字>（如 bilibili / qq / github）
+    #   2) 完整 FA 类名     → 原样使用（如 fa-solid fa-rss，rss 不在 brands 里）
+    #   3) 图片路径 / URL   → 渲染成 <img>，20×20（没有内置图标的平台用这个）
+    # ⚠️ 图标别超过 6 个：这块没有专门 CSS 管溢出，胶囊会一直横向长，
+    #    手机窄屏（375px）上超过 6 个就会顶出屏幕。现在是 5 个，安全。
     links:
       - icon: github
         url: https://github.com/Minecraftgoose/
       - icon: email
         url: support@mail.goose.cc.cd
+      - icon: bilibili
+        url: https://space.bilibili.com/3707055193983607
+      # Font Awesome 6.2.1 里没有 douyin，只有 tiktok。两者是同一套音符 logo，
+      # 先借用它顶上；想要抖音官方彩色图标，把这里换成
+      #   icon: /images/icons/douyin.svg
+      # 并把 svg 丢进 source/images/icons/ 即可（渲染成 <img>，20×20）。
+      - icon: tiktok
+        url: https://www.douyin.com/user/MS4wLjABAAAAVVa2ek41kZ8-aIl3rPjIKGHVJyeNhjpQkDWEAOUp5xtCY7f_CC0vB1KWDUsUL3UW
+      - icon: qq
+        url: https://qm.qq.com/q/bnpfz7uY5U
     qrs: []
 # HOME BANNER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
