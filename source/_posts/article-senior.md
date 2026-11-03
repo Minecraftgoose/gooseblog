@@ -13,8 +13,8 @@ description: '私人作文汇总'
 sticky: false
 slug: article-senior
 password: Goose110423
-abstract: '这是一篇加密文章，请输入密码查看。'
-message: '请输入密码'
+abstract: '防君子不防小人。'
+message: '防君子不防小人'
 wrong_pass_message: '密码不对，请再试试。'
 ---
 ### 主题：直面挫折、逆境成长，坚守本心
