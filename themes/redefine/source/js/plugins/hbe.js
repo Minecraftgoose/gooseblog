@@ -11,6 +11,20 @@ export function initHBE() {
   const knownPrefix = "<hbe-prefix></hbe-prefix>";
 
   const mainElement = document.getElementById("hexo-blog-encrypt");
+  if (!mainElement) return;
+
+  // Web Crypto 只在安全上下文（HTTPS / localhost）可用；普通 HTTP 域名下
+  // subtle 是 undefined，若不提示就会变成「按了没反应、也看不到报错」。
+  if (!cryptoObj || !cryptoObj.subtle) {
+    const tip = document.createElement("p");
+    tip.textContent =
+      "当前页面不是安全上下文（需 HTTPS 或 localhost），浏览器禁用了加密接口，无法解密。";
+    tip.style.color = "#e88";
+    tip.style.fontSize = "14px";
+    mainElement.appendChild(tip);
+    return;
+  }
+
   const wrongPassMessage = mainElement.dataset["wpm"];
   const wrongHashMessage = mainElement.dataset["whm"];
   const dataElement = mainElement.getElementsByTagName("script")["hbeData"];
@@ -297,31 +311,57 @@ export function initHBE() {
         });
     }
 
-    mainElement.addEventListener("keydown", async (event) => {
-      if (event.isComposing || event.key === "Enter") {
-        const password = document.getElementById("hbePass").value;
+    // 回车和「解密」按钮走同一条路径；decrypting 防止连按 / 连点重复弹窗。
+    let decrypting = false;
+
+    async function tryDecrypt() {
+      if (decrypting) return;
+      const passInput = document.getElementById("hbePass");
+      const password = passInput ? passInput.value : "";
+      if (!password) return;
+
+      decrypting = true;
+      try {
         const keyMaterial = await getKeyMaterial(password);
         const hmacKey = await getHmacKey(keyMaterial);
         const decryptKey = await getDecryptKey(keyMaterial);
         const iv = await getIv(keyMaterial);
 
-        decrypt(decryptKey, iv, hmacKey).then((result) => {
-          console.log(`Decrypt result: ${result}`);
-          if (result) {
-            cryptoObj.subtle.exportKey("jwk", decryptKey).then((dk) => {
-              cryptoObj.subtle.exportKey("jwk", hmacKey).then((hmk) => {
-                const newStorageData = {
-                  dk: dk,
-                  iv: arrayBufferToHex(iv),
-                  hmk: hmk,
-                };
-                storage.setItem(storageName, JSON.stringify(newStorageData));
-              });
+        const result = await decrypt(decryptKey, iv, hmacKey);
+        console.log(`Decrypt result: ${result}`);
+        if (result) {
+          cryptoObj.subtle.exportKey("jwk", decryptKey).then((dk) => {
+            cryptoObj.subtle.exportKey("jwk", hmacKey).then((hmk) => {
+              const newStorageData = {
+                dk: dk,
+                iv: arrayBufferToHex(iv),
+                hmk: hmk,
+              };
+              storage.setItem(storageName, JSON.stringify(newStorageData));
             });
-          }
-        });
+          });
+        }
+      } catch (e) {
+        console.error("hexo-blog-encrypt:", e);
+      } finally {
+        decrypting = false;
       }
+    }
+
+    mainElement.addEventListener("keydown", (event) => {
+      // 中文输入法组词期间不要触发，否则每按一个键都会去解密一次。
+      if (event.isComposing || event.key !== "Enter") return;
+      event.preventDefault();
+      tryDecrypt();
     });
+
+    const submitButton = document.getElementById("hbeSubmit");
+    if (submitButton) {
+      submitButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        tryDecrypt();
+      });
+    }
   }
 
   hbeLoader();

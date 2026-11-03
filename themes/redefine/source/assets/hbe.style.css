@@ -104,6 +104,14 @@
   margin-bottom: 20px;
 }
 
+/* 密码框下方的「解密」按钮：覆盖 .hbe-button 给 Encrypt again 写的左对齐 */
+.hbe-submit {
+  text-align: center;
+  text-indent: 0;
+  margin-top: 18px;
+  font-family: inherit;
+}
+
 .hbe-button:active {
   box-shadow: 0px 2px 0px 0px rgba(0,0,0,.2);
   top: 1px;

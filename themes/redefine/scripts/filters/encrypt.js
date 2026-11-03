@@ -122,11 +122,12 @@ hexo.extend.filter.register(
       .replace(/{{hbeWrongPassMessage}}/g, config.wrong_pass_message)
       .replace(/{{hbeWrongHashMessage}}/g, config.wrong_hash_message)
       .replace(/{{hbeMessage}}/g, config.message);
+    // 注意：这里是浏览器端内联 module 脚本，不能用服务端变量 log / ensurePrefix，
+    // 否则会抛 ReferenceError 导致下面的 initHBE() 根本不执行（表现为回车无反应）。
     data.content += `<link href="${hexo.config.root}css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="${hexo.config.root}js/plugins/hbe.js"></script>
 <script data-swup-reload-script type="module">
 import {initHBE} from "${hexo.config.root}js/plugins/hbe.js";
-  log.info(ensurePrefix("hexo-blog-encrypt: loaded."));
-    initHBE();
+  initHBE();
 </script>
 `;
     data.excerpt = data.more = config.abstract;
