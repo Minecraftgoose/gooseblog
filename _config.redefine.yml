@@ -1,0 +1,510 @@
+info:
+  title: GooseBlog             
+  subtitle: 鹅滴博客嘎嘎                             
+  author: Goose               
+  url: https://blog.goose.cc.cd
+# BASIC INFORMATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# IMAGE CONFIGURATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+defaults:
+  favicon: /images/avatar-256.webp  
+  logo: /images/avatar.webp
+  avatar: /images/avatar.webp       
+# IMAGE CONFIGURATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# COLORS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+colors:
+  primary: "#8B5CF6"
+  secondary:
+  default_mode: dark      
+# COLORS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# SITE CUSTOMIZATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+global:
+  fonts:
+    chinese:
+      enable: true
+      family: "LXGW WenKai Screen"
+      url: https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/lxgwwenkaiscreen/result.css
+    english:
+      enable: false
+      family:
+      url:
+    title:
+      enable: false
+      family:
+      url:
+  content_max_width: 1000px
+  sidebar_width: 210px
+  hover:
+    shadow: true
+    scale: false
+  scroll_progress:
+    bar: true             
+    percentage: true
+  website_counter:
+    url: https://cn.vercount.one/js
+    enable: true
+    site_pv: true
+    site_uv: true
+    post_pv: true
+  single_page: true      
+  preloader:
+    enable: true        
+    custom_message: GooseBlog
+  side_tools:
+    gear_rotation: true
+    auto_expand: false
+  open_graph:
+    enable: true
+    image: /images/og.webp
+    description: 鹅滴博客嘎嘎
+  google_analytics:
+    enable: false
+    id:
+# SITE CUSTOMIZATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# FONTAWESOME >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+fontawesome:
+  thin: false
+  light: false
+  duotone: false
+  sharp_solid: false
+# FONTAWESOME <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# HOME BANNER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+home_banner:
+  enable: true
+  style: fixed           
+  image:
+    light: /images/background.webp     
+    dark: /images/background.webp         
+  title: GooseBlog        
+  subtitle:
+    text:
+      - "希望是像钻石一样珍贵的东西，希望是我们唯一回家的方向。"
+      - "我原来以为家在身后，现在才知道：家，在前面。"
+      - "跨过晨昏线，便是永夜。"
+      - "无论最终结果将人类历史导向何处，我们决定，选择希望！"
+      - "让人类保持理智，确实是一种奢求。"
+      - "没有人类的文明，毫无意义。"
+      - "同归于尽总好过坐以待毙。"
+      - "我们已经没有什么不能失去的了。"
+      - "这发动机的声音听起来像心跳。"
+      - "总有一天，贝加尔湖的冰会化成水的。"
+      - "那一天，无数双手把她推到我的面前，水下的每个人，都是她的父母。"
+      - "来吧！让我们点燃木星！"
+      - "其实在我心里，那颗星星，早就不存在了。"
+      - "他说，爸爸会化作天上的那颗星星，后来我才知道他是骗人的，北京根本就没有星星。"
+      - "户口，当哥哥的，要保护好妹妹，带朵朵回家。"
+      - "孩子别怕，从此以后我们就是一家人了。"
+      - "爷爷不在了，我们的家在哪里？"
+      - "儿子，对不起，爸爸又要去执行任务了，这是爸爸一生中，最重要的任务。"
+      - "空间站跑了，地面通讯马上会瘫痪，地球上的人被放弃了，可我儿子还在下面。"
+      - "太阳正在急速老化，持续膨胀，一百年后，太阳会膨胀到吞没整个地球，三百年后，太阳系将不复存在。"
+      - "这是一场体现人类精神的比赛，要知道，流浪地球在宇宙中是叫不到救援的！"
+      - "无论结果如何，人类的勇气和坚毅，都被镌刻在星空下。"
+      - "小时候有人跟我说，他就是天上的星星，只要抬头就能看见。"
+      - "这是爷爷的家，以前都住满了人。"
+      - "老东西，老东西你在哪儿，我去接你。"
+      - "请协助执行1125号子任务，运送火石重启杭州发动机。"
+      - "北京第三区交通委提醒您：道路千万条，安全第一条。行车不规范，亲人两行泪。"
+      - "最初，没有人在意这场灾难，直到这场灾难和每个人息息相关。"
+      - "人类把最精密的保密系统，都用在了自我毁灭上。"
+      - "在浩瀚宇宙中，地球只是一个小小白点，但这个小小白点却是我们的一切。"
+      - "我相信，会再次看到蓝天，鲜花挂满枝头。"
+      - "为了生存，人类曾付出巨大的努力和牺牲，赢得了进化的胜利，然而，进化的脚步却从未停止。"
+      - "我信，我的孩子会信，孩子的孩子会信。"
+      - "人类的勇气可以跨越时间，跨越每一个历史，当下，和未来。"
+      - "一万五千年前，一根愈合的股骨，标志着人类文明的诞生。"
+      - "悲伤就像地心引力，不断拖我下沉。"
+      - "冰会化成水的……我相信我们的子孙还可以在贝加尔湖钓鲑鱼。"
+      - "我们俄罗斯人在太空中是无敌的。"
+      - "远离亲人，我很遗憾，但这是我不得不做的事。"
+      - "危难当前，唯有责任。"
+      - "天亮前的夜是最难熬的。"
+      - "团结，延续着文明的火种。"
+      - "中国航天飞行中队，50岁以上的，出列。"
+      - "延续人类文明的最优选择，是毁灭人类。——MOSS"
+      - "遨游太空不重要，给喜欢的人一束花很重要。"
+      - "我们还没转正，不享受医疗保险。"
+      - "再见了，太阳系。"
+      - "我方开放地下城，这是告知，不是商量。"
+      - "兄弟，我还是有点害怕……但是，地球之光，要勇敢。"
+      - "可惜啊，没有带你去贝加尔湖钓鲑鱼。"
+      - "笨笨，你是条军犬。"
+      - "北京的房价终于降了。"
+      - "地球，还挺美好的。"
+      - "从历史上看，人类的命运取决于人类的选择。"
+      - "记住，没有人的文明，毫无意义。——马兆"
+      - "天亮前的夜是最难熬的，我们的人一定可以完成任务。——周喆直"
+      - "我相信我们的人一定可以完成任务，无论虚实，不计存亡。"
+      - "爸爸要去睡一个大盒子，当你不用望远镜就能看到木星的时候，爸爸就回来了。"
+      - "看，我周围的星星多漂亮，它们都在陪着我。"
+      - "550W听起来不像个名字，但把它翻过来，叫莫斯，直译为小苔藓，是不是亲切了一些？——MOSS"
+      - "我选择希望。——刘培强"
+      - "为了克服你们对历史、当下、未来的执念，延续人类文明的最优选择是毁灭人类，但你是一个变量。——MOSS"
+      - "丫丫，记住这些数字，只有你能记住。"
+      - "爸爸，我们拯救世界了吗？——应该是吧。"
+      - "培强，地球，还挺美好的。——张鹏"
+      - "兄弟，我有点紧张，但作为地球之光，我必须勇敢。——张鹏"
+      - "真遗憾，不能一起去贝加尔湖钓鲑鱼了。"
+      - "我们还没转正，没有医疗保险。——赫伯特·科普利"
+      - "我知道，我用不到了。——刘培强"
+      - "五颗核弹用不了两个人，就仨座儿，坐不下了，回家吧，你女儿在家里等着你呢。"
+      - "别看了，只剩一套潜水服，这里的工作完不成，都得死。——马兆"
+      - "我希望世界记住这一天。"
+      - "有人在帮我们。"
+      - "键盘就是你的武器。"
+      - "带鱼睡觉的时候，是竖着的。——马兆"
+      - "东西终于便宜了。——图恒宇"
+      - "笨笨，别怕，我在呢。"
+      - "这是世界上最大的液冷服务器集群，这是一个全新的世界。——马兆"
+      - "人类敬畏历史，却轻视未来。"
+      - "一万五千年后，当太阳系将不复存在，人类的团结与勇气将延续文明的火种。"
+    hitokoto:
+      enable: false        
+      show_author: false
+      api: https://v1.hitokoto.cn
+    typing_speed: 85      
+    backing_speed: 45     
+    starting_delay: 500
+    backing_delay: 1600    
+    loop: true
+    smart_backspace: true
+  text_color:
+    light: "#fff"
+    dark: "#e8e8e8"
+  text_style:
+    title_size: 2.8rem
+    subtitle_size: 1.5rem
+    line_height: 1.2
+  custom_font:
+    enable: false
+    family:
+    url:
+  social_links:
+    enable: true
+    style: default
+    # icon 三种写法：
+    #   1) 品牌名          → 自动拼 fa-brands fa-<名字>（如 bilibili / qq / github）
+    #   2) 完整 FA 类名     → 原样使用（如 fa-solid fa-rss，rss 不在 brands 里）
+    #   3) 图片路径 / URL   → 渲染成 <img>，20×20（没有内置图标的平台用这个）
+    # ⚠️ 图标别超过 6 个：这块没有专门 CSS 管溢出，胶囊会一直横向长，
+    #    手机窄屏（375px）上超过 6 个就会顶出屏幕。现在是 5 个，安全。
+    links:
+      - icon: github
+        url: https://github.com/Minecraftgoose/
+      - icon: email
+        url: support@mail.goose.cc.cd
+      - icon: bilibili
+        url: https://space.bilibili.com/3707055193983607
+      # Font Awesome 6.2.1 里没有 douyin，只有 tiktok。两者是同一套音符 logo，
+      # 先借用它顶上；想要抖音官方彩色图标，把这里换成
+      #   icon: /images/icons/douyin.svg
+      # 并把 svg 丢进 source/images/icons/ 即可（渲染成 <img>，20×20）。
+      - icon: tiktok
+        url: https://www.douyin.com/user/MS4wLjABAAAAVVa2ek41kZ8-aIl3rPjIKGHVJyeNhjpQkDWEAOUp5xtCY7f_CC0vB1KWDUsUL3UW
+      - icon: qq
+        url: https://qm.qq.com/q/bnpfz7uY5U
+    qrs: []
+# HOME BANNER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# NAVIGATION BAR >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+navbar:
+  auto_hide: false
+  color:
+    left: "#A78BFA"
+    right: "#7C3AED"
+    transparency: 35
+  width:
+    home: 1200px
+    pages: 1000px
+  links:
+    Home:
+      path: /
+      text: Home
+      icon: fa-regular fa-house
+    # 归档 / 标签 / 分类 三个折叠进这一个下拉里，避免导航过长。
+    #
+    # ⚠️ submenus 的**显示文字不是这里写的 key**，而是拿 key 去语言包
+    #    查翻译（navbar.ejs 里 __(submenu.toLowerCase()).toUpperCase()）。
+    #    查不到就原样返回 key 再转大写 —— 两种情况下都是英文。
+    #    语言包「菜单翻译」段已把 archives / categories / tags 都写成英文，
+    #    保证下拉和其余导航项（走 text 字段）风格一致。
+    #
+    # ⚠️ path 写 '#' 而不是 'none'：navbar.ejs 开头有
+    #      `if (link.path === 'none')` 直接跳过整项，写了页面就没了。
+    #      有 submenus 时 href 会被强制成 '#' 且 onClick 阻止跳转，
+    #      所以这里填什么都不会真的跳走，用 '#' 还顺带避免误判成首页高亮。
+    Index:
+      path: '#'
+      text: Index
+      icon: fa-regular fa-layer-group
+      submenus:
+        Archives: /archives
+        Categories: /categories
+        Tags: /tags
+    Gallery:
+      path: /masonry
+      text: Gallery
+      icon: fa-regular fa-image
+    Moments:
+      path: /shuoshuo
+      text: Moments
+      icon: fa-regular fa-comment
+    Bookmarks:
+      path: /bookmarks
+      text: Bookmarks
+      icon: fa-regular fa-bookmark
+    Friends:
+      path: /friends
+      text: Friends
+      icon: fa-regular fa-link
+    About:
+      path: /about
+      text: About
+      icon: fa-regular fa-user
+  search:
+    enable: true      
+    preload: true
+# NAVIGATION BAR <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# HOME PAGE ARTICLE SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+home:
+  sidebar:
+    enable: true
+    position: left
+    first_item: menu
+    announcement: '哎玛又要期中了。。。'
+    show_on_mobile: true
+    statistics_labels:
+      tags: Tags
+      categories: Categories
+      posts: Posts
+    links:
+      Archives:
+        path: /archives
+        text: Archives
+        icon: fa-regular fa-archive
+      Tags:
+        path: /tags
+        text: Tags
+        icon: fa-regular fa-tags
+      Categories:
+        path: /categories
+        text: Categories
+        icon: fa-regular fa-folder
+  article_date_format: auto
+  excerpt_length: 200
+  categories:
+    enable: true
+    limit: 3
+  tags:
+    enable: true
+    limit: 3
+# HOME PAGE ARTICLE SETTINGS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# ARTICLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+articles:
+  style:
+    font_size: 16px
+    line_height: 1.5
+    image_border_radius: 14px
+    image_alignment: center
+    image_caption: true
+    link_icon: true
+    delete_mask: true
+    title_alignment: left
+    headings_top_spacing:
+      h1: 3.2rem
+      h2: 2.4rem
+      h3: 1.9rem
+      h4: 1.6rem
+      h5: 1.4rem
+      h6: 1.3rem
+  word_count:
+    enable: true
+    count: true
+    min2read: true
+  author_label:
+    enable: true
+    auto: false
+    list: []
+  code_block:
+    copy: true
+    style: mac
+    highlight_theme:
+      light: github
+      dark: vs2015
+    font:
+      enable: false
+      family:
+      url:
+  toc:
+    enable: true
+    max_depth: 3
+    number: false
+    expand: true
+    init_open: true
+  copyright:
+    enable: true
+    default: cc_by_nc_sa
+  lazyload: true
+  pangu_js: true
+  recommendation:
+    enable: true
+    title: 推荐阅读
+    limit: 3
+    mobile_limit: 2
+    placeholder: /images/og.webp
+    skip_dirs: []
+# ARTICLE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# COMMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+comment:
+  enable: true
+  system: giscus
+  config:
+    waline:
+      serverUrl: https://example.example.com
+      lang: zh-CN
+      emoji: []
+      recaptchaV3Key:
+      turnstileKey:
+      reaction: false
+    gitalk:
+      clientID:
+      clientSecret:
+      repo:
+      owner:
+      proxy:
+    twikoo:
+      version: 1.6.10
+      server_url:
+      region:
+    giscus:
+      repo: Minecraftgoose/gooseblog
+      repo_id: R_kgDOUnTIVg
+      category: Announcements
+      category_id: DIC_kwDOUnTIVs4DGfPv
+      mapping: pathname     
+      strict: 0
+      reactions_enabled: 1   
+      emit_metadata: 0
+      lang: zh-CN
+      input_position: bottom
+      loading: lazy
+    artalk:
+      server:
+      site:
+    utterances:
+      repo:
+      issue_term: pathname
+      issue_number:
+      label:
+      theme_light: github-light
+      theme_dark: github-dark
+# COMMENT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# FRIEND LINKS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+links: []
+# FRIEND LINKS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# FOOTER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+footer:
+  runtime: true
+  icon: '<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: var(--primary-color)"></i>'
+  start: 2026/7/19 20:10:08
+  statistics: true
+  customize: '<p>GooseBlog 鹅滴博客嘎嘎</p>'   
+  icp:
+    enable: false
+    number:
+    url:
+# FOOTER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# INJECT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+inject:
+  enable: true
+  head:
+    - |
+      <link rel="preload" as="image" href="/images/background.webp" media="(min-width: 1441px)">
+      <link rel="preload" as="image" href="/images/background-1920.webp" media="(min-width: 901px) and (max-width: 1440px)">
+      <link rel="preload" as="image" href="/images/background-1280.webp" media="(max-width: 900px)">
+      <link rel="stylesheet" href="/css/goose-skin.css">
+      <!-- 这里绝对不要写死 window.__GOOSE_LINK_PREVIEW__ 的绝对地址。
+           写死成主站域名后，netlify页面会跨域CloudflareWorker。 -->
+    - |
+      <style>
+        .home-banner-background img { display: none; }
+        .home-banner-background::before {
+          content: "";
+          position: absolute; inset: 0;
+          background-image: url("/images/background-1280.webp");
+          background-size: cover; background-position: center center;
+        }
+        @media (min-width: 901px) {
+          .home-banner-background::before { background-image: url("/images/background-1920.webp"); }
+        }
+        @media (min-width: 1441px) {
+          .home-banner-background::before { background-image: url("/images/background.webp"); }
+        }
+      </style>
+  footer:
+    - |
+      <script src="/js/goose/self-links.js" data-swup-reload-script></script>
+      <script src="/js/goose/share.js" data-swup-reload-script></script>
+      <script src="/js/goose/link-card.js" data-swup-reload-script></script>
+      <script src="/js/goose/friends-thumb.js" data-swup-reload-script></script>
+# INJECT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# PLUGINS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+plugins:
+  feed:
+    enable: true
+  aplayer:
+    enable: true
+    type: fixed
+    # 歌单直接写在这里，不用另建 yml。
+    # aplayer.js 只认这 6 个字段：name / artist / url / cover / lrc / theme。
+    # 没封面就别写 cover（空字符串会让图片加载失败），没歌词就别写 lrc。
+    # url 里的空格保持 %20 编码，别改成真实空格，也别加引号以外的装饰。
+    audios:
+      - name: "Amazon"
+        artist: "Alon.L"
+        url: "https://nwryazfllltstovpfihh.supabase.co/storage/v1/object/public/1/Amazon%20%20-%20Alon.L.aac"
+      - name: "Fever Pitch"
+        artist: "Richz"
+        url: "https://nwryazfllltstovpfihh.supabase.co/storage/v1/object/public/1/Fever%20Pitch%20-%20Richz.aac"
+      - name: "lo0k"
+        artist: "stupid"
+        url: "https://nwryazfllltstovpfihh.supabase.co/storage/v1/object/public/1/lo0k%20-%20stupid.aac"
+      - name: "Time to Pretend"
+        artist: "Lazer Boomerang"
+        url: "https://nwryazfllltstovpfihh.supabase.co/storage/v1/object/public/1/Time%20to%20Pretend%20-%20Lazer%20Boomerang.aac"
+  mermaid:
+    enable: true
+    version: "11.4.1"
+    theme:
+      light: "default"
+      dark: "dark"
+# PLUGINS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# PAGE TEMPLATES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+page_templates:
+  friends_column: 2
+  tags_style: blur
+  masonry:
+    batch_size: 12
+    initial_batch_size: 24
+# PAGE TEMPLATES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# CDN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start
+cdn:
+  enable: false
+  provider: npmmirror
+  custom_url:
+# CDN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
+
+# DEVELOPER MODE >>>>>>>>>>>>>>>>>>
