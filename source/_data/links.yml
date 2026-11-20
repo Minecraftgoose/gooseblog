@@ -16,14 +16,13 @@
       thumbnail: 'https://workspace-zb-cdn.qianwen.com/49027911be7e4e33a84fbb43682bc876%2Fo%2F1791676223875-c.png?auth_key=1823216040-0-0-5a5a211c5e600c1529c2397134783145'
       avatar: 'https://host.goose.cc.cd/icons/icon-192x192.png'
       description: '静态网站托管'
-    - name: '登🌟者的博客'
-      link: 'https://starblog.totalh.net/'
-      thumbnail: 'https://workspace-zb-cdn.qianwen.com/19ba413c1341450baaed62be534ec414%2Fo%2F1791676244022-c.png?auth_key=1823213160-0-0-dc69c071e3f52dfbb721b907011c618c'
-      avatar: 'https://avatar.moonshot.cn/avatar/d5o5jimmu6s7tat0tdqg/1785077058301196.png'
-      description: '优质内容的博客（starblog）'
+    - name: 'ArkBlog 方舟博客'
+      link: 'https://arkblog.totalh.net/'
+      thumbnail: 'https://i.imgs.ovh/2026/11/15/bb8aabdfc3a5fbe5e737f95c97429ad1.png'
+      description: ' 写点东西，放在自己的文件夹里
     - name: '水水的小屋🏡'
       link: 'https://www.happycola.top/'
-      thumbnail: 'https://www.happycola.top/img/Homepage_Screenshot.jpg'
+      thumbnail: 'https://www.happycola.top/img/site-screenshot.jpg'
       avatar: 'https://www.happycola.top/img/avatar.png'
       description: '写点有趣的东东 awa'
     - name: 晨叶梦春的小屋
@@ -40,7 +39,7 @@
       link: 'https://www.longmoon.top/'
       thumbnail: 'https://workspace-zb-cdn.qianwen.com/2e55ed9a41bd43f98c9baba252a9cf2d%2Fo%2F1791646315834-c.png?auth_key=1823186220-0-0-61fe4772ad0d5fa50b65b9d7f53cab13'
       avatar: 'https://avatar.moonshot.cn/avatar/d305r74nvj4ml242n0dg/1781531691373077.png'
-      description: 长月博客（仿旧版GooseBlog）
+      description: '长月博客'
     - name: HN Space
       link: 'https://blog.hn-space.cn'
       thumbnail: 'https://workspace-zb-cdn.qianwen.com/b24418002144424b98804a5a663b9401%2Fo%2F1791681870403-c.png?auth_key=1823219100-0-0-82f486a277c8c29dcb92e3f746e62252'
