@@ -1,0 +1,6 @@
+# 全站放行：Bingbot / Googlebot 等所有合规爬虫
+User-agent: *
+Allow: /
+
+# 站点地图（文章 URL 全在这里，避免爬虫只靠首页内链发现）
+Sitemap: https://blog.goose.cc.cd/sitemap.xml

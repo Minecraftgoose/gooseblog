@@ -32,7 +32,16 @@ hexo.extend.helper.register('generateMeta', function (theme, page) {
 
 hexo.extend.helper.register('autoCanonical', function (config, page) {
   var base_url = config.url;
-  if (config.url.charAt(config.url.length - 1) !== '/') base_url += '/';
+  if (base_url.charAt(base_url.length - 1) !== '/') base_url += '/';
 
-  return '<link rel="canonical" href="' + base_url + page.canonical_path.replace('index.html', '').toLowerCase() + '"/>';
+  // ⚠️ 不要对 path 做 toLowerCase()。
+  //   本站 permalink 是 posts/:slug/，slug 允许大写（GooseHost-2026、
+  //   TimeFreeze …）。小写化之后 canonical 会指向
+  //   /posts/goosehost-2026/ 这种并不存在的地址，而 sitemap.xml、atom.xml
+  //   里用的都是 post.permalink 原始大小写。三者对不上 + canonical 落地 404，
+  //   搜索引擎会直接放弃收录文章页，表现就是「只收录了根域名」。
+  //   需要规范化只处理 host，path 一律保留 Hexo 原样。
+  var canonical_path = String(page.canonical_path || '').replace(/index\.html$/, '');
+
+  return '<link rel="canonical" href="' + base_url + canonical_path + '"/>';
 });

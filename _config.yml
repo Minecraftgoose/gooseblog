@@ -100,10 +100,19 @@ deploy:
   type: ''
 
 # Feed
+# 同时输出 Atom + RSS2：
+#   atom.xml  → <summary> 摘要 + <content> 全文（很多阅读器只读 summary）
+#   rss2.xml  → <description> 摘要 + <content:encoded> 全文（Foxmail 等客户端
+#               对 content:encoded 的兼容性更好，正文能正常读出来）
+# 两个文件都带全文，订阅哪个都不缺正文。
 feed:
   enable: true
-  type: atom
-  path: atom.xml
+  type:
+    - atom
+    - rss2
+  path:
+    - atom.xml
+    - rss2.xml
   limit: 20
   content: true
   content_limit: 140

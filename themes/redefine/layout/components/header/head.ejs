@@ -6,9 +6,10 @@
       const openGraphConfig = theme.global?.open_graph;
       const openGraphEnabled = openGraphConfig === true || openGraphConfig?.enable === true;
     %>
-    <% if (!openGraphEnabled) { %>
-        <meta name="description" content="<%= page.description || config.description || 'Hexo Theme Redefine' %>">
-    <% }%>
+    <%# 标准 meta description 必须无条件输出：原主题只在关闭 open_graph 时才写， %>
+    <%# 本站开了 open_graph，结果全站只剩 og:description，Bing 取不到页面摘要。 %>
+    <%# 两者属性不同（name vs property），并存不冲突。 %>
+    <meta name="description" content="<%= page.description || config.description || 'Hexo Theme Redefine' %>">
     <meta name="author" content="<%= theme.info.author || config.author || 'Redefine Team' %>">
     
     <!-- Completely eliminate flash of wrong theme -->
