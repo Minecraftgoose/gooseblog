@@ -1,7 +1,7 @@
 ---
 title: '相伴GooseHost——2026年度总结'
 date: '2026-11-22 09:28:14'
-updated: ''
+updated: '2026-11-22 09:28:14'
 tags:
   - 'GooseHost'
   - '文档'
