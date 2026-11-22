@@ -4,12 +4,13 @@ date: '2026-11-22 09:28:14'
 updated: ''
 tags:
   - 'GooseHost'
+  - '文档'
 categories:
-  - 'GooseHost'
-cover: ''
-og_image: ''
-excerpt: ''
-description: ''
+  - '项目'
+cover: 'https://img.goose.cc.cd/i/d712485cd56be9505fa0b146697885f3.png'
+og_image: 'https://img.goose.cc.cd/i/d712485cd56be9505fa0b146697885f3.png'
+excerpt: 'GooseHost2026年度总结与故事分享'
+description: '来看看GooseHost曾经往事'
 sticky: false
 slug: GooseHost-2026
 ---
