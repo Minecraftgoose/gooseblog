@@ -102,3 +102,7 @@
   description: '老蒋身体不舒服，找孙中山先生看病'
   width: 624
   height: 480
+
+- image: 'https://kimi-file.moonshot.cn/kimi-fs/files/blob/community/e9815e674cae9333b56b2f3f8e624720509fc7891455f04ec51d28a682500f7f?x-tos-process=image%2Fauto-orient%2C1%2Fstrip%2Fresize%2Cw_480%2Ch_480%2Cm_mfit%2Fignore-error%2C1'
+  width: 480
+  height: 805
